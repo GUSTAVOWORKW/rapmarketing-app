@@ -36,3 +36,165 @@
     transform: rotate(360deg);
   }
 }
+
+/* Centralização dos estilos do mockup do celular para previews */
+.phone-mockup {
+  width: 280px;
+  height: 560px;
+  background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+  border-radius: 36px;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.8),
+    0 0 0 2px #333,
+    0 0 0 8px #111,
+    inset 0 2px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.3);
+  border: 3px solid #222;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Notch do iPhone realista */
+.phone-mockup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: linear-gradient(145deg, #0a0a0a, #000);
+  border-radius: 0 0 16px 16px;
+  z-index: 100;
+  box-shadow: 
+    0 3px 8px rgba(0,0,0,0.9),
+    inset 0 -2px 0 rgba(255,255,255,0.05);
+}
+
+/* Sensor/câmera do notch */
+.phone-mockup::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #111;
+  border-radius: 50%;
+  z-index: 101;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Container interno com clipping perfeito */
+.phone-content {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #000;
+  /* Clipping para bordas arredondadas perfeitas */
+  clip-path: inset(0 round 30px);
+}
+
+/* Conteúdo do template respeitando o notch */
+.phone-content > div {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 30px;
+  /* Espaço para o notch */
+  padding-top: 32px;
+  box-sizing: border-box;
+  /* Forçar conteúdo a preencher toda a área */
+  min-height: 100%;
+}
+
+/* Scrollbar customizada e sutil */
+.phone-content::-webkit-scrollbar,
+.phone-content > div::-webkit-scrollbar {
+  width: 2px;
+}
+
+.phone-content::-webkit-scrollbar-track,
+.phone-content > div::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 32px 0 8px 0; /* Evitar scrollbar no notch */
+}
+
+.phone-content::-webkit-scrollbar-thumb,
+.phone-content > div::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 1px;
+}
+
+.phone-content::-webkit-scrollbar-thumb:hover,
+.phone-content > div::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+/* Forçar templates a se encaixarem perfeitamente */
+.phone-content > div > div {
+  border-radius: 0 !important;
+  min-height: calc(100vh - 32px) !important;
+  padding-top: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Evitar vazamento de elementos */
+.phone-mockup * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word !important;
+}
+
+/* Garantir que barras de música não vazem */
+.phone-content .music-bar,
+.phone-content [style*="MusicBar"] {
+  max-width: calc(100% - 32px) !important;
+  margin-left: 16px !important;
+  margin-right: 16px !important;
+  box-sizing: border-box !important;
+}
+
+/* Container específico para templates no mockup */
+.template-preview-container {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+/* Garantir que o conteúdo dos templates se ajuste perfeitamente */
+.template-preview-container > div {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  contain: layout style paint;
+}
+
+/* Forçar elementos a respeitarem as bordas do mockup */
+.phone-content > div {
+  contain: layout style paint !important;
+}
