@@ -53,7 +53,7 @@ export const SpotifyCallbackHandler = () => {
 
         const { error } = await supabase
           .from('spotify_tokens')
-          .upsert([tokenData], { onConflict: 'user_id' }); // <-- CORREÇÃO AQUI: tokenData em um array
+          .upsert([tokenData], { onConflict: 'user_id' });
 
         if (error) {
           console.error('❌ [SpotifyCallback] Erro ao salvar tokens do Spotify:', error);
@@ -68,7 +68,6 @@ export const SpotifyCallbackHandler = () => {
       } catch (err) {
         console.error('❌ [SpotifyCallback] Erro geral no processamento de tokens:', err);
       } finally {
-        // Garante que o estado de processamento seja desativado em qualquer caso
         setIsProcessing(false);
       }
     };
@@ -91,3 +90,5 @@ export const SpotifyCallbackHandler = () => {
 
   return null;
 };
+
+export default SpotifyCallbackHandler;
