@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './App.css';
 import Auth from './components/Auth/Auth';
-import Dashboard from './pages/Dashboard';
 import ChooseUsername from './pages/ChooseUsername';
-import TemplateSelectPage from './pages/TemplateSelectPage';
-import StreamingSetup from './pages/StreamingSetup';
-import PublicProfile from './pages/PublicProfile';
+import LandingPage from './pages/LandingPage';
 import { supabase } from './services/supabase';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import HeaderBar from './components/Common/HeaderBar';
+import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
+
+// Seus outros imports de componentes e contextos
+import UserDashboard from './components/dashboard/UserDashboard.tsx';
+import UserSettings from './pages/UserSettings.js';
+import DashboardLayout from './components/layout/DashboardLayout';
+import CreatePresavePage from './pages/CreatePresavePage';
+import PresavePage from './pages/PresavePage';
+import CreateSmartLinkPage from './pages/CreateSmartLinkPage.tsx';
+import PublicProfileSmartLink from './pages/PublicProfileSmartLink.js';
+import SmartLinkMetrics from './components/dashboard/SmartLinkMetrics.tsx';
+import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler';
+import { PresaveFormProvider } from './context/presave/PresaveFormContext';
+import { SmartLinkFormProvider } from './context/smartlink/SmartLinkFormContext';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -17,45 +25,39 @@ function App() {
   const isMountedRef = useRef(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // LOG DE DEBUG 1: Rastreia cada renderização do componente
+  console.log('--- Renderização do App ---', { 
+    loading: loading, 
+    temSessao: !!session, 
+    temPerfil: !!profile 
+  });
 
   const fetchProfile = useCallback(async (userId) => {
-    setLoading(true);
+    // LOG DE DEBUG 2: Confirma que a busca de perfil foi iniciada
+    console.log(`[fetchProfile] Buscando perfil para o usuário: ${userId}`);
     try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select('*') // Busca todos os campos do perfil, incluindo mainColor, bgColor, musicLinks, avatar, cover, socials, etc.
-        .eq('user_id', userId)
-        .maybeSingle();
-
+      const { data, error, status } = await supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle();
       if (!isMountedRef.current) return { success: false, error: "Component unmounted" };
-
       if (error && status !== 406) {
-        console.error("Erro ao buscar perfil:", error.message);
-        setProfile(null); // Mantém a limpeza do perfil em caso de erro
+        setProfile(null);
         return { success: false, error };
       } else {
         setProfile(data);
         return { success: true, data };
       }
     } catch (e) {
-      console.error("Exceção ao buscar perfil:", e.message);
-      if (isMountedRef.current) {
-        setProfile(null);
-      }
+      if (isMountedRef.current) { setProfile(null); }
       return { success: false, error: e };
     } finally {
+      // LOG DE DEBUG 3: Confirma que a busca de perfil terminou e o loading será desativado
+      console.log('[fetchProfile] FINALIZADO. Setando loading para false.');
       if (isMountedRef.current) {
         setLoading(false);
       }
     }
-  }, []); // fetchProfile não deve depender de 'profile' ou 'loading' para evitar loops
-
-  const handleProfileUpdate = useCallback(async () => {
-    if (session?.user) {
-      return await fetchProfile(session.user.id);
-    }
-    return { success: false, error: "No user session for profile update" };
-  }, [session, fetchProfile]);
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -67,142 +69,101 @@ function App() {
   useEffect(() => {
     isMountedRef.current = true;
     setLoading(true);
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
-      if (!isMountedRef.current) return;
-      setSession(currentSession);
-      if (currentSession?.user) {
-        fetchProfile(currentSession.user.id);
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
-    });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, currentAuthSession) => {
+      async (_event, session) => {
+        // LOG DE DEBUG 4: O log mais importante. Mostra se a autenticação foi detectada.
+        console.log(`[onAuthStateChange] Disparado! Evento: ${_event}`, session);
+
         if (!isMountedRef.current) return;
-        setSession(currentAuthSession);
-        if (currentAuthSession?.user) {
-          fetchProfile(currentAuthSession.user.id);
+        setSession(session);
+        setCurrentUserId(session?.user?.id || null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
         } else {
           setProfile(null);
           setLoading(false);
         }
       }
     );
-
     return () => {
       isMountedRef.current = false;
       subscription?.unsubscribe();
     };
   }, [fetchProfile]);
 
-  if (loading && !profile && !session?.user?.id) {
-     return <div>Carregando aplicação inicial...</div>;
-  }
-  
-  if (!session) {
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const captureSpotifyTokens = async () => {
+      const urlParams = new URLSearchParams(location.search);
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      const accessToken = urlParams.get('access_token') || hashParams.get('access_token');
+      const refreshToken = urlParams.get('refresh_token') || hashParams.get('refresh_token');
+      const expiresIn = urlParams.get('expires_in') || hashParams.get('expires_in');
+      if (accessToken) {
+        try {
+          const expiresAt = new Date();
+          expiresAt.setSeconds(expiresAt.getSeconds() + parseInt(expiresIn || '3600'));
+          const { error } = await supabase.from('spotify_tokens').upsert({ user_id: session.user.id, access_token: accessToken, refresh_token: refreshToken, expires_at: expiresAt.toISOString(), updated_at: new Date().toISOString() });
+          if (!error) {
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+          }
+        } catch (error) {}
+      }
+    };
+    captureSpotifyTokens();
+  }, [session, location]);
+
+  if (loading) {
     return (
-      <Router> {/* Router aqui é um erro se App já está dentro de um Router no index.js. Assumindo que App é o topo. */}
-        <Routes>
-          <Route path="*" element={<Auth />} />
-        </Routes>
-      </Router>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-blue-600"></div>
+      </div>
     );
   }
-  
-  // Se a sessão existe, mas o perfil ainda está carregando (e não temos um perfil ainda)
-  // Isso pode acontecer logo após o login, antes do primeiro fetchProfile completar.
-  if (loading && !profile) {
-      return <div>Carregando perfil...</div>;
-  }
+
+  const ProtectedRoutesWithLayout = () => {
+    if (!session) { return <Navigate to="/login" replace />; }
+    if (!profile?.username) { return <Navigate to="/choose-username" replace />; }
+    return (
+      <DashboardLayout currentUserId={currentUserId} onSignOut={handleLogout}>
+        <Outlet />
+      </DashboardLayout>
+    );
+  };
 
   return (
-    <>
-      <HeaderBar user={session?.user} avatar={profile?.avatar} onLogout={handleLogout} />
-      <div className="App">
+    <SmartLinkFormProvider>
+      <PresaveFormProvider>
         <Routes>
-          <Route
-            path="/login"
-            element={
-              !session ? ( // Esta condição é redundante devido ao if(!session) acima, mas mantida por segurança.
-                <Auth />
-              ) : (
-                <Navigate to={profile?.username ? (profile?.template_id ? "/dashboard" : "/choose-template") : "/choose-username"} replace />
-              )
-            }
+          <Route 
+            path="/" 
+            element={session ? <Navigate to="/dashboard" /> : <LandingPage />} 
           />
-          <Route
-            path="/choose-username"
-            element={
-              session?.user ? ( // Simplificado, pois session já é verificado acima
-                !profile?.username ? <ChooseUsername currentUserId={session.user.id} onProfileUpdate={handleProfileUpdate}/> : <Navigate to={profile?.template_id ? "/dashboard" : "/choose-template"} replace />
-              ) : (
-                <Navigate to="/login" replace />
-              )
-            }
+          <Route 
+            path="/login" 
+            element={session ? <Navigate to="/dashboard" /> : <Auth />} 
           />
-          <Route
-            path="/choose-template"
-            element={
-              session?.user && profile?.username ? (
-                <TemplateSelectPage currentUserId={session.user.id} onProfileUpdate={handleProfileUpdate} hadTemplate={!!profile?.template_id} />
-              ) : (
-                <Navigate to={!session?.user ? "/login" : "/choose-username"} replace />
-              )
-            }
+          <Route 
+            path="/choose-username" 
+            element={session ? <ChooseUsername /> : <Navigate to="/login" />} 
           />
-          <Route
-            path="/streaming-setup"
-            element={
-              session?.user && profile?.username && profile?.template_id ? (
-                <StreamingSetup currentUserId={session.user.id} onProfileUpdate={handleProfileUpdate} />
-              ) : (
-                <Navigate to={
-                  !session?.user ? "/login" : 
-                  !profile?.username ? "/choose-username" : 
-                  "/choose-template" // Se não tem template_id, volta para choose-template
-                } replace />
-              )
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              session?.user && profile?.username && profile?.template_id ? (
-                <Dashboard />
-              ) : (
-                <Navigate to={
-                  !session?.user ? "/login" : 
-                  !profile?.username ? "/choose-username" : 
-                  "/choose-template"
-                } replace />
-              )
-            }
-          />
-          <Route path="/:username" element={<PublicProfile />} />
-          <Route
-            path="*"
-            element={
-              <Navigate
-                to={
-                  session?.user // Se tem sessão
-                    ? (profile?.username // E tem username
-                        ? (profile?.template_id ? "/dashboard" : "/choose-template") // Decide entre dashboard ou choose-template
-                        : "/choose-username") // Se não tem username
-                    : "/login" // Se não tem sessão
-                }
-                replace
-              />
-            }
-          />
+          <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
+          <Route path="/:slug" element={<PublicProfileSmartLink />} />
+          <Route path="/presave/:slug" element={<PresavePage />} />
+          <Route element={<ProtectedRoutesWithLayout />}>
+            <Route path="/dashboard" element={<UserDashboard currentUserId={currentUserId} />} />
+            <Route path="/settings" element={<UserSettings />} />
+            <Route path="/dashboard/metrics" element={<SmartLinkMetrics />} />
+            <Route path="/dashboard/metrics/:linkId" element={<SmartLinkMetrics />} />
+            <Route path="/criar-presave/:presaveId?" element={<CreatePresavePage />} />
+            <Route path="/criar-smart-link/:smartLinkId?" element={<CreateSmartLinkPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
         </Routes>
-      </div>
-    </>
+      </PresaveFormProvider>
+    </SmartLinkFormProvider>
   );
 }
 
-// Nota: Para que useLocation e useNavigate funcionem em App, 
-// o componente App deve ser renderizado dentro de um <BrowserRouter> no index.js.
-// Ex: ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));
 export default App;

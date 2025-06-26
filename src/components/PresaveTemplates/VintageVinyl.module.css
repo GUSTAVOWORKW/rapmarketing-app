@@ -1,0 +1,404 @@
+/* src/components/PresaveTemplates/VintageVinyl.module.css */
+
+.vintageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #2c1810 0%, #8b4513 50%, #cd853f 100%);
+  font-family: 'Georgia', serif;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.vintageContainer.mobile {
+  padding: 1rem;
+  min-height: 100vh;
+}
+
+/* Background texture */
+.paperTexture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 2px, transparent 2px),
+    radial-gradient(circle at 80% 50%, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 50px 50px, 30px 30px;
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.vinylPattern {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 150%;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    rgba(0,0,0,0.02) 2deg,
+    transparent 4deg
+  );
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.vintageTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #f4e4bc;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+  margin: 0;
+  letter-spacing: 0.2em;
+  position: relative;
+}
+
+.vintageTitle::before,
+.vintageTitle::after {
+  content: '♪';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: #daa520;
+}
+
+.vintageTitle::before {
+  left: -2rem;
+}
+
+.vintageTitle::after {
+  right: -2rem;
+}
+
+.subtitle {
+  color: #daa520;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Vinyl Record Section */
+.vinylSection {
+  position: relative;
+  margin: 2rem 0;
+}
+
+.vinylRecord {
+  width: 280px;
+  height: 280px;
+  background: 
+    radial-gradient(circle at center, #1a1a1a 30%, #333 32%, #1a1a1a 34%),
+    repeating-conic-gradient(from 0deg, #1a1a1a 0deg, #2a2a2a 1deg, #1a1a1a 2deg);
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 
+    0 0 30px rgba(0,0,0,0.5),
+    inset 0 0 20px rgba(0,0,0,0.3);
+  animation: vinylSpin 8s linear infinite;
+}
+
+@keyframes vinylSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vinylCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: #8b4513;
+  border-radius: 50%;
+  border: 3px solid #daa520;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.artwork {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #daa520;
+  box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+
+.comingSoonBadge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #dc143c;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transform: rotate(15deg);
+}
+
+/* Track Info */
+.trackInfo {
+  text-align: center;
+  background: rgba(139, 69, 19, 0.2);
+  padding: 2rem;
+  border-radius: 15px;
+  border: 2px solid #daa520;
+  box-shadow: 
+    0 8px 16px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
+}
+
+.trackName {
+  font-size: 2.2rem;
+  color: #f4e4bc;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  font-weight: bold;
+}
+
+.artistName {
+  font-size: 1.5rem;
+  color: #daa520;
+  margin: 0 0 1rem 0;
+  font-style: italic;
+}
+
+.releaseInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dateLabel {
+  background: #8b4513;
+  color: #f4e4bc;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.dateValue {
+  color: #daa520;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* Platforms Section */
+.platformsSection {
+  width: 100%;
+  text-align: center;
+}
+
+.sectionTitle {
+  color: #f4e4bc;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #daa520, transparent);
+}
+
+.platformGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.platformButton {
+  background: linear-gradient(145deg, #8b4513, #a0522d);
+  border: 2px solid #daa520;
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #f4e4bc;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.platformButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.platformButton:hover::before {
+  left: 100%;
+}
+
+.platformButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  border-color: #ffd700;
+}
+
+.platformIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.platformIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: sepia(100%) saturate(200%) hue-rotate(30deg);
+}
+
+/* Social and Contact Sections */
+.socialSection,
+.contactSection {
+  width: 100%;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.socialGrid,
+.contactGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.socialLink,
+.contactLink {
+  background: rgba(139, 69, 19, 0.3);
+  border: 1px solid #daa520;
+  color: #f4e4bc;
+  padding: 0.7rem 1.2rem;
+  border-radius: 25px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.socialLink:hover,
+.contactLink:hover {
+  background: rgba(218, 165, 32, 0.2);
+  border-color: #ffd700;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.socialContent {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.socialIcon {
+  font-size: 1rem;
+}
+
+/* Footer */
+.footer {
+  margin-top: 3rem;
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(218, 165, 32, 0.3);
+}
+
+.footerText {
+  color: #daa520;
+  font-size: 0.9rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .vintageContainer {
+    padding: 1rem;
+  }
+  
+  .vintageTitle {
+    font-size: 2rem;
+  }
+  
+  .vintageTitle::before,
+  .vintageTitle::after {
+    display: none;
+  }
+  
+  .vinylRecord {
+    width: 220px;
+    height: 220px;
+  }
+  
+  .artwork {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .trackName {
+    font-size: 1.8rem;
+  }
+  
+  .platformGrid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+  
+  .socialGrid,
+  .contactGrid {
+    flex-direction: column;
+    align-items: center;
+  }
+}

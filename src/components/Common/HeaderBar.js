@@ -1,100 +1,37 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
-const Bar = styled.header`
-  width: 100%;
-  height: 64px;
-  background: #232323;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  box-shadow: 0 2px 8px #0002;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-`;
-
-const UserSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
-`;
-
-const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #444;
-  border: 2px solid #00e676;
-`;
-
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: background 0.18s;
-  &:hover {
-    background: #00e67622;
-    color: #00e676;
-  }
-`;
-
-const Dropdown = styled.div`
-  position: absolute;
-  right: 32px;
-  top: 60px;
-  background: #232323;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px #0005;
-  min-width: 160px;
-  padding: 8px 0;
-  z-index: 200;
-`;
-
-const DropdownItem = styled.button`
-  width: 100%;
-  background: none;
-  border: none;
-  color: #fff;
-  text-align: left;
-  padding: 12px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 0;
-  &:hover {
-    background: #00e67622;
-    color: #00e676;
-  }
-`;
+import { FaChevronDown } from 'react-icons/fa';
 
 export default function HeaderBar({ user, avatar, onLogout }) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   return (
-    <Bar>
-      <div style={{ fontWeight: 'bold', fontSize: 22, color: '#00e676', letterSpacing: 1, cursor: 'pointer' }} onClick={() => navigate('/dashboard')}>
-        RAPMARKETING
+    <header className="w-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-b border-gray-200 shadow-sm py-3 px-6 flex items-center justify-between z-50 relative">
+      <div className="flex items-center cursor-pointer select-none" onClick={() => navigate('/dashboard')}>
+        <img src="/logob.png" alt="Logo Rapmarketing" className="h-16 w-auto object-contain transition-all duration-300" />
       </div>
-      <UserSection>
-        {avatar && <Avatar src={avatar} alt="avatar" />}
-        <MenuButton onClick={() => setOpen((v) => !v)}>
-          {user?.email || 'Usuário'} &#x25BC;
-        </MenuButton>
+      <div className="flex items-center gap-4 relative">
+        {avatar && <img className="w-10 h-10 rounded-full border-2 border-red-400 shadow-sm object-cover" src={avatar} alt="avatar" />}
+        <button
+          className="flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm transition-colors focus:outline-none"
+          onClick={() => setOpen((v) => !v)}
+        >
+          {user?.email || 'Usuário'} <FaChevronDown className="ml-2 text-base" />
+        </button>
         {open && (
-          <Dropdown>
-            <DropdownItem onClick={() => { setOpen(false); navigate('/dashboard'); }}>Dashboard</DropdownItem>
-            <DropdownItem onClick={() => { setOpen(false); onLogout && onLogout(); }}>Deslogar</DropdownItem>
-          </Dropdown>
+          <div className="absolute right-0 top-14 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[180px] py-2 z-50 animate-fade-in">
+            <button
+              className="w-full text-left px-5 py-2 text-gray-700 hover:bg-gray-100 font-medium transition-colors"
+              onClick={() => { setOpen(false); navigate('/dashboard'); }}
+            >Dashboard</button>
+            <button
+              className="w-full text-left px-5 py-2 text-red-600 hover:bg-red-50 font-medium transition-colors"
+              onClick={() => { setOpen(false); onLogout && onLogout(); }}
+            >Sair</button>
+          </div>
         )}
-      </UserSection>
-    </Bar>
+      </div>
+    </header>
   );
 }

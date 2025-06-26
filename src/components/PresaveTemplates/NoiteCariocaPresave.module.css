@@ -1,0 +1,579 @@
+/* NoiteCariocaPresave.module.css - NOITE CARIOCA */
+
+/* Importação de fontes para o tema */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+/* Variáveis CSS para o tema Noite Carioca */
+:root {
+  --azul-meia-noite: #0A0F1C;
+  --cinza-asfalto: #1A1D23;
+  --branco-led: #FFFFFF;
+  --ciano-cientifico: #00D4FF;
+  --laranja-amber: #FF8C42;
+  
+  /* Fontes */
+  --font-title: 'Oswald', 'Bebas Neue', sans-serif;
+  --font-body: 'Inter', 'Roboto', sans-serif;
+}
+
+/* Container Principal - Cinematográfico */
+.noiteContainer {
+  min-height: 100vh;
+  background: var(--azul-meia-noite);
+  color: var(--branco-led);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background Media com Luzes da Cidade */
+.backgroundMedia {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.cityLights {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(255, 140, 66, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(255, 140, 66, 0.06) 0%, transparent 40%),
+    linear-gradient(180deg, transparent 0%, rgba(26, 29, 35, 0.8) 100%);
+  background-size: 600px 600px, 500px 500px, 400px 400px, 450px 450px, 100% 100%;
+  animation: cityPulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes cityPulse {
+  0% { opacity: 0.6; }
+  100% { opacity: 0.9; }
+}
+
+.darkOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(135deg, rgba(10, 15, 28, 0.9) 0%, rgba(26, 29, 35, 0.8) 100%);
+}
+
+/* Lens Flare Effect Anamórfico */
+.lensFlare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.lensFlare::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  right: -5%;
+  width: 2px;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 212, 255, 0.8) 20%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(0, 212, 255, 0.8) 80%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  animation: lensFlareAnamorphic 12s ease-in-out infinite;
+  transform: rotate(-15deg);
+}
+
+.lensFlare::after {
+  content: '';
+  position: absolute;
+  top: 20%;
+  left: -5%;
+  width: 1px;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 123, 0, 0.6) 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 123, 0, 0.6) 70%,
+    transparent 100%
+  );
+  filter: blur(2px);
+  animation: lensFlareAnamorphic 12s ease-in-out infinite 6s;
+  transform: rotate(20deg);
+}
+
+@keyframes lensFlareAnamorphic {
+  0% { 
+    opacity: 0;
+    transform: rotate(-15deg) translateX(-100px);
+  }
+  10% { 
+    opacity: 0.3;
+    transform: rotate(-15deg) translateX(0);
+  }
+  20% { 
+    opacity: 0.8;
+    transform: rotate(-15deg) translateX(50px);
+  }
+  30% { 
+    opacity: 0.4;    transform: rotate(-15deg) translateX(100px);
+  }
+  40% { 
+    opacity: 0;
+    transform: rotate(-15deg) translateX(200px);
+  }
+  100% { 
+    opacity: 0;
+    transform: rotate(-15deg) translateX(200px);
+  }
+}
+
+/* Container Principal */
+
+/* Container de Conteúdo */
+.contentContainer {
+  background: rgba(10, 15, 28, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+  box-shadow: 
+    0 0 50px rgba(0, 212, 255, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Header Cinematográfico */
+.cinematicHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brandArea {
+  flex: 1;
+}
+
+.templateLabel {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 300;
+  color: var(--accent-color, var(--ciano-cientifico));
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+  font-style: italic;
+  margin-top: 0.3rem;
+  letter-spacing: 0.5px;
+}
+
+/* Área Central */
+.centralArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+/* Artwork com Glow */
+.artworkSection {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.artworkFrame {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.artwork {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 
+    0 0 30px rgba(0, 212, 255, 0.3),
+    0 10px 20px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.artworkGlow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: var(--accent-color, var(--ciano-cientifico));
+  opacity: 0.2;
+  border-radius: 8px;
+  filter: blur(15px);
+  z-index: 1;
+  animation: artworkPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes artworkPulse {
+  0% { opacity: 0.1; transform: scale(0.95); }
+  100% { opacity: 0.3; transform: scale(1.05); }
+}
+
+/* Informações da Track */
+.trackInfo {
+  text-align: center;
+  width: 100%;
+}
+
+.artistName {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--branco-led);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.trackName {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Release Info */
+.releaseInfo {
+  margin-bottom: 1.5rem;
+}
+
+.releaseLabel {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.releaseDate {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  color: var(--accent-color, var(--ciano-cientifico));
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+/* Countdown */
+.countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.countdownLabel {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+.countdownTimer {
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  color: var(--accent-color, var(--ciano-cientifico));
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+}
+
+/* Seções */
+.platformsSection,
+.socialSection,
+.contactSection {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-title);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--branco-led);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Botões de Plataforma */
+.platformGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.8rem;
+}
+
+.platformButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--branco-led);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-body);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.platformButton:hover {
+  background: var(--accent-color, var(--ciano-cientifico));
+  border-color: var(--accent-color, var(--ciano-cientifico));
+  /* Removido transform: translateY - hover preciso sem pular */
+  box-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.platformButton:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--branco-led);
+  animation: expandLine 0.3s ease-out;
+}
+
+@keyframes expandLine {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.platformIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.socialIcon,
+.platformIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.platformName {
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Redes Sociais */
+.socialGrid {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.socialButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--branco-led);
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.socialButton:hover {
+  background: var(--accent-color, var(--ciano-cientifico));
+  border-color: var(--accent-color, var(--ciano-cientifico));
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Contatos */
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contactButton {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--branco-led);
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.contactButton:hover {
+  background: var(--accent-color, var(--ciano-cientifico));
+  border-color: var(--accent-color, var(--ciano-cientifico));
+  transition: all 0.3s ease;
+}
+
+/* Footer Cinematográfico */
+.cinematicFooter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+}
+
+.footerLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.footerText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.attribution {
+  font-family: var(--font-body);
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.brand {
+  font-family: var(--font-title);
+  font-size: 10px;
+  color: var(--accent-color, var(--ciano-cientifico));
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+}
+
+/* Responsivo Mobile */
+.mobile {
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.mobile .contentContainer {
+  max-width: 100%;
+  padding: 1.5rem;
+}
+
+.mobile .centralArea {
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.mobile .artworkFrame {
+  width: 160px;
+  height: 160px;
+}
+
+.mobile .artistName {
+  font-size: 1.6rem;
+}
+
+.mobile .trackName {
+  font-size: 1rem;
+}
+
+.mobile .platformGrid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.mobile .platformButton {
+  padding: 0.8rem;
+}
+
+.mobile .socialGrid {
+  gap: 0.8rem;
+}
+
+.mobile .lensFlare {
+  width: 200px;
+  height: 200px;
+  top: 10%;
+  right: -5%;
+}

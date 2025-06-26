@@ -44,16 +44,19 @@ const SOCIALS = [
 const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 export function generateDemoProfile(templateId) {
-  const name = getRandom(ARTIST_NAMES);
-  const bio = getRandom(BIOS);
-  const username = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-  // Avatar brasileiro do RandomUser.me (seed para "brasileiro")
-  const gender = Math.random() < 0.5 ? 'men' : 'women';
-  const number = Math.floor(Math.random() * 99) + 1;
-  const avatar = `https://randomuser.me/api/portraits/${gender}/${number}.jpg`;
+  const artistName = getRandom(ARTIST_NAMES);
+  const bioText = getRandom(BIOS);
+  const generatedUsername = artistName.toLowerCase().replace(/[^a-z0-9]/g, '_');
 
   // Capa de álbum via Unsplash, customizada por template
   const coverTerms = {
+    'urban-legend': "street,brazil,urban,graffiti",
+    'underground': "underground,music,dark,texture",
+    'holographic': "holographic,future,neon,cyberpunk",
+    'golden-era': "90s,hiphop,vintage,boombox",
+    'diamond-status': "diamond,luxury,shine,glitter",
+    'night-hustle': "neon,night,city,urban",
+    'stage-presence': "stage,lights,concert,performance",
     quebrada: "street,brazil,urban,graffiti",
     minimal: "minimal,abstract,music,brazil",
     neon: "neon,favela,urban,night",
@@ -61,26 +64,36 @@ export function generateDemoProfile(templateId) {
     gold: "gold,luxury,music,brazil",
     retro: "vintage,music,retro,brazil"
   };
-  const cover = `https://source.unsplash.com/300x300/?${coverTerms[templateId] || 'urban,music,brazil'}`;
+  const coverImageUrl = `https://source.unsplash.com/400x400/?${coverTerms[templateId] || 'urban,music,brazil,rap'}`;
 
   // Música demo
   const track = getRandom(TRACKS);
-  const musicUrl = "https://www.youtube.com/watch?v=QDYfEBY9NM4"; // Pode variar depois
-
-  // Links sociais demo
-  const socials = SOCIALS.reduce((acc, s) => {
-    acc[s.platform] = s.url + username;
-    return acc;
-  }, {});
 
   return {
-    username: name,
-    bio,
-    avatar,
-    cover,
-    musicUrl,
-    socials,
-    trackTitle: track.title
+    userProfile: {
+      user_id: `demo-user-${templateId}-${Math.random().toString(36).substring(7)}`,
+      username: generatedUsername,
+      bio: bioText,
+      template_id: templateId,
+      is_active: true,
+    },
+    smartLink: {
+      id: `demo-link-${templateId}-${Math.random().toString(36).substring(7)}`,
+      user_id: `demo-user-${templateId}-${Math.random().toString(36).substring(7)}`,
+      slug: generatedUsername,
+      artist_name: artistName,
+      release_title: track.title,
+      cover_image_url: coverImageUrl,
+      template_id: templateId,
+      platform_links: [
+        { platform_id: 'spotify', platform_name: 'Spotify', url: `https://open.spotify.com/search/${encodeURIComponent(artistName)}` },
+        { platform_id: 'youtube', platform_name: 'YouTube Music', url: `https://www.youtube.com/results?search_query=${encodeURIComponent(artistName)}` },
+        { platform_id: 'apple-music', platform_name: 'Apple Music', url: `https://music.apple.com/search?term=${encodeURIComponent(artistName)}` },
+      ],
+      custom_colors: { /* primary: '#FFFFFF', secondary: '#000000', text: '#333333' */ },
+      is_public: true,
+      view_count: Math.floor(Math.random() * 1000),
+    }
   };
 }
 

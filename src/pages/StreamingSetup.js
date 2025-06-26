@@ -1,183 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import ProfilePreview, { saveFullProfile } from './ProfilePreview';
-import { supabase } from '../services/supabase';
-import { useLocation } from 'react-router-dom';
-import { generateDemoProfile } from '../utils';
+import { supabase } from '../services/supabase'; 
+import { useNavigate, useLocation } from 'react-router-dom';
+import { PLATFORMS as appPlatforms } from '../data/platforms'; 
 
-const streamingIconUrl = (id) => `/assets/streaming-icons/${id}.svg`;
-const platforms = [
-  { id: 'spotify', name: 'Spotify' },
-  { id: 'apple-music', name: 'Apple Music' },
-  { id: 'youtube-music', name: 'YouTube Music' },
-  { id: 'soundcloud', name: 'SoundCloud' },
-  { id: 'deezer', name: 'Deezer' },
-  { id: 'amazon-music', name: 'Amazon Music' },
-  { id: 'tidal', name: 'Tidal' },
-  { id: 'audiomack', name: 'Audiomack' },
-  { id: 'napster', name: 'Napster' },
-  { id: 'pandora', name: 'Pandora' },
-];
-
-const Container = styled.div`
-  min-height: 100vh;
-  background: #181818;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px 20px 20px;
-`;
-
-const Title = styled.h2`
-  margin-bottom: 18px;
-`;
-
-const Form = styled.form`
-  width: 100%;
-  max-width: 420px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-`;
-
-const PlatformRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #232323;
-  border-radius: 8px;
-  padding: 10px 14px;
-`;
-
-const Input = styled.input`
-  flex: 1;
-  padding: 8px 10px;
-  border-radius: 4px;
-  border: none;
-  font-size: 1rem;
-  background: #181818;
-  color: #fff;
-`;
-
-const Button = styled.button`
-  margin-top: 24px;
-  background: #00e676;
-  color: #181818;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-  &:hover {
-    background: #00c853;
-  }
-`;
-
-const StreamingSetup = ({ currentUserId, onProfileUpdate }) => {
+const StreamingSetup = ({ currentUser }) => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const [links, setLinks] = useState({});
-  const [saving, setSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const [profileData, setProfileData] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [templateId, setTemplateId] = useState(null);
+  const [platformLinks, setPlatformLinks] = useState([]);
+  const [username, setUsername] = useState(null);
 
-  useEffect(() => {
-    // Se veio do choose-template, pega o templateId do state
-    if (location.state && location.state.templateId) {
-      setTemplateId(location.state.templateId);
-    }
-  }, [location.state]);
-
-  useEffect(() => {
-    // Busca o perfil do usuário para preview real
-    const fetchProfile = async () => {
-      if (!currentUserId) return;
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', currentUserId)
-        .maybeSingle();
-      setUserProfile(data);
-      // Se não tem socials/musicLinks customizados, gera demo do template escolhido
-      if (data && (!data.socials || Object.keys(data.socials).length === 0) && templateId) {
-        const demo = generateDemoProfile(templateId);
-        setProfileData({ ...data, ...demo, template_id: templateId });
-      } else {
-        setProfileData(data);
+  useEffect(() => {    const fetchProfile = async () => {
+      if (currentUser && currentUser.id) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('user_id', currentUser.id)
+          .single();
+        if (error) {
+          console.error('Error fetching profile for username:', error);
+        } else if (data) {
+          setUsername(data.username);
+        }
       }
     };
     fetchProfile();
-  }, [currentUserId, templateId]);
+  }, [currentUser]);
 
-  const handleChange = (platform, value) => {
-    setLinks((prev) => ({ ...prev, [platform]: value }));
+  useEffect(() => {
+    setPlatformLinks(
+      appPlatforms.map(p => ({
+        platform_id: p.id,
+        url: '',
+      }))
+    );
+  }, []);
+
+  const handleChange = (platformId, value) => {
+    setPlatformLinks(prevLinks =>
+      prevLinks.map(link =>
+        link.platform_id === platformId ? { ...link, url: value } : link
+      )
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
-    // Atualiza os links no perfil do usuário
-    await supabase
-      .from('profiles')
-      .update({ socials: links, updated_at: new Date().toISOString() })
-      .eq('user_id', currentUserId);
-    if (onProfileUpdate) await onProfileUpdate();
-    // Converte os links preenchidos em musicLinks para o preview
-    const musicLinks = Object.entries(links)
-      .filter(([_, url]) => url && url.trim() !== '')
-      .map(([platform, url]) => ({ platform, url, title: '' }));
-    setProfileData({ ...userProfile, socials: links, musicLinks });
-    setShowPreview(true);
-    setSaving(false);
-  };
-
-  const handleConfirm = async (profileDataToSave) => {
-    setSaving(true);
-    const error = await saveFullProfile(currentUserId, profileDataToSave);
-    setSaving(false);
-    if (error) {
-      alert('Erro ao salvar perfil: ' + error.message);
-      return;
+    if (!username) {
+        alert("Nome de usuário não encontrado. Não é possível prosseguir.");
+        return;
     }
-    // Após salvar, redireciona para a tela de Meus Templates no Dashboard
-    window.location.href = '/dashboard?tab=templates';
+    const filledLinks = platformLinks.filter(link => link.url && link.url.trim() !== '');
+    
+    navigate(`/smartlink-editor/${username}`, { 
+        state: { 
+            initialPlatformLinks: filledLinks,
+            templateId: location.state?.templateId 
+        } 
+    });
   };
-
-  if (showPreview && profileData) {
-    return <ProfilePreview profile={profileData} onConfirm={handleConfirm} allowEdit onEdit={() => setShowPreview(false)} currentUserId={currentUserId} />;
-  }
 
   return (
-    <Container>
-      <Title>Adicione seus links de streaming</Title>
-      <Form onSubmit={handleSubmit} autoComplete="off">
-        {platforms.map((p) => (
-          <PlatformRow key={p.id}>
-            <img
-              src={streamingIconUrl(p.id)}
-              alt={p.name + ' logo'}
-              style={{ width: 32, height: 32, borderRadius: 6, background: '#fff', padding: 2, boxShadow: '0 1px 4px #0003', transition: 'transform 0.2s', filter: 'drop-shadow(0 0 2px #00e67688)' }}
-              onError={e => { e.target.style.opacity = 0.3; e.target.src = '/assets/streaming-icons/spotify.svg'; }}
-            />
-            <span style={{ minWidth: 90 }}>{p.name}</span>
-            <Input
-              type="text"
-              placeholder={`Link do ${p.name}`}
-              value={links[p.id] || ''}
-              onChange={e => handleChange(p.id, e.target.value)}
-              autoComplete="off"
-            />
-          </PlatformRow>
-        ))}
-        <Button type="submit" disabled={saving}>
-          {saving ? 'Salvando...' : 'Avançar'}
-        </Button>
-      </Form>
-    </Container>
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-xl">
+        <h2 className="text-3xl font-bold text-center text-purple-400 mb-8">
+          Adicione seus links de streaming
+        </h2>
+        <form className="space-y-6" onSubmit={handleSubmit} autoComplete="off">
+          {appPlatforms.map((p) => {
+            const currentLink = platformLinks.find(pl => pl.platform_id === p.id);
+            return (
+              <div className="flex items-center space-x-3 bg-gray-700 p-3 rounded-md" key={p.id}>
+                {/* Substituir <img src={p.icon_url} ... /> por componente de ícone */}
+                {p.icon ? (
+                  <span className="w-8 h-8 flex items-center justify-center text-2xl" style={{ color: p.brand_color }}>
+                    {React.createElement(p.icon)}
+                  </span>
+                ) : (
+                  <span className="w-8 h-8 flex items-center justify-center bg-gray-600 rounded-full opacity-30" />
+                )}
+                <span className="flex-shrink-0 w-28 text-sm font-medium text-gray-300">{p.name}</span>
+                <input
+                  className="flex-grow bg-gray-600 text-white border border-gray-500 rounded-md px-3 py-2 text-sm focus:ring-purple-500 focus:border-purple-500 placeholder-gray-400"
+                  type="url" 
+                  placeholder={p.placeholder_url}
+                  value={currentLink?.url || ''}
+                  onChange={e => handleChange(p.id, e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            );
+          })}
+          <button 
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-md focus:outline-none focus:shadow-outline transition duration-150 ease-in-out disabled:opacity-50"
+            type="submit"
+          >
+            Avançar para o Editor
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 

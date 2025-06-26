@@ -185,8 +185,8 @@ const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit, currentUserId }
       getDemoAlbumAndTrack(templateId),
       // Adicione mais álbuns/tracks reais se desejar
       // Exemplo:
-      { albumCover: 'https://i.scdn.co/image/ab67616d0000b273b1e0e7e7e7e7e7e7e7e7e7e7', trackName: 'Negro Drama', artist: 'Racionais MC\'s', spotifyUrl: 'https://open.spotify.com/track/3Qm86XLflmIXVm1wcwkgDK' },
-      { albumCover: 'https://i.scdn.co/image/ab67616d0000b273e1e1e1e1e1e1e1e1e1e1e1', trackName: 'Hoje Cedo', artist: 'Emicida, Pitty', spotifyUrl: 'https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs' },
+      { albumCover: 'https://i.scdn.co/image/ab67616d0000b273b1e0e7e7e7e7e7e7e7e7e7', trackName: 'Negro Drama', artist: 'Racionais MC\'s', spotifyUrl: 'https://open.spotify.com/track/3Qm86XLflmIXVm1wcwkgDK' },
+      { albumCover: 'https://i.scdn.co/image/ab67616d0000b273e1e1e1e1e1e1e1e1e1e1', trackName: 'Hoje Cedo', artist: 'Emicida, Pitty', spotifyUrl: 'https://open.spotify.com/track/6Qyc6fS4DsZjB2mRW9DsQs' },
     ];
     return options[Math.floor(Math.random() * options.length)];
   }

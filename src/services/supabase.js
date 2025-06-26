@@ -8,4 +8,8 @@ if (supabaseUrl === 'YOUR_SUPABASE_URL' || supabaseAnonKey === 'YOUR_SUPABASE_AN
   console.warn('Supabase URL ou Chave Anônima não configurados. Por favor, adicione-os ao seu arquivo .env ou substitua os placeholders em src/services/supabase.js');
 }
 
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ ERRO CRÍTICO: URL ou chave do Supabase não configurados!');
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

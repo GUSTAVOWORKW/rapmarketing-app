@@ -1,0 +1,878 @@
+/* ModernCard.module.css - FUNK MODERNO: BAILE NO PÔR DO SOL CARIOCA */
+
+/* Paleta de Cores do Pôr do Sol Carioca */
+:root {
+  --sunset-orange: #FF6B35;        /* Laranja Pôr do Sol */
+  --sunset-deep: #FF4500;          /* Laranja Intenso */
+  --neon-cyan: #00D4FF;            /* Azul Ciano Neon */
+  --twilight-purple: #6A0DAD;      /* Roxo Crepúsculo */
+  --sand-white: #FFF8E7;           /* Branco Areia */
+  --urban-graphite: #2C2C2C;      /* Grafite Urbano */
+  --warm-gold: #FFD700;            /* Dourado Quente */
+  --rio-teal: #008B8B;             /* Verde-azul do Mar */
+  --heat-red: #DC143C;             /* Vermelho Calor */
+  --concrete-gray: #696969;        /* Cinza Concreto */
+}
+
+/* Container Principal - Atmosfera do Pôr do Sol */
+.sunsetContainer {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  overflow: hidden;
+}
+
+/* Background de Pôr do Sol com Efeito de Calor */
+.sunsetBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(180deg, 
+      #FF6B35 0%,           /* Laranja do alto */
+      #FF4500 30%,          /* Laranja mais forte */
+      #FFD700 60%,          /* Dourado no meio */
+      #6A0DAD 85%,          /* Roxo crepúsculo */
+      #2C2C2C 100%          /* Grafite urbano na base */
+    );
+  z-index: 1;
+}
+
+/* Efeito de Onda de Calor */
+.heatWave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 100px,
+      rgba(255, 107, 53, 0.1) 100px,
+      rgba(255, 107, 53, 0.1) 102px
+    );
+  animation: heatDistortion 8s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes heatDistortion {
+  0%, 100% { 
+    transform: translateX(0px) scaleY(1);
+    opacity: 0.3;
+  }
+  25% { 
+    transform: translateX(5px) scaleY(1.02);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(-3px) scaleY(0.98);
+    opacity: 0.4;
+  }
+  75% { 
+    transform: translateX(7px) scaleY(1.01);
+    opacity: 0.5;
+  }
+}
+
+/* Gradiente adicional para profundidade */
+.sunsetGradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at center, 
+      rgba(255, 215, 0, 0.4) 0%,
+      rgba(255, 107, 53, 0.3) 40%,
+      rgba(106, 13, 173, 0.2) 70%,
+      rgba(44, 44, 44, 0.8) 100%
+    );
+  z-index: 3;
+}
+
+.sunsetContainer.mobile {
+  padding: 1rem;
+}
+
+/* Card Principal - Laje do Baile */
+.baileCard {
+  background: 
+    linear-gradient(145deg, 
+      rgba(44, 44, 44, 0.95) 0%,
+      rgba(105, 105, 105, 0.9) 30%,
+      rgba(44, 44, 44, 0.95) 100%
+    );
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 3px solid var(--sunset-orange);
+  box-shadow: 
+    0 0 40px rgba(255, 107, 53, 0.6),
+    0 0 80px rgba(0, 212, 255, 0.3),
+    inset 0 0 40px rgba(255, 215, 0, 0.1);
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  animation: cardGlow 4s ease-in-out infinite;
+}
+
+@keyframes cardGlow {
+  0%, 100% { 
+    border-color: var(--sunset-orange);
+    box-shadow: 
+      0 0 40px rgba(255, 107, 53, 0.6),
+      0 0 80px rgba(0, 212, 255, 0.3);
+  }
+  50% { 
+    border-color: var(--neon-cyan);
+    box-shadow: 
+      0 0 50px rgba(0, 212, 255, 0.8),
+      0 0 100px rgba(255, 107, 53, 0.4);
+  }
+}
+
+/* Header - Vibe da Laje */
+.lajeHeader {
+  background: linear-gradient(90deg, 
+    rgba(255, 107, 53, 0.9) 0%, 
+    rgba(255, 215, 0, 0.8) 100%
+  );
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 17px 17px 0 0;
+  border-bottom: 2px solid var(--neon-cyan);
+}
+
+.cityVibe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.locationPin {
+  font-size: 16px;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.locationText {
+  color: var(--sand-white);
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.sunsetTime {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.timeEmoji {
+  font-size: 14px;
+  animation: sunPulse 3s ease-in-out infinite;
+}
+
+@keyframes sunPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.timeText {
+  color: var(--sand-white);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Seção do Artwork */
+.artworkSection {
+  padding: 2rem 1.5rem 1rem;
+  text-align: center;
+}
+
+.artworkFrame {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.artworkGlow {
+  position: relative;
+  display: inline-block;
+}
+
+.artwork {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 15px;
+  border: 4px solid var(--warm-gold);
+  box-shadow: 
+    0 0 30px rgba(255, 215, 0, 0.7),
+    0 0 60px rgba(255, 107, 53, 0.5),
+    0 0 90px rgba(0, 212, 255, 0.3);
+  transition: all 0.4s ease;
+  animation: artworkFloat 6s ease-in-out infinite;
+  filter: brightness(1.1) contrast(1.2) saturate(1.3);
+}
+
+@keyframes artworkFloat {
+  0%, 100% { 
+    transform: translateY(0px) rotate(0deg);
+    box-shadow: 
+      0 0 30px rgba(255, 215, 0, 0.7),
+      0 0 60px rgba(255, 107, 53, 0.5);
+  }
+  33% { 
+    transform: translateY(-8px) rotate(1deg);
+    box-shadow: 
+      0 0 40px rgba(255, 107, 53, 0.8),
+      0 0 80px rgba(0, 212, 255, 0.6);
+  }
+  66% { 
+    transform: translateY(-4px) rotate(-0.5deg);
+    box-shadow: 
+      0 0 35px rgba(0, 212, 255, 0.8),
+      0 0 70px rgba(255, 215, 0, 0.6);
+  }
+}
+
+.artwork:hover {
+  transform: scale(1.05) rotate(2deg);
+  border-color: var(--neon-cyan);
+  box-shadow: 
+    0 0 50px rgba(0, 212, 255, 0.9),
+    0 0 100px rgba(255, 107, 53, 0.7);
+}
+
+/* Reflexo da Artwork */
+.artworkReflection {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 40px;
+  background: linear-gradient(180deg, 
+    rgba(255, 215, 0, 0.3) 0%, 
+    transparent 100%
+  );
+  border-radius: 50%;
+  filter: blur(8px);
+  animation: reflectionShimmer 4s ease-in-out infinite;
+}
+
+@keyframes reflectionShimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Status Badge */
+.statusVibes {
+  display: flex;
+  justify-content: center;
+}
+
+.statusBadge {
+  background: linear-gradient(45deg, var(--sunset-orange), var(--heat-red));
+  color: var(--sand-white);
+  padding: 0.7rem 1.2rem;
+  border-radius: 25px;
+  font-weight: 900;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid var(--warm-gold);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 53, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.4);
+  animation: statusPulse 3s ease-in-out infinite;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.statusBadge.released {
+  background: linear-gradient(45deg, var(--warm-gold), var(--sunset-orange));
+  animation: releasedGlow 2s ease-in-out infinite;
+}
+
+.statusBadge.dropping {
+  background: linear-gradient(45deg, var(--twilight-purple), var(--neon-cyan));
+}
+
+@keyframes statusPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.8), 0 0 60px rgba(255, 215, 0, 0.6);
+  }
+}
+
+@keyframes releasedGlow {
+  0%, 100% { 
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), 0 0 50px rgba(255, 107, 53, 0.6);
+  }
+  50% { 
+    box-shadow: 0 0 35px rgba(255, 215, 0, 1), 0 0 70px rgba(255, 107, 53, 0.8);
+  }
+}
+
+/* Seção da Track - Estilo Grafite */
+.trackSection {
+  padding: 1.5rem;
+  background: rgba(44, 44, 44, 0.8);
+  margin: 0 1rem;
+  border-radius: 15px;
+  border: 2px solid var(--neon-cyan);
+  position: relative;
+}
+
+.trackSection::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--sunset-orange), 
+    var(--neon-cyan), 
+    var(--warm-gold), 
+    var(--twilight-purple)
+  );
+  border-radius: 15px;
+  z-index: -1;
+  animation: borderFlow 4s linear infinite;
+}
+
+@keyframes borderFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.trackHeader {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.trackTitle {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--sand-white);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 
+    2px 2px 0px var(--sunset-orange),
+    4px 4px 0px var(--twilight-purple),
+    6px 6px 10px rgba(0, 0, 0, 0.8);
+  line-height: 1.2;
+  animation: textGlow 3s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% { 
+    text-shadow: 
+      2px 2px 0px var(--sunset-orange),
+      4px 4px 0px var(--twilight-purple),
+      6px 6px 10px rgba(0, 0, 0, 0.8);
+  }
+  50% { 
+    text-shadow: 
+      2px 2px 0px var(--neon-cyan),
+      4px 4px 0px var(--warm-gold),
+      6px 6px 15px rgba(0, 0, 0, 0.9);
+  }
+}
+
+.artistName {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.releaseInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid var(--neon-cyan);
+}
+
+.releaseLabel {
+  color: var(--sand-white);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.releaseDate {
+  color: var(--warm-gold);
+  font-weight: 900;
+  font-size: 13px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Call to Action - "Tá Pronto pro Hit?" */
+.callToAction {
+  padding: 1.5rem;
+  text-align: center;
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 53, 0.2) 0%, 
+    rgba(255, 215, 0, 0.2) 100%
+  );
+  margin: 1rem;
+  border-radius: 15px;
+  border: 2px solid var(--sunset-orange);
+  position: relative;
+  overflow: hidden;
+}
+
+.callToAction::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(255, 215, 0, 0.3) 50%,
+    transparent 100%
+  );
+  animation: ctaShine 3s ease-in-out infinite;
+}
+
+@keyframes ctaShine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.ctaTitle {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--sand-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  text-shadow: 
+    2px 2px 0px var(--sunset-orange),
+    4px 4px 8px rgba(0, 0, 0, 0.8);
+  animation: ctaTitlePulse 2s ease-in-out infinite;
+}
+
+@keyframes ctaTitlePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.ctaSubtitle {
+  color: var(--sand-white);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.9;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Plataformas - Botões do Baile */
+.platformsSection {
+  padding: 1rem 1.5rem;
+}
+
+.platformsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.platformButton {
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 53, 0.9) 0%, 
+    rgba(255, 69, 0, 0.9) 100%
+  );
+  border: 2px solid var(--warm-gold);
+  border-radius: 15px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  color: var(--sand-white);
+  text-decoration: none;
+}
+
+.platformButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(0, 212, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s ease;
+}
+
+.platformButton:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.9) 0%, 
+    rgba(255, 107, 53, 0.9) 100%
+  );
+  border-color: var(--neon-cyan);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 25px rgba(0, 212, 255, 0.4),
+    0 0 40px rgba(255, 107, 53, 0.6);
+}
+
+.platformButton:hover::before {
+  left: 100%;
+}
+
+.platformIcon {
+  width: 40px;
+  height: 40px;
+  background: var(--sand-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.platformIcon img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(20%);
+}
+
+.platformInitial {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--urban-graphite);
+}
+
+.platformContent {
+  flex: 1;
+  text-align: left;
+}
+
+.platformName {
+  display: block;
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.platformAction {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.platformArrow {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--sand-white);
+  transition: transform 0.3s ease;
+}
+
+.platformButton:hover .platformArrow {
+  transform: translateX(5px);
+}
+
+/* Redes Sociais */
+.socialSection {
+  padding: 1rem 1.5rem;
+  border-top: 2px solid var(--neon-cyan);
+  margin-top: 1rem;
+}
+
+.socialTitle {
+  color: var(--sand-white);
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.socialGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.socialButton {
+  background: linear-gradient(135deg, var(--twilight-purple), var(--neon-cyan));
+  border: 2px solid var(--warm-gold);
+  border-radius: 25px;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--sand-white);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.socialButton:hover {
+  background: linear-gradient(135deg, var(--sunset-orange), var(--warm-gold));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.5);
+}
+
+.socialIcon {
+  font-size: 14px;
+}
+
+.socialName {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* Contatos */
+.contactSection {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--twilight-purple);
+}
+
+.contactTitle {
+  color: var(--sand-white);
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.contactGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.contactButton {
+  background: rgba(44, 44, 44, 0.8);
+  border: 1px solid var(--rio-teal);
+  border-radius: 20px;
+  padding: 0.6rem 1rem;
+  color: var(--rio-teal);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.contactButton:hover {
+  background: var(--rio-teal);
+  color: var(--sand-white);
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.footer {
+  padding: 1.5rem;
+  text-align: center;
+  border-top: 2px solid var(--sunset-orange);
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 53, 0.1) 0%, 
+    rgba(106, 13, 173, 0.1) 100%
+  );
+  border-radius: 0 0 17px 17px;
+  position: relative;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.footerText {
+  color: var(--sand-white);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+}
+
+.footerEmoji {
+  font-size: 14px;
+  animation: rocket 2s ease-in-out infinite;
+}
+
+@keyframes rocket {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+.footerWave {
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--sunset-orange) 0%, 
+    var(--warm-gold) 25%, 
+    var(--neon-cyan) 50%, 
+    var(--twilight-purple) 75%, 
+    var(--sunset-orange) 100%
+  );
+  background-size: 200% 100%;
+  animation: waveFlow 3s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+@keyframes waveFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .sunsetContainer {
+    padding: 1rem;
+  }
+  
+  .baileCard {
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .artwork {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .trackTitle {
+    font-size: 20px;
+  }
+  
+  .artistName {
+    font-size: 16px;
+  }
+  
+  .ctaTitle {
+    font-size: 18px;
+  }
+  
+  .lajeHeader {
+    padding: 0.8rem 1rem;
+  }
+  
+  .locationText,
+  .timeText {
+    font-size: 10px;
+  }
+  
+  .trackSection,
+  .callToAction,
+  .platformsSection,
+  .socialSection,
+  .contactSection {
+    padding: 1rem;
+  }
+  
+  .platformButton {
+    padding: 0.8rem;
+  }
+  
+  .platformName {
+    font-size: 14px;
+  }
+}
+
+/* Efeitos especiais para mais impacto */
+.baileCard::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--sunset-orange), 
+    var(--neon-cyan), 
+    var(--warm-gold), 
+    var(--twilight-purple),
+    var(--sunset-orange)
+  );
+  background-size: 400% 400%;
+  border-radius: 22px;
+  z-index: -1;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}
+
+/* Otimização de performance */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

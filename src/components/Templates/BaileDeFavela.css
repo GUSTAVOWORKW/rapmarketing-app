@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
+/* O container principal que define o fundo e a fonte base. */
+.baile-de-favela-bg {
+    /* A imagem de fundo é aplicada via style inline no TSX para funcionar corretamente com a pasta /public */
+    background-size: cover;
+    background-position: center;
+    /* O blend mode foi removido do gradiente no TSX para que a textura de concreto fique mais visível */
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    width: 100%;
+    padding: 1rem;
+}
+
+/* Estilo para o título (nome do artista) */
+.baile-de-favela-bg h1 {
+    font-family: 'Staatliches', cursive;
+    font-size: 3.5rem; /* Ajustado para melhor legibilidade e responsividade */
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    text-transform: uppercase;
+    /* Sombra forte para destacar o texto do fundo de concreto */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+@media (max-width: 640px) {
+    .baile-de-favela-bg h1 {
+        font-size: 2.8rem;
+    }
+}
+
+/* Borda simples e forte para o avatar, removendo a animação holográfica */
+.urban-avatar-border {
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    padding: 4px; /* Espaçamento para a borda não cortar a imagem */
+    background-color: black; /* Fundo caso a imagem demore a carregar */
+}
+
+/* Novo estilo para os botões de link, com visual industrial */
+.urban-link-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6); /* Fundo escuro semi-transparente */
+    border: 2px solid #ffffff;
+    backdrop-filter: blur(4px); /* Leve desfoque para legibilidade */
+    -webkit-backdrop-filter: blur(4px);
+    transition: all 0.2s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.urban-link-btn:hover {
+    background: #ffffff;
+    color: #000000;
+    transform: translateY(-3px);
+}
+
+.urban-link-btn svg {
+    transition: fill 0.2s ease-in-out;
+}
+
+.urban-link-btn:hover svg {
+    fill: #000000;
+}
+
+
+/* Container para o player do Spotify */
+.spotify-embed-container {
+    border-radius: 12px;
+    overflow: hidden; /* Garante que o iframe respeite a borda arredondada */
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+/* Container para os ícones de redes sociais, agora com wrap */
+.social-links-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Impede que os ícones vazem da tela */
+    gap: 1.75rem; /* Espaçamento consistente entre os ícones */
+    max-width: 100%;
+}
+
+/* Estilo para os ícones sociais */
+.urban-social-btn {
+    font-size: 2rem;
+    color: #a0aec0; /* Cinza claro */
+    transition: all 0.2s ease-in-out;
+}
+
+.urban-social-btn:hover {
+    color: #ffffff;
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}
+
+/* Remove estilos antigos e não utilizados para evitar conflitos */
+.holographic-border-animation,
+.link-btn-holographic,
+.social-btn-holographic {
+    display: none;
+}
+

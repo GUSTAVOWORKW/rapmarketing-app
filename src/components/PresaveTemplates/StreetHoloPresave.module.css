@@ -1,0 +1,762 @@
+/* StreetHoloPresave.module.css - RITMO DA D17 - BAILES DE RUA SP */
+
+/* Importar fontes do tema */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue:wght@400&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Paleta de cores D17 - Asfalto Noturno com Neon Azul Elétrico */
+:root {
+  --d17-black: #0A0A0A;
+  --d17-asphalt: #1A1A1A;
+  --d17-concrete: #2A2A2A;
+  --d17-gray: #404040;
+  --d17-white: #FFFFFF;
+  --d17-neon: #00BFFF; /* Azul Elétrico - cor principal neon */
+  --d17-neon-glow: rgba(0, 191, 255, 0.8);
+  --d17-neon-shadow: rgba(0, 191, 255, 0.4);
+  --d17-strobe: rgba(255, 255, 255, 0.9);
+}
+
+/* Container Principal - Asfalto Noturno */
+.d17Container {
+  min-height: 100vh;
+  background: 
+    radial-gradient(ellipse at center, var(--d17-asphalt) 0%, var(--d17-black) 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(42, 42, 42, 0.1) 2px,
+      rgba(42, 42, 42, 0.1) 4px
+    );
+  color: var(--d17-white);
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.d17Container.mobile {
+  padding: 1rem;
+}
+
+/* Background de Rua com Textura Granulada */
+.streetBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.concreteTexture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(42, 42, 42, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(64, 64, 64, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(26, 26, 26, 0.4) 0%, transparent 50%);
+  background-size: 120px 120px, 180px 180px, 240px 240px;
+  opacity: 0.6;
+  animation: textureShift 20s ease-in-out infinite;
+}
+
+@keyframes textureShift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -5px) rotate(1deg); }
+  50% { transform: translate(-5px, 10px) rotate(-1deg); }
+  75% { transform: translate(5px, 5px) rotate(0.5deg); }
+}
+
+/* Parede de Graffiti com Tag D17 */
+.graffitiWall {
+  position: absolute;
+  top: 20%;
+  left: -10%;
+  width: 30%;
+  height: 60%;
+  background: 
+    linear-gradient(135deg, var(--d17-concrete) 0%, var(--d17-asphalt) 100%);
+  border-right: 2px solid var(--d17-gray);
+  transform: skewX(-15deg);
+  opacity: 0.3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.d17Tag {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 8rem;
+  font-weight: 400;
+  color: var(--d17-neon);
+  text-shadow: 
+    0 0 20px var(--d17-neon-glow),
+    0 0 40px var(--d17-neon-shadow),
+    0 0 60px var(--d17-neon-shadow);
+  transform: skewX(15deg) rotate(-5deg);
+  animation: neonFlicker 3s ease-in-out infinite;
+}
+
+@keyframes neonFlicker {
+  0%, 100% { 
+    opacity: 1;
+    text-shadow: 
+      0 0 20px var(--d17-neon-glow),
+      0 0 40px var(--d17-neon-shadow),
+      0 0 60px var(--d17-neon-shadow);
+  }
+  50% { 
+    opacity: 0.8;
+    text-shadow: 
+      0 0 30px var(--d17-neon-glow),
+      0 0 60px var(--d17-neon-shadow),
+      0 0 90px var(--d17-neon-shadow);
+  }
+}
+
+/* Luz Estroboscópica */
+.strobeLight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--d17-strobe);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+
+.strobeLight.active {
+  opacity: 0.05;
+  animation: strobeFlash 0.1s ease-in-out;
+}
+
+@keyframes strobeFlash {
+  0% { opacity: 0; }
+  50% { opacity: 0.1; }
+  100% { opacity: 0; }
+}
+
+/* Card Principal - Estética de Rua */
+.streetCard {
+  background: 
+    linear-gradient(145deg, 
+      rgba(26, 26, 26, 0.95) 0%, 
+      rgba(16, 16, 16, 0.98) 50%,
+      rgba(10, 10, 10, 0.95) 100%
+    );
+  border: 1px solid var(--d17-concrete);
+  border-radius: 0px;
+  box-shadow: 
+    0 0 50px rgba(0, 0, 0, 0.8),
+    0 0 100px rgba(0, 191, 255, 0.1),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.streetCard.beatPulse {
+  animation: beatPulse 0.15s ease-out;
+}
+
+@keyframes beatPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Header Street */
+.streetHeader {
+  background: var(--d17-black);
+  border-bottom: 1px solid var(--d17-neon);
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoArea {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.logoText {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--d17-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.districtTag {
+  background: var(--d17-neon);
+  color: var(--d17-black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0px;
+  box-shadow: 0 0 15px var(--d17-neon-shadow);
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: statusBlink 1.5s ease-in-out infinite;
+}
+
+.statusDot.live {
+  background: #00FF00;
+  box-shadow: 0 0 8px #00FF00;
+}
+
+.statusDot.upcoming {
+  background: var(--d17-neon);
+  box-shadow: 0 0 8px var(--d17-neon);
+}
+
+@keyframes statusBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+.statusText {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--d17-white);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Zona do Artwork */
+.artworkZone {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.artworkFrame {
+  position: relative;
+  display: inline-block;
+}
+
+.neonGlow {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: transparent;
+  border: 2px solid var(--d17-neon);
+  border-radius: 0px;
+  box-shadow: 
+    0 0 20px var(--d17-neon-glow),
+    0 0 40px var(--d17-neon-shadow),
+    inset 0 0 20px var(--d17-neon-shadow);
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% { 
+    opacity: 0.8;
+    box-shadow: 
+      0 0 20px var(--d17-neon-glow),
+      0 0 40px var(--d17-neon-shadow);
+  }
+  50% { 
+    opacity: 1;
+    box-shadow: 
+      0 0 30px var(--d17-neon-glow),
+      0 0 60px var(--d17-neon-shadow),
+      0 0 80px var(--d17-neon-shadow);
+  }
+}
+
+.artwork {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0px;
+  filter: contrast(1.1) saturate(1.2);
+  position: relative;
+  z-index: 2;
+}
+
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 191, 255, 0.1) 3px,
+    rgba(0, 191, 255, 0.1) 6px
+  );
+  pointer-events: none;
+  animation: scanlineMove 3s linear infinite;
+  z-index: 3;
+}
+
+@keyframes scanlineMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(6px); }
+}
+
+/* Info do Track - Tipografia Stencil */
+.trackInfo {
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-bottom: 1px solid var(--d17-concrete);
+}
+
+.trackTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--d17-white);
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 
+    2px 2px 0px var(--d17-black),
+    0 0 20px var(--d17-neon-shadow);
+  animation: titleGlow 4s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { 
+    text-shadow: 
+      2px 2px 0px var(--d17-black),
+      0 0 20px var(--d17-neon-shadow);
+  }
+  50% { 
+    text-shadow: 
+      2px 2px 0px var(--d17-black),
+      0 0 30px var(--d17-neon-glow),
+      0 0 40px var(--d17-neon-shadow);
+  }
+}
+
+.artistName {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--d17-neon);
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px var(--d17-neon-shadow);
+}
+
+.releaseInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.dateLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--d17-gray);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.releaseDate {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--d17-white);
+  text-transform: uppercase;
+}
+
+/* Seção de Plataformas */
+.platformsSection {
+  padding: 1.5rem 2rem;
+}
+
+.sectionHeader {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--d17-neon);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 0 15px var(--d17-neon-shadow);
+}
+
+.platformGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.neonButton {
+  background: 
+    linear-gradient(135deg, 
+      rgba(26, 26, 26, 0.9) 0%, 
+      rgba(16, 16, 16, 0.9) 100%
+    );
+  border: 1px solid var(--d17-concrete);
+  border-radius: 0px;
+  padding: 1rem;
+  color: var(--d17-white);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.neonButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%,
+    rgba(0, 191, 255, 0.2) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s ease;
+}
+
+.neonButton:hover::before {
+  left: 100%;
+}
+
+.neonButton:hover {
+  border-color: var(--d17-neon);
+  background: 
+    linear-gradient(135deg, 
+      rgba(0, 191, 255, 0.1) 0%, 
+      rgba(26, 26, 26, 0.9) 100%
+    );
+  box-shadow: 
+    0 0 20px var(--d17-neon-shadow),
+    0 0 40px rgba(0, 191, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.buttonIcon {
+  width: 40px;
+  height: 40px;
+  background: var(--d17-neon);
+  border-radius: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 15px var(--d17-neon-shadow),
+    inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.buttonIcon img {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) saturate(100%) invert(1);
+}
+
+.iconLetter {
+  color: var(--d17-black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.buttonContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.platformName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--d17-white);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.platformAction {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--d17-neon);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.neonArrow {
+  color: var(--d17-neon);
+  font-size: 20px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.neonButton:hover .neonArrow {
+  transform: translateX(5px);
+  text-shadow: 0 0 10px var(--d17-neon-glow);
+}
+
+/* Seção Social */
+.socialSection {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--d17-concrete);
+}
+
+.socialGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.socialButton {
+  background: var(--d17-black);
+  border: 1px solid var(--d17-gray);
+  border-radius: 0px;
+  padding: 0.8rem 1rem;
+  color: var(--d17-white);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.socialButton:hover {
+  border-color: var(--d17-neon);
+  background: rgba(0, 191, 255, 0.1);
+  box-shadow: 0 0 15px var(--d17-neon-shadow);
+  transform: translateY(-2px);
+}
+
+.socialIcon {
+  width: 20px;
+  height: 20px;
+  background: var(--d17-concrete);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  color: var(--d17-white);
+}
+
+.socialName {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Seção de Contato */
+.contactSection {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--d17-concrete);
+}
+
+.contactGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.contactChip {
+  background: var(--d17-concrete);
+  border: 1px solid var(--d17-gray);
+  border-radius: 0px;
+  padding: 0.5rem 0.8rem;
+  color: var(--d17-white);
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.contactChip:hover {
+  background: var(--d17-neon);
+  color: var(--d17-black);
+  box-shadow: 0 0 10px var(--d17-neon-shadow);
+}
+
+/* Footer Street */
+.streetFooter {
+  background: var(--d17-black);
+  border-top: 1px solid var(--d17-neon);
+  padding: 1rem 2rem;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footerText {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--d17-gray);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footerNeon {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--d17-neon) 50%, 
+    transparent 100%
+  );
+  animation: footerGlow 3s ease-in-out infinite;
+}
+
+@keyframes footerGlow {
+  0%, 100% { 
+    opacity: 0.6;
+    box-shadow: 0 0 5px var(--d17-neon-shadow);
+  }
+  50% { 
+    opacity: 1;
+    box-shadow: 0 0 10px var(--d17-neon-glow);
+  }
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+  .d17Container {
+    padding: 1rem;
+  }
+  
+  .streetCard {
+    max-width: 100%;
+  }
+  
+  .artwork {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .trackTitle {
+    font-size: 1.8rem;
+  }
+  
+  .d17Tag {
+    font-size: 6rem;
+  }
+  
+  .graffitiWall {
+    width: 25%;
+  }
+  
+  .streetHeader,
+  .trackInfo,
+  .platformsSection,
+  .socialSection,
+  .contactSection,
+  .streetFooter {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Efeitos especiais para máximo impacto */
+.streetCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--d17-neon) 50%, 
+    transparent 100%
+  );
+  animation: topLineGlow 4s ease-in-out infinite;
+}
+
+@keyframes topLineGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.streetCard::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--d17-neon) 50%, 
+    transparent 100%
+  );
+  animation: bottomLineGlow 4s ease-in-out infinite reverse;
+}
+
+@keyframes bottomLineGlow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Performance otimizada */
+* {
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

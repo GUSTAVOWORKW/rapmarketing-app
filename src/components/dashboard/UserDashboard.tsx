@@ -1,0 +1,151 @@
+// src/components/dashboard/UserDashboard.tsx
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../../services/supabase';
+import { useUserSmartLink } from '../../hooks/useUserSmartLinks'; 
+import { useSmartLink } from '../../hooks/useSmartLink';
+import { UserProfile, PlatformLink } from '../../types';
+import { FaTrash, FaLink, FaMusic, FaThList, FaUserCircle } from 'react-icons/fa'; // Adicionado FaMusic, FaThList, FaUserCircle
+
+interface UserDashboardProps {
+  currentUserId: string;
+}
+
+const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
+  const [userProfileForContent, setUserProfileForContent] = useState<UserProfile | null>(null);
+  const [loadingProfileForContent, setLoadingProfileForContent] = useState(true);
+
+  const [activePresavesCount, setActivePresavesCount] = useState<number | null>(null);
+  const [loadingPresavesCount, setLoadingPresavesCount] = useState(true);
+  // Estado para contagem de Smart Links (simplificado por enquanto)
+  const [smartLinksCount, setSmartLinksCount] = useState<number>(0);
+  // Estado para contagem de Smart Bios (placeholder)
+  const [smartBiosCount, setSmartBiosCount] = useState<number>(0);
+  const [loadingSmartLinksCount, setLoadingSmartLinksCount] = useState(true); // Novo estado de loading
+
+
+  const { 
+    smartLink, 
+    loading: loadingLink, 
+    error: linkError, 
+    clearUserSmartLinkState
+  } = useUserSmartLink(currentUserId); 
+  
+  const { deleteSmartLink } = useSmartLink(null); 
+
+  useEffect(() => {
+    const fetchUserProfileForContent = async () => {
+      if (!currentUserId) {
+        setLoadingProfileForContent(false);
+        return;
+      }
+      setLoadingProfileForContent(true);      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('user_id, username')
+          .eq('user_id', currentUserId)
+          .single();
+        if (error) throw error;
+        setUserProfileForContent(data as UserProfile);
+      } catch (error) {
+        console.error('Error fetching user profile for dashboard content:', error);
+      } finally {
+        setLoadingProfileForContent(false);
+      }
+    };
+
+    fetchUserProfileForContent();
+  }, [currentUserId]);
+
+  // Novo useEffect para buscar contagem de pré-saves ativos
+  useEffect(() => {
+    const fetchActivePresaves = async () => {
+      if (!currentUserId) {
+        setLoadingPresavesCount(false);
+        setActivePresavesCount(0);
+        return;
+      }
+      setLoadingPresavesCount(true);
+      try {
+        const currentDate = new Date().toISOString();
+        const { count, error } = await supabase
+          .from('presaves') 
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', currentUserId) 
+          .gt('release_date', currentDate); 
+
+        if (error) throw error;
+        setActivePresavesCount(count ?? 0);
+      } catch (error) {
+        console.error('Error fetching active presaves count:', error);
+        setActivePresavesCount(0); 
+      } finally {
+        setLoadingPresavesCount(false);
+      }
+    };
+
+    fetchActivePresaves();
+  }, [currentUserId]);
+
+  // useEffect para buscar contagem de todos os smart links do usuário
+  useEffect(() => {
+    const fetchSmartLinksCount = async () => {
+      if (!currentUserId) {
+        setLoadingSmartLinksCount(false);
+        setSmartLinksCount(0);
+        return;
+      }
+      setLoadingSmartLinksCount(true);
+      try {
+        const { count, error } = await supabase
+          .from('smart_links')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', currentUserId);
+
+        if (error) throw error;
+        setSmartLinksCount(count ?? 0);
+      } catch (error) {
+        console.error('Error fetching smart links count:', error);
+        setSmartLinksCount(0);
+      } finally {
+        setLoadingSmartLinksCount(false);
+      }
+    };
+
+    fetchSmartLinksCount();
+    // Para Smart Bios, manteremos 0 por enquanto e seu loading como false
+    setSmartBiosCount(0); 
+  }, [currentUserId]);
+
+
+  const handleDeleteLink = async () => {
+    if (smartLink && smartLink.id && window.confirm('Tem certeza que deseja excluir seu Smart Link?')) {
+      const success = await deleteSmartLink(smartLink.id);
+      if (success) {
+        clearUserSmartLinkState(); // Update UI by clearing the link
+        // Optionally, show a success notification
+      } else {
+        alert("Falha ao excluir o link.");
+      }
+    }
+  };
+
+  const publicLinkUrl = userProfileForContent?.username && smartLink?.slug 
+    ? `${window.location.origin}/${smartLink.slug}` 
+    : null;
+
+  if (loadingProfileForContent || loadingLink || loadingPresavesCount || loadingSmartLinksCount) { // Adicionado loadingSmartLinksCount
+    return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
+      <h1 className="text-3xl font-bold text-[#3100ff] mb-4">Bem-vindo ao seu novo Dashboard!</h1>
+      <p className="text-lg text-gray-700 text-center max-w-xl">
+        Aqui você encontra o novo painel de impacto visual, conquistas e estatísticas animadas. Use a barra lateral para navegar pelas funções principais.
+      </p>
+    </div>
+  );
+};
+
+export default UserDashboard;
