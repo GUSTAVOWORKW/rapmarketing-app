@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './services/supabase';
-// A importação 'useLocation' foi removida, pois não é mais necessária.
 import { Routes, Route, Navigate, useNavigate, Outlet } from 'react-router-dom';
 
 // Seus Componentes e Páginas
@@ -52,11 +51,40 @@ function App() {
     navigate('/login');
   };
 
+  // ==================================================================
+  // INÍCIO DA CORREÇÃO FINAL
+  // Este useEffect processa manualmente o token da URL.
+  // Ele roda apenas uma vez quando o app carrega.
+  // ==================================================================
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('access_token') && hash.includes('refresh_token')) {
+      const hashParams = new URLSearchParams(hash.substring(1));
+      const access_token = hashParams.get('access_token');
+      const refresh_token = hashParams.get('refresh_token');
+
+      if (access_token && refresh_token) {
+        console.log("Token detectado na URL, tentando setar a sessão manualmente...");
+        
+        supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
+          if (error) {
+            console.error("Erro ao setar a sessão manualmente:", error);
+          } else {
+            console.log("Sessão setada manualmente com sucesso.");
+            // Limpa a URL para remover os tokens, o onAuthStateChange vai cuidar do resto.
+            window.location.hash = '';
+          }
+        });
+      }
+    }
+  }, []); // O array vazio garante que isso rode apenas uma vez.
+
   useEffect(() => {
     isMountedRef.current = true;
     setLoading(true);
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        console.log(`[onAuthStateChange] Evento: ${_event}`, session);
         if (!isMountedRef.current) return;
         setSession(session);
         setCurrentUserId(session?.user?.id || null);
@@ -73,6 +101,7 @@ function App() {
       subscription?.unsubscribe();
     };
   }, [fetchProfile]);
+
 
   if (loading) {
     return (
