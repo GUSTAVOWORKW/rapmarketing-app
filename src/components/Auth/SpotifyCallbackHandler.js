@@ -11,11 +11,8 @@ export const SpotifyCallbackHandler = () => {
     const processTokens = async () => {
       if (hasProcessed.current) return;
 
-      // A lógica de captura de hash agora está DENTRO do useEffect.
-      // Isso garante que ela só rode quando o componente estiver montado.
       const capturedHash = window.location.hash;
       if (!capturedHash || !capturedHash.includes('provider_token')) {
-        // Se não houver tokens do Spotify na URL, não faça nada.
         return;
       }
 
@@ -23,7 +20,6 @@ export const SpotifyCallbackHandler = () => {
       setIsProcessing(true);
       hasProcessed.current = true;
 
-      // Limpa a URL imediatamente para evitar que outros scripts a leiam.
       window.history.replaceState({}, document.title, window.location.pathname);
 
       try {
@@ -57,7 +53,7 @@ export const SpotifyCallbackHandler = () => {
 
         const { error } = await supabase
           .from('spotify_tokens')
-          .upsert(tokenData, { onConflict: 'user_id' });
+          .upsert([tokenData], { onConflict: 'user_id' }); // <-- CORREÇÃO AQUI: tokenData em um array
 
         if (error) {
           console.error('❌ [SpotifyCallback] Erro ao salvar tokens do Spotify:', error);
@@ -66,15 +62,14 @@ export const SpotifyCallbackHandler = () => {
           window.dispatchEvent(new CustomEvent('spotify-connected'));
           setTimeout(() => {
             navigate('/settings');
-            window.location.reload(); // Força a atualização para refletir o estado conectado
+            window.location.reload();
           }, 1000);
         }
       } catch (err) {
         console.error('❌ [SpotifyCallback] Erro geral no processamento de tokens:', err);
       } finally {
-        if (!navigate) {
-            setIsProcessing(false);
-        }
+        // Garante que o estado de processamento seja desativado em qualquer caso
+        setIsProcessing(false);
       }
     };
 
@@ -94,5 +89,5 @@ export const SpotifyCallbackHandler = () => {
     );
   }
 
-  return null; // Não renderiza nada se não estiver processando ativamente.
+  return null;
 };
