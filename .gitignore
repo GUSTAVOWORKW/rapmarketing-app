@@ -15,3 +15,15 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Arquivos de anotações, logs e scripts SQL
+*.md
+*.sql
+
+# Pastas de configuração local e SSL
+/supabase
+/ssl
+
+# Exceção para o README principal (opcional, mas recomendado)
+# Esta linha deve vir DEPOIS de *.md
+!README.md
