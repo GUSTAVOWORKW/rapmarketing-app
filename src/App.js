@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from './services/supabase';
-import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
+// A importação 'useLocation' foi removida, pois não é mais necessária.
+import { Routes, Route, Navigate, useNavigate, Outlet } from 'react-router-dom';
 
 // Seus Componentes e Páginas
 import Auth from './components/Auth/Auth';
@@ -72,32 +73,6 @@ function App() {
       subscription?.unsubscribe();
     };
   }, [fetchProfile]);
-
-  // Corrige login Google/Supabase: processa access_token na hash da URL
-  useEffect(() => {
-    if (window.location.hash.includes('access_token')) {
-      console.log('[DEBUG] Hash detectada na URL:', window.location.hash);
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const access_token = hashParams.get('access_token');
-      const refresh_token = hashParams.get('refresh_token');
-      console.log('[DEBUG] access_token:', access_token);
-      console.log('[DEBUG] refresh_token:', refresh_token);
-      if (access_token && refresh_token) {
-        supabase.auth.setSession({ access_token, refresh_token }).then((result) => {
-          console.log('[DEBUG] Resultado do setSession:', result);
-          window.location.hash = '';
-          window.location.reload(); // Força o React a detectar a sessão
-        });
-      }
-    }
-  }, []);
-
-  // Loga a sessão atual do Supabase ao montar o app
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data, error }) => {
-      console.log('[DEBUG] Sessão atual do Supabase:', data, error);
-    });
-  }, []);
 
   if (loading) {
     return (
