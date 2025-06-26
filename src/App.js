@@ -73,6 +73,19 @@ function App() {
     };
   }, [fetchProfile]);
 
+  // Corrige login Google/Supabase: processa access_token na hash da URL
+  useEffect(() => {
+    if (window.location.hash.includes('access_token')) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const access_token = hashParams.get('access_token');
+      const refresh_token = hashParams.get('refresh_token');
+      if (access_token && refresh_token) {
+        supabase.auth.setSession({ access_token, refresh_token }).then(() => {
+          window.location.hash = '';
+        });
+      }
+    }
+  }, []);
 
   if (loading) {
     return (
