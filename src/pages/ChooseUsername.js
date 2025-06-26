@@ -329,7 +329,7 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
           <p className="text-center text-[#1c1c1c]/70">Carregando dados do usuário...</p> // Preto com opacidade
         ) : !currentUserId ? (
           <p className="text-center text-red-500 p-3"> {/* Manter vermelho para erro crítico */}
-            Não foi possível carregar os dados do usuário. Por favor, tente <a href="#" onClick={(e) => { e.preventDefault(); window.location.reload(); }} className="underline hover:text-red-700">recarregar a página</a> ou contate o suporte se o problema persistir.
+            Não foi possível carregar os dados do usuário. Por favor, tente <button type="button" onClick={() => window.location.reload()} className="underline hover:text-red-700 bg-transparent border-none p-0 m-0 cursor-pointer inline">recarregar a página</button> ou contate o suporte se o problema persistir.
           </p>
         ) : (
           <>

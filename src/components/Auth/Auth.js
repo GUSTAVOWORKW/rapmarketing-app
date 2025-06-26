@@ -5,18 +5,13 @@ import { FaGoogle } from 'react-icons/fa'; // Ícone do Google
 const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
+      // ==================================================================
+      // INÍCIO DA ALTERAÇÃO FINAL (TESTE DE SIMPLIFICAÇÃO)
+      // Removemos o objeto 'options' e o 'redirectTo' para forçar
+      // o Supabase a usar a 'Site URL' configurada no dashboard.
+      // ==================================================================
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          // ==================================================================
-          // ESTA É A LINHA QUE CORRIGE TODO O PROBLEMA.
-          // O redirecionamento DEVE ser para a raiz do site (a origem),
-          // para que a lógica do App.js possa funcionar corretamente.
-          // Qualquer outro valor aqui (como '/spotify-callback' ou '/choose-username')
-          // causará o erro que você está vendo.
-          // ==================================================================
-          redirectTo: window.location.origin,
-        },
       });
 
       if (error) {
