@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-// ... todos os seus outros imports ...
-import Auth from './components/Auth/Auth';
-import ChooseUsername from './pages/ChooseUsername';
-import LandingPage from './pages/LandingPage';
 import { supabase } from './services/supabase';
 import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
 
+// Seus Componentes e Páginas
+import Auth from './components/Auth/Auth';
+import ChooseUsername from './pages/ChooseUsername';
+import LandingPage from './pages/LandingPage';
 import UserDashboard from './components/dashboard/UserDashboard.tsx';
 import UserSettings from './pages/UserSettings.js';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -15,6 +15,8 @@ import CreateSmartLinkPage from './pages/CreateSmartLinkPage.tsx';
 import PublicProfileSmartLink from './pages/PublicProfileSmartLink.js';
 import SmartLinkMetrics from './components/dashboard/SmartLinkMetrics.tsx';
 import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler';
+
+// Seus Contexts
 import { PresaveFormProvider } from './context/presave/PresaveFormContext';
 import { SmartLinkFormProvider } from './context/smartlink/SmartLinkFormContext';
 
@@ -24,18 +26,21 @@ function App() {
   const [loading, setLoading] = useState(true);
   const isMountedRef = useRef(true);
   const navigate = useNavigate();
-  const location = useLocation();
   const [currentUserId, setCurrentUserId] = useState(null);
 
   const fetchProfile = useCallback(async (userId) => {
     try {
       const { data, error, status } = await supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle();
-      if (!isMountedRef.current) return { success: false };
-      if (error && status !== 406) { setProfile(null); } else { setProfile(data); }
+      if (!isMountedRef.current) return;
+      if (error && status !== 406) {
+        setProfile(null);
+      } else {
+        setProfile(data);
+      }
     } catch (e) {
-      if (isMountedRef.current) { setProfile(null); }
+      if (isMountedRef.current) setProfile(null);
     } finally {
-      if (isMountedRef.current) { setLoading(false); }
+      if (isMountedRef.current) setLoading(false);
     }
   }, []);
 
@@ -68,14 +73,6 @@ function App() {
     };
   }, [fetchProfile]);
 
-  // ==================================================================
-  // INÍCIO DA CORREÇÃO FINAL
-  // O useEffect abaixo, que capturava os tokens do Spotify, foi
-  // REMOVIDO. A lógica para isso deve viver exclusivamente dentro do
-  // componente SpotifyCallbackHandler.js para evitar conflito com o
-  // retorno do login do Google.
-  // ==================================================================
-  // useEffect(() => { ... }, [session, location]); // <- CÓDIGO REMOVIDO
 
   if (loading) {
     return (
@@ -86,8 +83,8 @@ function App() {
   }
 
   const ProtectedRoutesWithLayout = () => {
-    if (!session) { return <Navigate to="/login" replace />; }
-    if (!profile?.username) { return <Navigate to="/choose-username" replace />; }
+    if (!session) return <Navigate to="/login" replace />;
+    if (!profile?.username) return <Navigate to="/choose-username" replace />;
     return (
       <DashboardLayout currentUserId={currentUserId} onSignOut={handleLogout}>
         <Outlet />
