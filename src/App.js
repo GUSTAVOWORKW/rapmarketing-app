@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { supabase } from './services/supabase';
-import { Routes, Route, Navigate, useNavigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+
+// Hook de autenticação centralizado
+import { useAuth } from './hooks/useAuth';
 
 // Seus Componentes e Páginas
 import Auth from './components/Auth/Auth';
@@ -20,125 +22,65 @@ import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler';
 import { PresaveFormProvider } from './context/presave/PresaveFormContext';
 import { SmartLinkFormProvider } from './context/smartlink/SmartLinkFormContext';
 
-function App() {
-  const [session, setSession] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const isMountedRef = useRef(true);
-  const navigate = useNavigate();
-  const [currentUserId, setCurrentUserId] = useState(null);
+// Componente para exibir tela de carregamento
+const LoadingScreen = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-blue-600"></div>
+  </div>
+);
 
-  const fetchProfile = useCallback(async (userId) => {
-    try {
-      const { data, error, status } = await supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle();
-      if (!isMountedRef.current) return;
-      if (error && status !== 406) {
-        setProfile(null);
-      } else {
-        setProfile(data);
-      }
-    } catch (e) {
-      if (isMountedRef.current) setProfile(null);
-    } finally {
-      if (isMountedRef.current) setLoading(false);
-    }
-  }, []);
+// Componente para proteger rotas que exigem autenticação
+const ProtectedRoutes = () => {
+  const { session, profile } = useAuth();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setSession(null);
-    setProfile(null);
-    navigate('/login');
-  };
-
-  // ==================================================================
-  // INÍCIO DA CORREÇÃO FINAL
-  // Este useEffect processa manualmente o token da URL.
-  // Ele roda apenas uma vez quando o app carrega.
-  // ==================================================================
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes('access_token') && hash.includes('refresh_token')) {
-      const hashParams = new URLSearchParams(hash.substring(1));
-      const access_token = hashParams.get('access_token');
-      const refresh_token = hashParams.get('refresh_token');
-
-      if (access_token && refresh_token) {
-        console.log("Token detectado na URL, tentando setar a sessão manualmente...");
-        
-        supabase.auth.setSession({ access_token, refresh_token }).then(({ error }) => {
-          if (error) {
-            console.error("Erro ao setar a sessão manualmente:", error);
-          } else {
-            console.log("Sessão setada manualmente com sucesso.");
-            // Limpa a URL para remover os tokens, o onAuthStateChange vai cuidar do resto.
-            window.location.hash = '';
-          }
-        });
-      }
-    }
-  }, []); // O array vazio garante que isso rode apenas uma vez.
-
-  useEffect(() => {
-    isMountedRef.current = true;
-    setLoading(true);
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log(`[onAuthStateChange] Evento: ${_event}`, session);
-        if (!isMountedRef.current) return;
-        setSession(session);
-        setCurrentUserId(session?.user?.id || null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
-      }
-    );
-    return () => {
-      isMountedRef.current = false;
-      subscription?.unsubscribe();
-    };
-  }, [fetchProfile]);
-
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-4 border-blue-600"></div>
-      </div>
-    );
+  if (!session) {
+    return <Navigate to="/login" replace />;
   }
 
-  const ProtectedRoutesWithLayout = () => {
-    if (!session) return <Navigate to="/login" replace />;
-    if (!profile?.username) return <Navigate to="/choose-username" replace />;
-    return (
-      <DashboardLayout currentUserId={currentUserId} onSignOut={handleLogout}>
-        <Outlet />
-      </DashboardLayout>
-    );
-  };
+  if (!profile?.username) {
+    return <Navigate to="/choose-username" replace />;
+  }
+
+  return (
+    <DashboardLayout>
+      <Outlet />
+    </DashboardLayout>
+  );
+};
+
+function App() {
+  const { session, loading } = useAuth();
+
+  // Mostra a tela de carregamento enquanto o hook de autenticação processa a sessão.
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <SmartLinkFormProvider>
       <PresaveFormProvider>
         <Routes>
+          {/* Rotas Públicas */}
           <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
-          <Route path="/choose-username" element={session ? <ChooseUsername /> : <Navigate to="/login" />} />
           <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
           <Route path="/:slug" element={<PublicProfileSmartLink />} />
           <Route path="/presave/:slug" element={<PresavePage />} />
-          <Route element={<ProtectedRoutesWithLayout />}>
-            <Route path="/dashboard" element={<UserDashboard currentUserId={currentUserId} />} />
+
+          {/* Rotas que exigem apenas login (sem perfil completo) */}
+          <Route path="/choose-username" element={session ? <ChooseUsername /> : <Navigate to="/login" />} />
+
+          {/* Rotas Protegidas (exigem login e perfil completo) */}
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/settings" element={<UserSettings />} />
             <Route path="/dashboard/metrics" element={<SmartLinkMetrics />} />
             <Route path="/dashboard/metrics/:linkId" element={<SmartLinkMetrics />} />
             <Route path="/criar-presave/:presaveId?" element={<CreatePresavePage />} />
             <Route path="/criar-smart-link/:smartLinkId?" element={<CreateSmartLinkPage />} />
           </Route>
+
+          {/* Rota de fallback */}
           <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
         </Routes>
       </PresaveFormProvider>
@@ -147,3 +89,4 @@ function App() {
 }
 
 export default App;
+
