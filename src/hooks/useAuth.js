@@ -32,36 +32,42 @@ export const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    let isOauthRedirect = false;
-    const hash = window.location.hash;
-    if (hash.includes('access_token') && hash.includes('refresh_token')) {
-        isOauthRedirect = true;
-    }
+    setLoading(true);
+    const isOauthRedirect = window.location.hash.includes('access_token');
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      console.log(`[useAuth] Evento: ${event}`, newSession);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(`[useAuth] Evento: ${event}`);
 
-      // Se for um redirecionamento OAuth, ignore o primeiro evento INITIAL_SESSION
-      // e espere pelo evento SIGNED_IN que contém os dados corretos.
-      if (isOauthRedirect && event === 'INITIAL_SESSION') {
-        console.log('[useAuth] Redirecionamento OAuth detectado, aguardando SIGNED_IN...');
-        return; // Não faça nada, apenas espere
+      if (event === 'INITIAL_SESSION') {
+        // Se for um redirecionamento OAuth, não faça nada. Espere pelo SIGNED_IN.
+        if (isOauthRedirect) {
+          console.log('[useAuth] Redirecionamento OAuth. Aguardando SIGNED_IN...');
+          return;
+        }
+        // Se for um carregamento normal, processe a sessão (que pode ser nula)
+        setSession(session);
+        if (session) {
+          setUser(session.user);
+          await fetchProfile(session.user.id);
+        }
+        setLoading(false);
+      } else if (event === 'SIGNED_IN') {
+        setSession(session);
+        setUser(session.user);
+        await fetchProfile(session.user.id);
+        // Limpa o hash da URL para uma aparência limpa
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setLoading(false);
+      } else if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setLoading(false);
       }
-
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
-      await fetchProfile(newSession?.user?.id);
-      
-      // Limpa o hash da URL após o processamento bem-sucedido
-      if (event === 'SIGNED_IN') {
-        window.history.replaceState(null, '', ' ');
-      }
-
-      setLoading(false);
     });
 
     return () => {
-      subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, [fetchProfile]);
 
