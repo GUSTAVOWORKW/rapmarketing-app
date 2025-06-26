@@ -4,9 +4,11 @@ import { FaGoogle } from 'react-icons/fa';
 const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
-      // Usando a chamada simplificada que confia na 'Site URL' do Supabase
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
 
       if (error) {

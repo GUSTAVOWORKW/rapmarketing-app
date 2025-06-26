@@ -6,6 +6,7 @@ import { useAuth } from './hooks/useAuth';
 
 // Seus Componentes e Páginas
 import Auth from './components/Auth/Auth';
+import AuthCallback from './pages/AuthCallback'; // <-- IMPORTAÇÃO ADICIONADA
 import ChooseUsername from './pages/ChooseUsername';
 import LandingPage from './pages/LandingPage';
 import UserDashboard from './components/dashboard/UserDashboard.tsx';
@@ -63,6 +64,7 @@ function App() {
           {/* Rotas Públicas */}
           <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} /> {/* <-- ROTA ADICIONADA */}
           <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
           <Route path="/:slug" element={<PublicProfileSmartLink />} />
           <Route path="/presave/:slug" element={<PresavePage />} />

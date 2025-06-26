@@ -33,41 +33,18 @@ export const useAuth = () => {
 
   useEffect(() => {
     setLoading(true);
-    const isOauthRedirect = window.location.hash.includes('access_token');
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`[useAuth] Evento: ${event}`);
-
-      if (event === 'INITIAL_SESSION') {
-        // Se for um redirecionamento OAuth, não faça nada. Espere pelo SIGNED_IN.
-        if (isOauthRedirect) {
-          console.log('[useAuth] Redirecionamento OAuth. Aguardando SIGNED_IN...');
-          return;
-        }
-        // Se for um carregamento normal, processe a sessão (que pode ser nula)
-        setSession(session);
-        if (session) {
-          setUser(session.user);
-          await fetchProfile(session.user.id);
-        }
-        setLoading(false);
-      } else if (event === 'SIGNED_IN') {
-        setSession(session);
-        setUser(session.user);
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
         await fetchProfile(session.user.id);
-        // Limpa o hash da URL para uma aparência limpa
-        window.history.replaceState({}, document.title, window.location.pathname);
-        setLoading(false);
-      } else if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, [fetchProfile]);
 
