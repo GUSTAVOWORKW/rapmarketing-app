@@ -1,111 +1,87 @@
-// src/components/Auth/SpotifyCallbackHandler.js
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
-
-// Captura tokens IMEDIATAMENTE quando o arquivo carrega
-const capturedHash = window.location.hash;
-if (capturedHash && capturedHash.includes('provider_token')) {
-  console.log('🚨 [SpotifyCallback] Tokens capturados no carregamento!');
-  sessionStorage.setItem('spotify_tokens_pending', capturedHash);
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
 
 export const SpotifyCallbackHandler = () => {
   const navigate = useNavigate();
   const hasProcessed = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    // Processar tokens salvos
     const processTokens = async () => {
       if (hasProcessed.current) return;
-      
-      const storedHash = sessionStorage.getItem('spotify_tokens_pending');
-      
-      if (!storedHash) {
+
+      // A lógica de captura de hash agora está DENTRO do useEffect.
+      // Isso garante que ela só rode quando o componente estiver montado.
+      const capturedHash = window.location.hash;
+      if (!capturedHash || !capturedHash.includes('provider_token')) {
+        // Se não houver tokens do Spotify na URL, não faça nada.
         return;
       }
-      
+
+      console.log('🚨 [SpotifyCallback] Tokens do Spotify detectados na URL.');
+      setIsProcessing(true);
       hasProcessed.current = true;
-      console.log('💾 [SpotifyCallback] Processando tokens salvos...');
-      
+
+      // Limpa a URL imediatamente para evitar que outros scripts a leiam.
+      window.history.replaceState({}, document.title, window.location.pathname);
+
       try {
-        // Parse dos tokens
-        const params = new URLSearchParams(storedHash.substring(1));
+        const params = new URLSearchParams(capturedHash.substring(1));
         const accessToken = params.get('provider_token');
         const refreshToken = params.get('provider_refresh_token');
         const expiresIn = params.get('expires_in') || '3600';
-        
+
         if (!accessToken) {
-          console.error('❌ [SpotifyCallback] Token não encontrado');
+          console.error('❌ [SpotifyCallback] Token de acesso do Spotify não encontrado na URL.');
+          setIsProcessing(false);
           return;
         }
-        
-        // Obter usuário atual
+
         const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
+
         if (userError || !user) {
-          console.error('❌ [SpotifyCallback] Usuário não autenticado:', userError);
-          // Tentar novamente em 1 segundo se não houver usuário
-          hasProcessed.current = false;
-          setTimeout(processTokens, 1000);
+          console.error('❌ [SpotifyCallback] Usuário não autenticado no Supabase. Não é possível salvar os tokens do Spotify.', userError);
+          setIsProcessing(false);
           return;
         }
-        
-        console.log('📦 [SpotifyCallback] Salvando tokens para usuário:', user.id);
-        
-        // Preparar dados
+
+        console.log('📦 [SpotifyCallback] Salvando tokens para o usuário:', user.id);
+
         const tokenData = {
           user_id: user.id,
           access_token: accessToken,
           refresh_token: refreshToken || '',
           expires_at: Date.now() + (parseInt(expiresIn) * 1000),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
         };
-        
-        // Deletar registro anterior
-        await supabase
+
+        const { error } = await supabase
           .from('spotify_tokens')
-          .delete()
-          .eq('user_id', user.id);
-        
-        // Inserir novo registro
-        const { data, error } = await supabase
-          .from('spotify_tokens')
-          .insert([tokenData])
-          .select();
-        
+          .upsert(tokenData, { onConflict: 'user_id' });
+
         if (error) {
-          console.error('❌ [SpotifyCallback] Erro ao salvar:', error);
+          console.error('❌ [SpotifyCallback] Erro ao salvar tokens do Spotify:', error);
         } else {
-          console.log('✅ [SpotifyCallback] Tokens salvos com sucesso!', data);
-          
-          // Limpar do sessionStorage
-          sessionStorage.removeItem('spotify_tokens_pending');
-          
-          // Disparar evento
+          console.log('✅ [SpotifyCallback] Tokens do Spotify salvos com sucesso!');
           window.dispatchEvent(new CustomEvent('spotify-connected'));
-          
-          // Redirecionar
           setTimeout(() => {
             navigate('/settings');
-            window.location.reload();
+            window.location.reload(); // Força a atualização para refletir o estado conectado
           }, 1000);
         }
       } catch (err) {
-        console.error('❌ [SpotifyCallback] Erro geral:', err);
+        console.error('❌ [SpotifyCallback] Erro geral no processamento de tokens:', err);
+      } finally {
+        if (!navigate) {
+            setIsProcessing(false);
+        }
       }
     };
 
     processTokens();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Array vazio pois queremos executar apenas uma vez
+  }, [navigate]);
 
-  // Mostrar indicador se tem tokens pendentes
-  const hasPendingTokens = sessionStorage.getItem('spotify_tokens_pending');
-  
-  if (hasPendingTokens) {
+  if (isProcessing) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-lg shadow-xl">
@@ -118,7 +94,5 @@ export const SpotifyCallbackHandler = () => {
     );
   }
 
-  return null;
+  return null; // Não renderiza nada se não estiver processando ativamente.
 };
-
-export default SpotifyCallbackHandler;
