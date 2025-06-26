@@ -1,4 +1,3 @@
-import React from 'react';
 import { supabase } from '../../services/supabase';
 import { FaGoogle } from 'react-icons/fa';
 
