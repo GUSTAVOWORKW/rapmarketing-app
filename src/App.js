@@ -82,6 +82,7 @@ function App() {
       if (access_token && refresh_token) {
         supabase.auth.setSession({ access_token, refresh_token }).then(() => {
           window.location.hash = '';
+          window.location.reload(); // Força o React a detectar a sessão
         });
       }
     }
