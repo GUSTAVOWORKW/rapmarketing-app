@@ -2,12 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa';
 
-export default function HeaderBar({ user, avatar, onLogout, className }) {
+export default function HeaderBar({ user, avatar, onLogout }) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   return (
-    <header className={`w-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-b border-gray-200 shadow-sm py-3 px-6 flex items-center justify-between z-50 relative ${className || ''}`}>
+    <header className="w-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-b border-gray-200 shadow-sm py-3 px-6 flex items-center justify-between z-50 relative">
       <div className="flex items-center cursor-pointer select-none" onClick={() => navigate('/dashboard')}>
         <img src="/logob.png" alt="Logo Rapmarketing" className="h-16 w-auto object-contain transition-all duration-300" />
       </div>

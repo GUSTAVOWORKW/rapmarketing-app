@@ -59,7 +59,8 @@ function App() {
   return (
     <SmartLinkFormProvider>
       <PresaveFormProvider>
-        <Routes>
+        <div style={{ border: '2px solid red' }}> {/* Temporary border for debugging */}
+          <Routes>
           {/* Rotas Públicas */}
           <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />

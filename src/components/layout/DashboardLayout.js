@@ -122,8 +122,8 @@ const DashboardLayout = ({ children }) => {
             </div>
         );
     }    return (
-      <div className="min-h-screen flex flex-col font-sans relative overflow-hidden">
-        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} className="flex-shrink-0" />
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden" style={{ border: '2px solid blue' }}>
+        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} style={{ border: '2px solid green' }} />
         {/* Onboarding Visual com Cards Animados */}
         {showOnboardingCards && location.pathname === '/dashboard' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -174,9 +174,9 @@ const DashboardLayout = ({ children }) => {
           </div>
         )}
         {/* Layout principal: sidebar à esquerda, conteúdo à direita */}
-        <div className="flex flex-row flex-1 min-h-0 w-full overflow-hidden">
+        <div className="flex flex-row flex-1 min-h-0 w-full" style={{ border: '2px solid purple' }}>
           {/* Sidebar */}
-          <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300">
+          <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300" style={{ border: '2px solid orange' }}>">
             {/* Avatar, nome do usuário e badge de status com visual de impacto */}
             <div className="flex flex-col items-center mb-8 group">
               <div className="relative mb-2">
@@ -251,13 +251,13 @@ const DashboardLayout = ({ children }) => {
               </button>
             </div>
           </aside>          {/* Main Content Area */}
-          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main min-h-0">
+          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main min-h-screen" style={{ border: '2px solid yellow' }}>
             <div className="absolute inset-0 pointer-events-none z-0">
               {/* Efeito visual de círculos animados no fundo */}
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#a259ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
               <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3100ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
             </div>
-            <div className="relative z-20 pointer-events-auto">{/* Aumentar z-index para garantir que esteja acima de outros elementos */}
+            <div className="relative z-20 pointer-events-auto" style={{ border: '2px solid cyan' }}>{/* Aumentar z-index para garantir que esteja acima de outros elementos */}
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
