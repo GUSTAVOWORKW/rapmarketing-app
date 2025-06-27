@@ -122,8 +122,8 @@ const DashboardLayout = ({ children }) => {
             </div>
         );
     }    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden">
-        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} />
+      <div className="min-h-screen flex flex-col font-sans relative overflow-hidden">
+        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} className="flex-shrink-0" />
         {/* Onboarding Visual com Cards Animados */}
         {showOnboardingCards && location.pathname === '/dashboard' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -174,7 +174,7 @@ const DashboardLayout = ({ children }) => {
           </div>
         )}
         {/* Layout principal: sidebar à esquerda, conteúdo à direita */}
-        <div className="flex flex-row flex-1 min-h-0 w-full">
+        <div className="flex flex-row flex-1 min-h-0 w-full overflow-hidden">
           {/* Sidebar */}
           <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300">
             {/* Avatar, nome do usuário e badge de status com visual de impacto */}
@@ -251,7 +251,7 @@ const DashboardLayout = ({ children }) => {
               </button>
             </div>
           </aside>          {/* Main Content Area */}
-          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main">
+          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main min-h-0">
             <div className="absolute inset-0 pointer-events-none z-0">
               {/* Efeito visual de círculos animados no fundo */}
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#a259ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
