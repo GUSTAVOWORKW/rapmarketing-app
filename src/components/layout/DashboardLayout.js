@@ -122,8 +122,8 @@ const DashboardLayout = ({ children }) => {
             </div>
         );
     }    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden" style={{ border: '2px solid blue' }}>
-        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} style={{ border: '2px solid green' }} />
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden">
+        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} />
         {/* Onboarding Visual com Cards Animados */}
         {showOnboardingCards && location.pathname === '/dashboard' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
@@ -251,7 +251,7 @@ const DashboardLayout = ({ children }) => {
               </button>
             </div>
           </aside>          {/* Main Content Area */}
-          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main min-h-screen">
+          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main">
             <div className="absolute inset-0 pointer-events-none z-0">
               {/* Efeito visual de círculos animados no fundo */}
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#a259ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
