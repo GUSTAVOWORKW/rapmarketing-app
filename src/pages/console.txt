@@ -1,379 +1,168 @@
-react refresh:37 Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: 'spotify', isPageView: false}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: 'deezer', isPageView: false}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: 'share_whatsapp', isPageView: false}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: 'custom_contact_click', isPageView: false}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:63 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
-useMetricsTracking.ts:127 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
-useMetricsTracking.ts:170 🚫 Page view já registrado para esta instância do componente. Ignorando.
-PublicProfileSmartLink.js:50 [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-PublicProfileSmartLink.js:109 [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
-PublicProfileSmartLink.js:110 [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
-PublicProfileSmartLink.js:119 [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
-useMetricsTracking.ts:148 ✅ Evento de tracking enviado com sucesso para a Edge Function
- [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
- [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
- [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
- [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
- [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- 🔍 Verificação de contexto (localhost): {currentPath: '/pedrin', isDashboard: false, isSmartLink: true, isPresave: false, isPublicPage: Array(1), …}
- 📊 Enviando evento para a Edge Function: {itemId: '24bbeb14-68b9-45f1-913e-c8e287a5b284', itemType: 'smartlink', platformId: undefined, isPageView: true}
- 🚫 Page view já registrado para esta instância do componente. Ignorando.
- [DEBUG] Dados brutos do Supabase: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
- [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
- [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- [DEBUG] Tentando carregar template. Nome recebido: "noitecarioca", Nome normalizado: "noitecarioca"
- [DEBUG] Mapa de templates disponível: {afrofuturismo: ƒ, amazoniadigital: ƒ, bailedefavela: ƒ, bailepulsante: ƒ, batalhaholografica: ƒ, …}
- [DEBUG] Objeto enviado para o template: {id: '24bbeb14-68b9-45f1-913e-c8e287a5b284', created_at: '2025-06-25T16:25:09.223777+00:00', updated_at: '2025-06-25T16:25:09.223777+00:00', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', artist_name: 'Pedrin', …}
- ✅ Evento de tracking enviado com sucesso para a Edge Function
+useAuth.js:65 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+    at useAuth.js:9:14
+(anônimo) @ useAuth.js:56
+await in (anônimo)
+(anônimo) @ useAuth.js:74
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+_initialize @ GoTrueClient.ts:383
+await in _initialize
+(anônimo) @ GoTrueClient.ts:308
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+ChooseUsername.js:37 ChooseUsername (1750993423393): useEffect - useEffect disparado. currentUserId: undefined. Definindo isUserDataLoading como true.
+ChooseUsername.js:89 ChooseUsername (1750993423393): useEffect - currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.
+(anônimo) @ ChooseUsername.js:89
+ol @ react-dom-client.production.js:8292
+Hl @ react-dom-client.production.js:9771
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9782
+ld @ react-dom-client.production.js:11313
+(anônimo) @ react-dom-client.production.js:11048
+A @ scheduler.production.js:151
+useAuth.js:65 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:68 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:85 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:85 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:95 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:95 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+    at useAuth.js:9:14
+(anônimo) @ useAuth.js:56
+await in (anônimo)
+(anônimo) @ useAuth.js:74
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+(anônimo) @ GoTrueClient.ts:2522
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+    at useAuth.js:9:14
+(anônimo) @ useAuth.js:56
+await in (anônimo)
+(anônimo) @ useAuth.js:74
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+(anônimo) @ GoTrueClient.ts:2522
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+    at useAuth.js:9:14
+(anônimo) @ useAuth.js:56
+await in (anônimo)
+(anônimo) @ useAuth.js:74
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+(anônimo) @ GoTrueClient.ts:2522
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+    at useAuth.js:9:14
+(anônimo) @ useAuth.js:56
+await in (anônimo)
+(anônimo) @ useAuth.js:74
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+(anônimo) @ GoTrueClient.ts:2522
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107
+useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] Evento: SIGNED_IN
+useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.

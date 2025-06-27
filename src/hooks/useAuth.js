@@ -35,6 +35,20 @@ export const useAuth = () => {
     }
     try {
       console.log(`[useAuth] fetchProfile: Buscando perfil para userId: ${userId}`);
+      
+      // Tenta carregar o perfil do localStorage primeiro
+      const cachedProfile = localStorage.getItem(`profile_${userId}`);
+      if (cachedProfile) {
+        try {
+          const parsedProfile = JSON.parse(cachedProfile);
+          setProfile(parsedProfile);
+          console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
+        } catch (parseError) {
+          console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
+          localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
+        }
+      }
+
       console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.');
       
       // Adiciona o timeout de 5 segundos à chamada do Supabase
@@ -47,14 +61,22 @@ export const useAuth = () => {
 
       if (error && error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil:', error);
-        setProfile(null);
+        if (!cachedProfile) { // Se não havia cache, define como nulo
+          setProfile(null);
+        }
       } else {
         console.log('[useAuth] fetchProfile: Perfil encontrado:', data);
         setProfile(data);
+        // Armazena o perfil no localStorage
+        localStorage.setItem(`profile_${userId}`, JSON.stringify(data));
       }
     } catch (e) {
       console.error('Exceção ao buscar perfil:', e);
-      setProfile(null);
+      // Se houve uma exceção e não havia cache, define como nulo
+      const cachedProfile = localStorage.getItem(`profile_${userId}`);
+      if (!cachedProfile) {
+        setProfile(null);
+      }
     } finally {
       console.log('[useAuth] fetchProfile: Finalizando busca de perfil.');
     }
