@@ -5,6 +5,7 @@ import { FaUserCircle, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt } from 're
 import { supabase } from '../../services/supabase';
 import SpotifyFollowersCounter from '../dashboard/SpotifyFollowersCounter';
 import { useAuth } from '../../hooks/useAuth';
+import HeaderBar from '../Common/HeaderBar'; // Importar HeaderBar
 
 const DashboardLayout = ({ children }) => {
     const navigate = useNavigate();
@@ -16,7 +17,7 @@ const DashboardLayout = ({ children }) => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
     // const [sidebarData, setSidebarData] = useState({ smartLinks: [], presaves: [] });
     // const [isLoading, setIsLoading] = useState(true);
-    const { user } = useAuth();
+    const { user, profile } = useAuth(); // Obter profile do useAuth
     const currentUserId = user?.id; // Definir currentUserId a partir do user
 
     const onSignOut = async () => {
@@ -121,7 +122,9 @@ const DashboardLayout = ({ children }) => {
             </div>
         );
     }    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden">        {/* Onboarding Visual com Cards Animados */}
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden">
+        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} />
+        {/* Onboarding Visual com Cards Animados */}
         {showOnboardingCards && location.pathname === '/dashboard' && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full relative animate-fade-in pointer-events-auto">{/* Adicionar pointer-events-auto para o modal */}
