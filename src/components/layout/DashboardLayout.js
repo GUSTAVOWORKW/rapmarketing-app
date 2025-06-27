@@ -176,78 +176,76 @@ const DashboardLayout = ({ children }) => {
         {/* Layout principal: sidebar à esquerda, conteúdo à direita */}
         <div className="flex flex-row flex-1 min-h-0 w-full h-0">
           {/* Sidebar */}
-          <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300 h-full overflow-y-auto">
-            {/* Avatar, nome do usuário e badge de status com visual de impacto */}
-            <div className="flex flex-col items-center mb-8 group">
-              <div className="relative mb-2">
+          <aside className="w-60 min-w-[180px] max-w-[240px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-4 space-y-4 shadow-2xl flex flex-col relative z-30 transition-all duration-300 h-full overflow-y-auto">
+            <div className="flex flex-col items-center mb-4 group">
+              <div className="relative mb-1">
                 {userProfile?.avatar_url ? (
-                  <img src={userProfile.avatar_url} alt="Avatar" className="w-28 h-28 rounded-full object-cover border-4 border-[#3100ff] shadow-xl neon-avatar" />
+                  <img src={userProfile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover border-2 border-[#3100ff] shadow-xl neon-avatar" />
                 ) : (
-                  <FaUserCircle className="w-28 h-28 rounded-full text-gray-300 border-4 border-[#3100ff] shadow-xl neon-avatar" />
+                  <FaUserCircle className="w-16 h-16 rounded-full text-gray-300 border-2 border-[#3100ff] shadow-xl neon-avatar" />
                 )}
-                {/* Efeito neon animado */}
-                <span className="absolute inset-0 rounded-full border-4 border-[#a259ff] animate-pulse pointer-events-none" style={{boxShadow:'0 0 24px 4px #a259ff55'}}></span>
+                <span className="absolute inset-0 rounded-full border-2 border-[#a259ff] animate-pulse pointer-events-none" style={{boxShadow:'0 0 12px 2px #a259ff55'}}></span>
               </div>
-              <h2 className="text-2xl font-extrabold bg-gradient-to-r from-[#3100ff] via-[#a259ff] to-[#ffb300] bg-clip-text text-transparent animate-gradient-x tracking-tight mt-2 mb-1 transition-colors" title={userProfile?.username || 'Usuário'}>
+              <h2 className="text-lg font-extrabold bg-gradient-to-r from-[#3100ff] via-[#a259ff] to-[#ffb300] bg-clip-text text-transparent animate-gradient-x tracking-tight mt-1 mb-0 transition-colors" title={userProfile?.username || 'Usuário'}>
                 {userProfile?.username || 'Usuário'}
               </h2>
-              {/* Badge de status */}
-              <span className="inline-block px-3 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md mt-1 animate-bounce">Artista PRO</span>
+              <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md mt-1 animate-bounce">Artista PRO</span>
             </div>
-            {/* Painel de boas-vindas visual e CTA */}
-            <div className="bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-5 flex flex-col items-center mb-6 animate-fade-in-up border border-[#e9e6ff]">
-              <span className="text-lg font-bold text-[#3100ff] mb-1">Bem-vindo(a) de volta!</span>
-              <span className="text-sm text-[#1c1c1c]/70 mb-2 text-center">Pronto para impulsionar sua carreira musical hoje?</span>
-              <button onClick={() => navigate('/criar-smart-link')} className="mt-2 px-5 py-2 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white font-bold rounded-lg shadow hover:scale-105 transition-all">+ Novo Smart Link</button>
+            <div className="bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-3 flex flex-col items-center mb-3 animate-fade-in-up border border-[#e9e6ff]">
+              <span className="text-base font-bold text-[#3100ff] mb-1">Bem-vindo(a)!</span>
+              <span className="text-xs text-[#1c1c1c]/70 mb-1 text-center">Pronto para impulsionar sua carreira?</span>
+              <button onClick={() => navigate('/criar-smart-link')} className="mt-1 px-3 py-1 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white font-bold rounded-lg shadow hover:scale-105 transition-all text-sm">+ Novo Smart Link</button>
             </div>
-            {/* Navegação principal */}
-            <nav className="space-y-4 flex-grow">              <button
-                type="button"                onClick={() => navigate('/criar-smart-link')}
-                className={`w-full flex items-center py-4 px-5 rounded-xl text-left font-bold text-lg transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border-2 border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer relative z-50 ${location.pathname === '/criar-smart-link' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
+            <nav className="space-y-2 flex-grow">
+              <button
+                type="button"
+                onClick={() => navigate('/criar-smart-link')}
+                className={`w-full flex items-center py-2 px-3 rounded-lg text-left font-bold text-base transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer relative z-50 ${location.pathname === '/criar-smart-link' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaUserCircle className="mr-4 text-2xl" /> Criar Smart Link
-              </button>              <button
-                type="button"                onClick={() => navigate('/criar-presave')}
-                className={`w-full flex items-center py-4 px-5 rounded-xl text-left font-bold text-lg transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border-2 border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer relative z-50 ${location.pathname === '/criar-presave' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
+                <FaUserCircle className="mr-2 text-lg" /> Criar Smart Link
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/criar-presave')}
+                className={`w-full flex items-center py-2 px-3 rounded-lg text-left font-bold text-base transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer relative z-50 ${location.pathname === '/criar-presave' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaCalendarAlt className="mr-4 text-2xl" /> Criar Pré-save
+                <FaCalendarAlt className="mr-2 text-lg" /> Criar Pré-save
               </button>
               <button
                 type="button"
                 onClick={handleNavigateToMetrics}
-                className={`w-full flex items-center py-4 px-5 rounded-xl text-left font-bold text-lg transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border-2 border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname.includes('/dashboard/metrics') ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
+                className={`w-full flex items-center py-2 px-3 rounded-lg text-left font-bold text-base transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname.includes('/dashboard/metrics') ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaChartBar className="mr-4 text-2xl" /> Métricas
+                <FaChartBar className="mr-2 text-lg" /> Métricas
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/settings')}
-                className={`w-full flex items-center py-4 px-5 rounded-xl text-left font-bold text-lg transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border-2 border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname === '/settings' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
+                className={`w-full flex items-center py-2 px-3 rounded-lg text-left font-bold text-base transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname === '/settings' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaCog className="mr-4 text-2xl" /> Configurações
+                <FaCog className="mr-2 text-lg" /> Configurações
               </button>
-              {/* Botão Adicionado: Dashboard Home */}
               <button
                 type="button"
                 onClick={handleNavigateToDashboardHome}
-                className={`w-full flex items-center py-4 px-5 rounded-xl text-left font-bold text-lg transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border-2 border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname === '/dashboard' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
+                className={`w-full flex items-center py-2 px-3 rounded-lg text-left font-bold text-base transition-all focus:outline-none focus:ring-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-[#1c1c1c] border border-[#e9e6ff] hover:bg-[#f8f6f2] hover:shadow-xl focus:ring-[#3100ff] cursor-pointer ${location.pathname === '/dashboard' ? 'ring-2 ring-[#3100ff] scale-105' : ''}`}
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaChartBar className="mr-4 text-2xl" /> Dashboard
+                <FaChartBar className="mr-2 text-lg" /> Dashboard
               </button>
             </nav>
             <div className="mt-auto">
               <button
                 type="button"
                 onClick={onSignOut}
-                className="w-full flex items-center py-4 px-5 rounded-xl text-left bg-gradient-to-r from-[#e9e6ff] to-[#f8f6f2] text-[#1c1c1c] hover:bg-[#e9e6ff] hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#3100ff] cursor-pointer font-bold text-lg"
+                className="w-full flex items-center py-2 px-3 rounded-lg text-left bg-gradient-to-r from-[#e9e6ff] to-[#f8f6f2] text-[#1c1c1c] hover:bg-[#e9e6ff] hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#3100ff] cursor-pointer font-bold text-base"
                 style={{ pointerEvents: 'auto' }}
               >
-                <FaSignOutAlt className="mr-4 text-2xl" /> Sair
+                <FaSignOutAlt className="mr-2 text-lg" /> Sair
               </button>
             </div>
           </aside>
