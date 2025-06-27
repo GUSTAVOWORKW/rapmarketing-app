@@ -4,41 +4,36 @@ import { supabase } from '../services/supabase';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  // Usar uma ref para evitar redirecionamentos múltiplos
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    // Função para redirecionar de forma segura
-    const redirectUser = () => {
-      if (!hasRedirected.current) {
-        hasRedirected.current = true;
-        console.log('[AuthCallback] Redirecionando para /dashboard...');
-        navigate('/dashboard');
-      }
-    };
+    const handleAuth = async () => {
+      if (hasRedirected.current) return;
 
-    // 1. Verifique ativamente se a sessão já existe. 
-    //    Isso resolve a condição de corrida se o evento SIGNED_IN já disparou.
-    supabase.auth.getSession().then(({ data: { session } }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+
       if (session) {
-        console.log('[AuthCallback] Sessão encontrada com getSession().');
-        redirectUser();
-      }
-    });
+        console.log('[AuthCallback] Sessão encontrada, redirecionando para /dashboard...');
+        hasRedirected.current = true;
+        navigate('/dashboard', { replace: true }); // Use replace para evitar histórico
+      } else {
+        // Se não houver sessão imediatamente, configure o listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log(`[AuthCallback] Evento onAuthStateChange: ${event}`);
+          if (event === 'SIGNED_IN' && session && !hasRedirected.current) {
+            console.log('[AuthCallback] Evento SIGNED_IN recebido, redirecionando para /dashboard...');
+            hasRedirected.current = true;
+            navigate('/dashboard', { replace: true });
+          }
+        });
 
-    // 2. Configure o listener como um fallback, caso a sessão ainda não esteja pronta.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(`[AuthCallback] Evento onAuthStateChange: ${event}`);
-      if (event === 'SIGNED_IN' && session) {
-        console.log('[AuthCallback] Evento SIGNED_IN recebido.');
-        redirectUser();
+        return () => {
+          subscription?.unsubscribe();
+        };
       }
-    });
-
-    // Limpeza
-    return () => {
-      subscription?.unsubscribe();
     };
+
+    handleAuth();
   }, [navigate]);
 
   return (

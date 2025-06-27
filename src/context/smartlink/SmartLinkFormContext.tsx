@@ -484,7 +484,7 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
           contactButtonText: data.contact_button_text || 'Contato',
           contactButtonUrl: data.contact_button_url || '',
           slug: data.slug || '',
-          template: data.template_id && typeof data.template_id === 'string' && data.template_id.trim() !== '' ? data.template_id : 'pordosolnoarpoador',
+          template: data.template_id || 'pordosolnoarpoador',
           avatarFile: null,
           coverImageFile: null,
           faviconFile: null,
