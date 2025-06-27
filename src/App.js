@@ -57,9 +57,10 @@ function App() {
   }
 
   return (
-    <SmartLinkFormProvider>
-      <PresaveFormProvider>
-        <Routes>
+    <>
+      <SmartLinkFormProvider>
+        <PresaveFormProvider>
+          <Routes>
             {/* Rotas Públicas */}
             <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
             <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
@@ -85,9 +86,9 @@ function App() {
             {/* Rota de fallback */}
             <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
           </Routes>
-        </div>
-      </PresaveFormProvider>
-    </SmartLinkFormProvider>
+        </PresaveFormProvider>
+      </SmartLinkFormProvider>
+    </>
   );
 }
 

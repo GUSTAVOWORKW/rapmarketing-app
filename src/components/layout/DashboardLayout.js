@@ -176,7 +176,7 @@ const DashboardLayout = ({ children }) => {
         {/* Layout principal: sidebar à esquerda, conteúdo à direita */}
         <div className="flex flex-row flex-1 min-h-0 w-full">
           {/* Sidebar */}
-          <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300">">
+          <aside className="w-72 min-w-[220px] max-w-[320px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-8 space-y-8 shadow-2xl flex flex-col relative z-30 transition-all duration-300">
             {/* Avatar, nome do usuário e badge de status com visual de impacto */}
             <div className="flex flex-col items-center mb-8 group">
               <div className="relative mb-2">
