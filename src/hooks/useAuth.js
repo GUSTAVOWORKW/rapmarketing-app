@@ -1,6 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 
+// Função auxiliar para adicionar timeout a uma Promise
+const timeout = (ms, promise) => {
+  return new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(new Error('Timeout: Supabase profile fetch took too long.'));
+    }, ms);
+    promise.then(
+      (res) => {
+        clearTimeout(id);
+        resolve(res);
+      },
+      (err) => {
+        clearTimeout(id);
+        reject(err);
+      }
+    );
+  });
+};
+
 export const useAuth = () => {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
@@ -15,13 +35,15 @@ export const useAuth = () => {
     }
     try {
       console.log(`[useAuth] fetchProfile: Buscando perfil para userId: ${userId}`);
-      console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.'); // NOVO LOG
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-      console.log('[useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.'); // NOVO LOG
+      console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.');
+      
+      // Adiciona o timeout de 5 segundos à chamada do Supabase
+      const { data, error } = await timeout(
+        5000, // 5 segundos
+        supabase.from('profiles').select('*').eq('user_id', userId).single()
+      );
+      
+      console.log('[useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.');
 
       if (error && error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil:', error);
