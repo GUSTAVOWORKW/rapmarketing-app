@@ -6,7 +6,7 @@ import { useAuth } from './hooks/useAuth';
 
 // Seus Componentes e Páginas
 import Auth from './components/Auth/Auth';
-import AuthCallback from './pages/AuthCallback'; // <-- IMPORTAÇÃO ADICIONADA
+import AuthCallback from './pages/AuthCallback';
 import ChooseUsername from './pages/ChooseUsername';
 import LandingPage from './pages/LandingPage';
 import UserDashboard from './components/dashboard/UserDashboard.tsx';
@@ -31,9 +31,8 @@ const LoadingScreen = () => (
 );
 
 // Componente para proteger rotas que exigem autenticação
-const ProtectedRoutes = () => {
-  const { session, profile } = useAuth();
-
+// Recebe session e profile como props
+const ProtectedRoutes = ({ session, profile }) => {
   if (!session) {
     return <Navigate to="/login" replace />;
   }
@@ -50,7 +49,7 @@ const ProtectedRoutes = () => {
 };
 
 function App() {
-  const { session, loading } = useAuth();
+  const { session, loading, profile } = useAuth(); // Chame useAuth apenas uma vez aqui
 
   // Mostra a tela de carregamento enquanto o hook de autenticação processa a sessão.
   if (loading) {
@@ -64,7 +63,7 @@ function App() {
           {/* Rotas Públicas */}
           <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
           <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
-          <Route path="/auth/callback" element={<AuthCallback />} /> {/* <-- ROTA ADICIONADA */}
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
           <Route path="/:slug" element={<PublicProfileSmartLink />} />
           <Route path="/presave/:slug" element={<PresavePage />} />
@@ -73,7 +72,8 @@ function App() {
           <Route path="/choose-username" element={session ? <ChooseUsername /> : <Navigate to="/login" />} />
 
           {/* Rotas Protegidas (exigem login e perfil completo) */}
-          <Route element={<ProtectedRoutes />}>
+          {/* Passe session e profile como props para ProtectedRoutes */}
+          <Route element={<ProtectedRoutes session={session} profile={profile} />}>
             <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/settings" element={<UserSettings />} />
             <Route path="/dashboard/metrics" element={<SmartLinkMetrics />} />
@@ -91,4 +91,3 @@ function App() {
 }
 
 export default App;
-
