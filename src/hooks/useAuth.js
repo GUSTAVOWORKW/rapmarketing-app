@@ -31,6 +31,9 @@ export const useAuth = () => {
     } catch (e) {
       console.error('Exceção ao buscar perfil:', e);
       setProfile(null);
+    } finally {
+      // Garante que o loading seja false após a tentativa de buscar o perfil
+      console.log('[useAuth] fetchProfile: Finalizando busca de perfil.');
     }
   }, []);
 
@@ -50,8 +53,8 @@ export const useAuth = () => {
         console.log('[useAuth] Evento: Nenhum usuário na sessão, limpando perfil.');
         setProfile(null); // Limpa o perfil se não houver usuário
       }
-      console.log('[useAuth] Evento: Finalizando carregamento.');
-      setLoading(false);
+      console.log('[useAuth] Evento: Finalizando carregamento do onAuthStateChange.');
+      setLoading(false); // Garante que o loading seja false aqui também
     });
 
     // Adiciona uma verificação inicial da sessão para cobrir casos onde o listener não dispara imediatamente
@@ -68,7 +71,7 @@ export const useAuth = () => {
         setProfile(null);
       }
       console.log('[useAuth] Verificação inicial: Finalizando carregamento.');
-      setLoading(false);
+      setLoading(false); // Garante que o loading seja false mesmo em caso de erro
     }).catch(e => {
       console.error('[useAuth] Erro na verificação inicial da sessão:', e);
       setLoading(false); // Garante que o loading seja false mesmo em caso de erro
