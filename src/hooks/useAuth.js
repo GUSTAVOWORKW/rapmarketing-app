@@ -3,10 +3,10 @@ import { supabase } from '../services/supabase';
 
 // Função auxiliar para adicionar timeout a uma Promise
 const timeout = (ms, promise) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const id = setTimeout(() => {
       clearTimeout(id);
-      reject(new Error('Timeout: Supabase profile fetch took too long.'));
+      resolve({ data: null, error: { message: 'Timeout: Supabase profile fetch took too long.' } });
     }, ms);
     promise.then(
       (res) => {
@@ -15,7 +15,7 @@ const timeout = (ms, promise) => {
       },
       (err) => {
         clearTimeout(id);
-        reject(err);
+        resolve({ data: null, error: err }); // Resolve with error for consistency
       }
     );
   });
@@ -33,53 +33,55 @@ export const useAuth = () => {
       setProfile(null);
       return;
     }
-    try {
-      console.log(`[useAuth] fetchProfile: Buscando perfil para userId: ${userId}`);
-      
-      // Tenta carregar o perfil do localStorage primeiro
-      const cachedProfile = localStorage.getItem(`profile_${userId}`);
-      if (cachedProfile) {
-        try {
-          const parsedProfile = JSON.parse(cachedProfile);
-          setProfile(parsedProfile);
-          console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
-        } catch (parseError) {
-          console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
-          localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
-        }
-      }
 
-      console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.');
-      
-      // Adiciona o timeout de 5 segundos à chamada do Supabase
-      const { data, error } = await timeout(
-        5000, // 5 segundos
-        supabase.from('profiles').select('*').eq('user_id', userId).single()
-      );
-      
-      console.log('[useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.');
-
-      if (error && error.code !== 'PGRST116') {
-        console.error('Erro ao buscar perfil:', error);
-        if (!cachedProfile) { // Se não havia cache, define como nulo
-          setProfile(null);
-        }
-      } else {
-        console.log('[useAuth] fetchProfile: Perfil encontrado:', data);
-        setProfile(data);
-        // Armazena o perfil no localStorage
-        localStorage.setItem(`profile_${userId}`, JSON.stringify(data));
+    // 1. Tenta carregar o perfil do localStorage primeiro
+    const cachedProfile = localStorage.getItem(`profile_${userId}`);
+    if (cachedProfile) {
+      try {
+        const parsedProfile = JSON.parse(cachedProfile);
+        setProfile(parsedProfile);
+        console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
+      } catch (parseError) {
+        console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
+        localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
       }
-    } catch (e) {
-      console.error('Exceção ao buscar perfil:', e);
-      // Se houve uma exceção e não havia cache, define como nulo
-      const cachedProfile = localStorage.getItem(`profile_${userId}`);
-      if (!cachedProfile) {
-        setProfile(null);
-      }
-    } finally {
-      console.log('[useAuth] fetchProfile: Finalizando busca de perfil.');
+    } else {
+      setProfile(null); // Garante que o perfil é nulo se não houver cache
     }
+
+    // 2. Inicia a busca do perfil no Supabase em segundo plano
+    // Não usamos 'await' aqui para não bloquear a execução e permitir que o cache seja exibido imediatamente
+    (async () => {
+      try {
+        console.log(`[useAuth] fetchProfile: Buscando perfil atualizado para userId: ${userId}`);
+        console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.');
+        
+        const { data, error } = await timeout(
+          5000, // 5 segundos
+          supabase.from('profiles').select('*').eq('user_id', userId).single()
+        );
+        
+        console.log('[useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.');
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Erro ao buscar perfil atualizado:', error);
+          // Não limpa o perfil se já foi carregado do cache
+        } else if (data) {
+          console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
+          setProfile(data); // Atualiza o estado com o perfil mais recente
+          localStorage.setItem(`profile_${userId}`, JSON.stringify(data)); // Atualiza o cache
+        }
+      } catch (e) {
+        if (e.message === 'Timeout: Supabase profile fetch took too long.') {
+          console.warn('A busca do perfil Supabase excedeu o tempo limite, usando dados em cache se disponíveis.');
+        } else {
+          console.error('Exceção ao buscar perfil atualizado:', e);
+        }
+        // Não limpa o perfil se já foi carregado do cache
+      } finally {
+        console.log('[useAuth] fetchProfile: Finalizando busca de perfil atualizado.');
+      }
+    })(); // Executa a função imediatamente
   }, []);
 
   useEffect(() => {
@@ -93,7 +95,7 @@ export const useAuth = () => {
 
       if (session?.user) {
         console.log('[useAuth] Evento: Usuário na sessão, buscando perfil...');
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id); // Não aguarda a conclusão
       } else {
         console.log('[useAuth] Evento: Nenhum usuário na sessão, limpando perfil.');
         setProfile(null);
@@ -102,12 +104,12 @@ export const useAuth = () => {
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         console.log('[useAuth] Verificação inicial: Sessão encontrada.');
         setSession(session);
         setUser(session.user);
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id); // Não aguarda a conclusão
       } else {
         console.log('[useAuth] Verificação inicial: Nenhuma sessão encontrada.');
         setSession(null);

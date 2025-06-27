@@ -1,26 +1,16 @@
-useAuth.js:65 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:90 [useAuth] Evento: SIGNED_IN
+useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
 useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
+useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:74 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
     at useAuth.js:9:14
-(anônimo) @ useAuth.js:56
-await in (anônimo)
 (anônimo) @ useAuth.js:74
-(anônimo) @ GoTrueClient.ts:2252
-_notifyAllSubscribers @ GoTrueClient.ts:2250
-_recoverAndRefresh @ GoTrueClient.ts:2172
-await in _recoverAndRefresh
-_initialize @ GoTrueClient.ts:383
-await in _initialize
-(anônimo) @ GoTrueClient.ts:308
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-ChooseUsername.js:37 ChooseUsername (1750993423393): useEffect - useEffect disparado. currentUserId: undefined. Definindo isUserDataLoading como true.
-ChooseUsername.js:89 ChooseUsername (1750993423393): useEffect - currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.
+useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
+ChooseUsername.js:37 ChooseUsername (1750994421591): useEffect - useEffect disparado. currentUserId: undefined. Definindo isUserDataLoading como true.
+ChooseUsername.js:89 ChooseUsername (1750994421591): useEffect - currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.
 (anônimo) @ ChooseUsername.js:89
 ol @ react-dom-client.production.js:8292
 Hl @ react-dom-client.production.js:9771
@@ -55,114 +45,33 @@ Hl @ react-dom-client.production.js:9782
 ld @ react-dom-client.production.js:11313
 (anônimo) @ react-dom-client.production.js:11048
 A @ scheduler.production.js:151
-useAuth.js:65 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:68 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
 useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:85 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
 useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
 useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:85 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
 useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:95 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:46 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:52 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:95 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:56
-await in (anônimo)
-(anônimo) @ useAuth.js:74
-(anônimo) @ GoTrueClient.ts:2252
-_notifyAllSubscribers @ GoTrueClient.ts:2250
-_recoverAndRefresh @ GoTrueClient.ts:2172
-await in _recoverAndRefresh
-(anônimo) @ GoTrueClient.ts:2522
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:56
-await in (anônimo)
-(anônimo) @ useAuth.js:74
-(anônimo) @ GoTrueClient.ts:2252
-_notifyAllSubscribers @ GoTrueClient.ts:2250
-_recoverAndRefresh @ GoTrueClient.ts:2172
-await in _recoverAndRefresh
-(anônimo) @ GoTrueClient.ts:2522
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:56
-await in (anônimo)
-(anônimo) @ useAuth.js:74
-(anônimo) @ GoTrueClient.ts:2252
-_notifyAllSubscribers @ GoTrueClient.ts:2250
-_recoverAndRefresh @ GoTrueClient.ts:2172
-await in _recoverAndRefresh
-(anônimo) @ GoTrueClient.ts:2522
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:56 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:56
-await in (anônimo)
-(anônimo) @ useAuth.js:74
-(anônimo) @ GoTrueClient.ts:2252
-_notifyAllSubscribers @ GoTrueClient.ts:2250
-_recoverAndRefresh @ GoTrueClient.ts:2172
-await in _recoverAndRefresh
-(anônimo) @ GoTrueClient.ts:2522
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-useAuth.js:59 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:79 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] Evento: SIGNED_IN
-useAuth.js:73 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:38 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
+useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
