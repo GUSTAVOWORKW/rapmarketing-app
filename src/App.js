@@ -49,7 +49,13 @@ const ProtectedRoutes = ({ session, profile }) => {
 };
 
 function App() {
-  const { session, loading, profile } = useAuth(); // Chame useAuth apenas uma vez aqui
+  const { session, loading, profile, fetchProfile } = useAuth();
+
+  const handleProfileUpdate = () => {
+    if (session?.user?.id) {
+      fetchProfile(session.user.id);
+    }
+  };
 
   // Mostra a tela de carregamento enquanto o hook de autenticação processa a sessão.
   if (loading) {
@@ -70,7 +76,19 @@ function App() {
             <Route path="/presave/:slug" element={<PresavePage />} />
 
             {/* Rotas que exigem apenas login (sem perfil completo) */}
-            <Route path="/choose-username" element={session ? <ChooseUsername /> : <Navigate to="/login" />} />
+            <Route
+              path="/choose-username"
+              element={
+                session ? (
+                  <ChooseUsername
+                    currentUserId={session.user.id}
+                    onProfileUpdate={handleProfileUpdate}
+                  />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
 
             {/* Rotas Protegidas (exigem login e perfil completo) */}
             {/* Passe session e profile como props para ProtectedRoutes */}

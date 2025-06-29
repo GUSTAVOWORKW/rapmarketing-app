@@ -130,5 +130,5 @@ export const useAuth = () => {
     };
   }, [fetchProfile]);
 
-  return { session, user, profile, loading };
+  return { session, user, profile, loading, fetchProfile };
 };
