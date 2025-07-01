@@ -129,7 +129,7 @@ const DashboardLayout = ({ children }) => {
             ></div>
         )}
 
-        <div className="flex flex-row flex-1 min-h-0 w-full h-0">
+        <div className="flex flex-row flex-1 w-full">
           {/* Sidebar */}
           <aside className={`fixed top-0 left-0 w-64 h-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-4 space-y-4 shadow-2xl flex flex-col z-40 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex flex-col items-center mb-4 group">
@@ -205,13 +205,13 @@ const DashboardLayout = ({ children }) => {
             </div>
           </aside>
           {/* Main Content Area */}
-          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main h-full min-h-0">
+          <main className="flex-1 p-10 md:p-16 bg-transparent overflow-y-auto relative dashboard-main h-full">
             <div className="absolute inset-0 pointer-events-none z-0">
               {/* Efeito visual de círculos animados no fundo */}
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#a259ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
               <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3100ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
             </div>
-            <div className="relative z-10 pointer-events-auto">{/* Reduzido z-index para garantir que não interfira com a sidebar */}
+            <div className="relative z-50 pointer-events-auto">{/* Reduzido z-index para garantir que não interfira com a sidebar */}
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
