@@ -16,7 +16,7 @@ import PlatformLinksStep from '../components/presave/FormSteps/PlatformLinksStep
 import SocialLinksStep from '../components/presave/FormSteps/SocialLinksStep';
 import FinalPreviewStep from '../components/presave/FormSteps/FinalPreviewStep';
 import TemplatePreview from '../components/presave/TemplatePreview';
-import SmartLinkMobilePreview from '../components/Common/SmartLinkMobilePreview';
+import TemplatePreview from '../components/presave/TemplatePreview';
 import ErrorBoundary from '../components/ui/ErrorBoundary';
 
 // Ícones
@@ -405,17 +405,13 @@ const CreatePresavePageContent = () => {
                 </div>
 
                 {state.selectedTemplate && (
-                  <div className="mb-4">
-                    <SmartLinkMobilePreview
-                      data={{
-                        artistName: state.artistName,
-                        trackName: state.trackName,
-                        artworkUrl: state.artworkUrl,
-                        platformLinks: state.platformLinks,
-                        socialLinks: state.socialLinks,
-                        templateId: state.selectedTemplate?.id
-                      }}
-                      template={state.selectedTemplate}
+                  <div className="mb-4 relative" style={{ pointerEvents: 'none' }}>
+                    <TemplatePreview
+                      templateId={state.selectedTemplate?.id}
+                      formState={state}
+                      isMobilePreview={true}
+                      className="w-full"
+                      style={{ pointerEvents: 'none' }}
                     />
                   </div>
                 )}
