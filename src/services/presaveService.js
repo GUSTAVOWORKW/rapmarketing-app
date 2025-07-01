@@ -98,25 +98,9 @@ export const savePresave = async (formData, userId) => {
       template_background_color: formData.templateBackgroundColor || '#000000',
       shareable_slug: shareableSlug,
       status: 'publicado',      // Dados estruturados como JSONB
-      platforms: {
-        spotify: formData.platforms?.spotify || '',
-        'apple-music': formData.platforms?.appleMusic || '',
-        'amazon-music': formData.platforms?.amazonMusic || '',
-        tidal: formData.platforms?.tidal || '',
-        'youtube-music': formData.platforms?.youtubeMusic || '',
-        deezer: formData.platforms?.deezer || '',
-        soundcloud: formData.platforms?.soundcloud || '',
-        youtube: formData.platforms?.youtube || '',        // Incluir também platformLinks se existir (com validação)
-        ...(formData.platformLinks ? 
-          formData.platformLinks
-            .filter(link => link.platform_id && link.platform_id !== 'undefined' && link.url && link.url.trim())
-            .reduce((acc, link) => {
-              acc[link.platform_id] = link.url;
-              return acc;
-            }, {}) : {})
-      },
-      
-      sociallinks: formData.socialLinks || [],
+      streaming_links: formData.streamingLinks || [],
+      social_links: formData.socialLinks || [],
+      contact_links: formData.contactLinks || [],
       
       // Inicializar contadores
       view_count: 0,
@@ -153,7 +137,7 @@ export const getPresaveBySlug = async (slug) => {
   try {
     const { data, error } = await supabase
       .from('presaves')
-      .select('*')
+      .select('*, streaming_links, social_links, contact_links')
       .eq('shareable_slug', slug)
       .eq('status', 'publicado')
       .single();

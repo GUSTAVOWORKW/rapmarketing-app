@@ -68,9 +68,32 @@ export interface Template {
 }
 
 export interface SocialLink {
-  id: string;
+  id?: string; // Optional for new links
   platform: string;
   url: string;
+  platformName?: string; // Optional, for display purposes
+}
+
+export interface ContactLink {
+  id?: string; // Optional for new links
+  type: 'email' | 'phone' | 'website' | 'custom';
+  value: string;
+  label?: string; // e.g., "My Portfolio", "Business Email"
+}
+
+// Update UserProfile to include new link types
+export interface UserProfile {
+  id?: string;        // ID da tabela profiles
+  user_id: string;    // Referência para auth.users(id)
+  username: string;
+  template_id?: string; // Template ID escolhido
+  bio?: string;       // Biografia do usuário
+  is_active?: boolean; // Se o perfil está ativo
+  updated_at?: string;
+  created_at?: string;
+  social_links?: SocialLink[];
+  streaming_links?: PlatformLink[]; // Assuming PlatformLink is suitable for streaming
+  contact_links?: ContactLink[];
 }
 
 // Mais tipos serão adicionados aqui

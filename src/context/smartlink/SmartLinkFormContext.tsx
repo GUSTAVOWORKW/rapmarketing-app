@@ -2,8 +2,11 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../hooks/useAuth';
-import { PlatformLink, SocialLink } from '../../types';
+import { PlatformLink, SocialLink, ContactLink } from '../../types';
 import { PLATFORMS } from '../../data/platforms';
+import { SOCIAL_PLATFORMS } from '../../data/socials';
+
+type EnrichedSocialLink = SocialLink & { id: string; name: string; icon: React.FC<any>; color: string; };
 
 // Define a estrutura do estado do formulário
 interface SmartLinkFormState {
@@ -30,6 +33,10 @@ interface SmartLinkFormState {
   socialLinks: SocialLink[];
   contactButtonText: string;
   contactButtonUrl: string;
+
+  // New: Streaming and Contact Links from User Profile
+  streamingLinks: PlatformLink[];
+  contactLinks: ContactLink[];
 
   // Step 5: Review / Outros
   slug: string;
@@ -62,7 +69,10 @@ const initialState: SmartLinkFormState = {
   platforms: [],
   socialLinks: [],
   contactButtonText: 'Contato',
-  contactButtonUrl: '',  slug: '',
+  contactButtonUrl: '',
+  streamingLinks: [],
+  contactLinks: [],
+  slug: '',
   template: 'pordosolnoarpoador', // Alterado para o novo template como padrão
   faviconUrl: '',
   faviconFile: null,
@@ -84,6 +94,12 @@ const ACTIONS = {
   ADD_SOCIAL_LINK: 'ADD_SOCIAL_LINK',
   REMOVE_SOCIAL_LINK: 'REMOVE_SOCIAL_LINK',
   UPDATE_SOCIAL_LINK: 'UPDATE_SOCIAL_LINK',
+  ADD_STREAMING_LINK: 'ADD_STREAMING_LINK',
+  REMOVE_STREAMING_LINK: 'REMOVE_STREAMING_LINK',
+  UPDATE_STREAMING_LINK: 'UPDATE_STREAMING_LINK',
+  ADD_CONTACT_LINK: 'ADD_CONTACT_LINK',
+  REMOVE_CONTACT_LINK: 'REMOVE_CONTACT_LINK',
+  UPDATE_CONTACT_LINK: 'UPDATE_CONTACT_LINK',
   LOAD_DRAFT: 'LOAD_DRAFT',
   RESET_FORM: 'RESET_FORM',
   SET_SAVING: 'SET_SAVING',
@@ -163,7 +179,58 @@ const smartLinkFormReducer = (state: SmartLinkFormState, action: any): SmartLink
             ? { ...link, ...action.payload.updates }
             : link
         ),
-      };    case ACTIONS.LOAD_DRAFT:
+      };
+    case ACTIONS.ADD_STREAMING_LINK: {
+      const newStreamingLink: PlatformLink = {
+        id: Date.now().toString(), // Unique ID for new link
+        platform_id: '',
+        url: '',
+      };
+      return {
+        ...state,
+        streamingLinks: [...state.streamingLinks, newStreamingLink],
+      };
+    }
+    case ACTIONS.REMOVE_STREAMING_LINK:
+      return {
+        ...state,
+        streamingLinks: state.streamingLinks.filter(link => link.id !== action.payload),
+      };
+    case ACTIONS.UPDATE_STREAMING_LINK:
+      return {
+        ...state,
+        streamingLinks: state.streamingLinks.map(link =>
+          link.id === action.payload.id
+            ? { ...link, ...action.payload.updates }
+            : link
+        ),
+      };
+    case ACTIONS.ADD_CONTACT_LINK: {
+      const newContactLink: ContactLink = {
+        id: Date.now().toString(), // Unique ID for new link
+        type: 'custom',
+        value: '',
+      };
+      return {
+        ...state,
+        contactLinks: [...state.contactLinks, newContactLink],
+      };
+    }
+    case ACTIONS.REMOVE_CONTACT_LINK:
+      return {
+        ...state,
+        contactLinks: state.contactLinks.filter(link => link.id !== action.payload),
+      };
+    case ACTIONS.UPDATE_CONTACT_LINK:
+      return {
+        ...state,
+        contactLinks: state.contactLinks.map(link =>
+          link.id === action.payload.id
+            ? { ...link, ...action.payload.updates }
+            : link
+        ),
+      };
+    case ACTIONS.LOAD_DRAFT:
       const payload = action.payload;
       return {
         ...state,
@@ -213,6 +280,12 @@ interface SmartLinkFormContextType {
   addSocialLink: (link?: SocialLink) => void;
   removeSocialLink: (id: string) => void;
   updateSocialLink: (id: string, updates: Partial<SocialLink>) => void;
+  addStreamingLink: (link?: PlatformLink) => void;
+  removeStreamingLink: (id: string) => void;
+  updateStreamingLink: (id: string, updates: Partial<PlatformLink>) => void;
+  addContactLink: (link?: ContactLink) => void;
+  removeContactLink: (id: string) => void;
+  updateContactLink: (id: string, updates: Partial<ContactLink>) => void;
   saveDraft: () => Promise<void>;
   loadDraft: (id: string) => Promise<void>;
   resetForm: () => void;
@@ -442,6 +515,54 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, []);
 
+  const addStreamingLink = useCallback((link?: PlatformLink) => {
+    if (link) {
+      dispatch({ type: ACTIONS.ADD_STREAMING_LINK, payload: link });
+    } else {
+      const newStreamingLink: PlatformLink = {
+        id: Date.now().toString(), // Unique ID for new link
+        platform_id: '',
+        url: '',
+      };
+      dispatch({ type: ACTIONS.ADD_STREAMING_LINK, payload: newStreamingLink });
+    }
+  }, []);
+
+  const removeStreamingLink = useCallback((id: string) => {
+    dispatch({ type: ACTIONS.REMOVE_STREAMING_LINK, payload: id });
+  }, []);
+
+  const updateStreamingLink = useCallback((id: string, updates: Partial<PlatformLink>) => {
+    dispatch({
+      type: ACTIONS.UPDATE_STREAMING_LINK,
+      payload: { id, updates },
+    });
+  }, []);
+
+  const addContactLink = useCallback((link?: ContactLink) => {
+    if (link) {
+      dispatch({ type: ACTIONS.ADD_CONTACT_LINK, payload: link });
+    } else {
+      const newContactLink: ContactLink = {
+        id: Date.now().toString(), // Unique ID for new link
+        type: 'custom',
+        value: '',
+      };
+      dispatch({ type: ACTIONS.ADD_CONTACT_LINK, payload: newContactLink });
+    }
+  }, []);
+
+  const removeContactLink = useCallback((id: string) => {
+    dispatch({ type: ACTIONS.REMOVE_CONTACT_LINK, payload: id });
+  }, []);
+
+  const updateContactLink = useCallback((id: string, updates: Partial<ContactLink>) => {
+    dispatch({
+      type: ACTIONS.UPDATE_CONTACT_LINK,
+      payload: { id, updates },
+    });
+  }, []);
+
   const setErrors = useCallback((errors: { [key: string]: string }) => {
     dispatch({ type: ACTIONS.SET_ERRORS, payload: errors });
   }, []);
@@ -455,49 +576,80 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
     console.log(`Carregando rascunho para o ID: ${id}`);
     dispatch({ type: ACTIONS.SET_LOADING, payload: true });
     try {
-      const { data, error } = await supabase
-        .from('smart_links')
-        .select('*')
-        .eq('id', id)
-        .single();
+      let smartLinkData = null;
+      let profileData = null;
 
-      if (error) {
-        if (error.code === 'PGRST116') { // No rows found
-          console.error(`Rascunho com ID ${id} não encontrado.`);
-          setErrors({ form: 'O link que você está tentando editar não foi encontrado.' });
-        } else {
+      if (id) {
+        // Try to load existing smart link
+        const { data, error } = await supabase
+          .from('smart_links')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116: 'No rows found'
           throw error;
         }
-      } else if (data) {
-        console.log('Rascunho carregado com sucesso:', data);        const draftData = {
-          currentSmartLinkId: data.id,
-          artistName: data.artist_name || '',
-          artistTitle: data.artist_title || '',
-          bio: data.bio || '',
-          avatarUrl: sanitizeUrl(data.avatar_url, initialState.avatarUrl),
-          releaseTitle: data.release_title || '',
-          feat: data.feat || '',
-          coverImageUrl: sanitizeUrl(data.cover_image_url, initialState.coverImageUrl),
-          playerUrl: data.player_url || '',
-          platforms: data.platforms || [],
-          socialLinks: data.social_links || [],
-          contactButtonText: data.contact_button_text || 'Contato',
-          contactButtonUrl: data.contact_button_url || '',
-          slug: data.slug || '',
-          template: data.template_id || 'pordosolnoarpoador',
-          avatarFile: null,
-          coverImageFile: null,
-          faviconFile: null,
-        };
-        dispatch({ type: ACTIONS.LOAD_DRAFT, payload: draftData });
+        smartLinkData = data;
       }
+
+      // Always fetch user profile for default links
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('social_links, streaming_links, contact_links')
+          .eq('user_id', user.id)
+          .single();
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error fetching user profile for default links:", error);
+        }
+        profileData = data;
+      }
+
+      const finalData = {
+        currentSmartLinkId: smartLinkData?.id || null,
+        artistName: smartLinkData?.artist_name || '',
+        artistTitle: smartLinkData?.artist_title || '',
+        bio: smartLinkData?.bio || '',
+        avatarUrl: sanitizeUrl(smartLinkData?.avatar_url, initialState.avatarUrl),
+        releaseTitle: smartLinkData?.release_title || '',
+        feat: smartLinkData?.feat || '',
+        coverImageUrl: sanitizeUrl(smartLinkData?.cover_image_url, initialState.coverImageUrl),
+        playerUrl: smartLinkData?.player_url || '',
+        platforms: smartLinkData?.platforms || profileData?.streaming_links || [],
+                socialLinks: (smartLinkData?.social_links || profileData?.social_links || [])
+          .filter((link: SocialLink) => link.url && link.platform)
+          .map((link: SocialLink) => {
+            const socialData = SOCIAL_PLATFORMS.find(sp => sp.id === link.platform);
+            return {
+              id: link.id || Date.now().toString() + Math.random().toString(36).substring(2, 9),
+              platform: link.platform,
+              url: link.url,
+              name: socialData?.name || link.platformName || '',
+              icon: socialData?.icon || undefined,
+              color: socialData?.color || undefined,
+            } as EnrichedSocialLink;
+          }),
+        contactLinks: smartLinkData?.contact_links || profileData?.contact_links || [],
+        contactButtonText: smartLinkData?.contact_button_text || 'Contato',
+        contactButtonUrl: smartLinkData?.contact_button_url || '',
+        slug: smartLinkData?.slug || '',
+        template: smartLinkData?.template_id || 'pordosolnoarpoador',
+        avatarFile: null,
+        coverImageFile: null,
+        faviconFile: null,
+      };
+
+      console.log('Rascunho carregado com sucesso:', finalData);
+      dispatch({ type: ACTIONS.LOAD_DRAFT, payload: finalData });
+
     } catch (error: any) {
       console.error('Erro ao carregar rascunho do Supabase:', error);
       setErrors({ form: `Erro ao carregar dados: ${error.message}` });
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, payload: false });
     }
-  }, [setErrors]);
+  }, [setErrors, user]);
 
   const generateSlug = useCallback((title: string): string => {
     if (!title) return '';
@@ -601,6 +753,8 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         player_url: state.playerUrl,
         platforms: state.platforms,
         social_links: state.socialLinks,
+        streaming_links: state.streamingLinks,
+        contact_links: state.contactLinks,
         contact_button_text: state.contactButtonText,
         contact_button_url: state.contactButtonUrl,
         slug: state.slug,
@@ -641,6 +795,12 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
     addSocialLink,
     removeSocialLink,
     updateSocialLink,
+    addStreamingLink,
+    removeStreamingLink,
+    updateStreamingLink,
+    addContactLink,
+    removeContactLink,
+    updateContactLink,
     saveDraft: async () => { console.warn("saveDraft is deprecated"); }, // Placeholder for now
     loadDraft, // Use the implementation from above
     resetForm,
@@ -648,7 +808,7 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
     generateSlug,
     availablePlatforms: PLATFORMS,
     publishSmartLink,
-  }), [state, updateField, setStep, addPlatformLink, removePlatformLink, updatePlatformLink, addSocialLink, removeSocialLink, updateSocialLink, loadDraft, resetForm, setErrors, generateSlug, publishSmartLink]);
+  }), [state, updateField, setStep, addPlatformLink, removePlatformLink, updatePlatformLink, addSocialLink, removeSocialLink, updateSocialLink, addStreamingLink, removeStreamingLink, updateStreamingLink, addContactLink, removeContactLink, updateContactLink, loadDraft, resetForm, setErrors, generateSlug, publishSmartLink]);
 
   return (
     <SmartLinkFormContext.Provider value={value}>

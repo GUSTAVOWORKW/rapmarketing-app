@@ -69,13 +69,13 @@ const TrackedSmartLink: React.FC<TrackedSmartLinkProps> = ({
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-center mb-4">Redes Sociais</h3>
                 <div className="grid grid-cols-2 gap-4">
-                  {social_links.map((social) => (
+                  {social_links.filter(social => social.id).map((social) => (
                     <PlatformLink
                       key={social.id}
                       href={social.url}
                       linkId={id}
                       linkType="smartlink"
-                      platformId={social.id}
+                      platformId={social.id!}
                       className="block bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-3 text-center hover:bg-white/20 transition-all duration-300 hover:scale-105"
                     >                    <span className="text-sm font-medium">
                         {social.platform || social.id}

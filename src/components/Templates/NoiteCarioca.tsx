@@ -130,19 +130,19 @@ const NoiteCarioca: React.FC<Partial<SmartLink>> = ({
     });
 
   // Preparar dados das redes sociais, garantindo que não haja nulos
-  const finalSocialLinks = (social_links || []).map(social => {
+  type EnrichedSocialLink = SocialLink & { name: string; icon: React.FC<any>; color: string; };
+
+  const finalSocialLinks = (social_links || []).map((social): EnrichedSocialLink | null => {
     const socialData = SOCIAL_PLATFORMS.find(sp => sp.id === social.platform);
     if (!socialData) return null;
       
     return {
-      id: social.id,
-      platform: social.platform,
-      url: social.url,
+      ...social,
       name: socialData.name,
       icon: socialData.icon,
       color: socialData.color
     };
-  }).filter((link): link is SocialLink & { name: string; icon: React.FC<any>; color: string; } => link !== null);
+  }).filter((link): link is EnrichedSocialLink => link !== null);
 
   const finalCoverImageUrl = cover_image_url || '/assets/defaults/default-cover.png';
   const hasPlayer = player_url && player_url.includes('open.spotify.com');

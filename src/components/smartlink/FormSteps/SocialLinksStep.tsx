@@ -1,14 +1,14 @@
 // components/smartlink/FormSteps/SocialLinksStep.tsx
 import React from 'react';
 import { useSmartLinkForm } from '../../../context/smartlink/SmartLinkFormContext';
-import { FaShare, FaCheckCircle } from 'react-icons/fa';
+import { FaShare, FaCheckCircle, FaEnvelope, FaPhone, FaGlobe, FaTimes, FaPlus, FaLink } from 'react-icons/fa';
 import { SOCIAL_PLATFORMS } from '../../../data/socials';
-import { SocialLink } from '../../../types';
+import { SocialLink, ContactLink } from '../../../types';
 
 interface SocialLinksStepProps {}
 
 const SocialLinksStep: React.FC<SocialLinksStepProps> = () => {
-  const { state, updateSocialLink, updateField, addSocialLink } = useSmartLinkForm();
+  const { state, updateSocialLink, addSocialLink, updateContactLink, addContactLink, removeContactLink, updateField } = useSmartLinkForm();
   const handleSocialUrlChange = (platformId: string, url: string) => {
     const existingLink = state.socialLinks.find(s => s.platform === platformId);
     if (existingLink) {
@@ -130,14 +130,90 @@ const SocialLinksStep: React.FC<SocialLinksStepProps> = () => {
         )}
       </div>
 
+      {/* Contact Links Section */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-6">Links de Contato Adicionais</h3>
+        <div className="space-y-4">
+          {state.contactLinks.map((link, index) => {
+            let IconComponent = FaLink;
+            let placeholderText = "https://seusite.com";
+            switch (link.type) {
+              case 'email': IconComponent = FaEnvelope; placeholderText = "seu.email@exemplo.com"; break;
+              case 'phone': IconComponent = FaPhone; placeholderText = "+5511999999999"; break;
+              case 'website': IconComponent = FaGlobe; placeholderText = "https://seusite.com"; break;
+              default: IconComponent = FaLink; placeholderText = "https://link-personalizado.com"; break;
+            }
+
+            return (
+              <div key={link.id || index} className="flex items-end space-x-2">
+                <div className="flex-grow">
+                  <label htmlFor={`contact-type-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+                  <select
+                    id={`contact-type-${index}`}
+                    value={link.type}
+                    onChange={(e) => updateContactLink(link.id!, { type: e.target.value as ContactLink['type'] })}
+                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  >
+                    <option value="">Selecione o tipo</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Telefone</option>
+                    <option value="website">Website</option>
+                    <option value="custom">Personalizado</option>
+                  </select>
+                </div>
+                <div className="flex-grow-[2]">
+                  <label htmlFor={`contact-value-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Valor/URL</label>
+                  <div className="flex items-center mt-1">
+                    <IconComponent className="inline mr-2 text-xl text-gray-500" />
+                    <input
+                      type="text"
+                      id={`contact-value-${index}`}
+                      value={link.value}
+                      onChange={(e) => updateContactLink(link.id!, { value: e.target.value })}
+                      placeholder={placeholderText}
+                      className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400"
+                    />
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <label htmlFor={`contact-label-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Rótulo (Opcional)</label>
+                  <input
+                    type="text"
+                    id={`contact-label-${index}`}
+                    value={link.label || ''}
+                    onChange={(e) => updateContactLink(link.id!, { label: e.target.value })}
+                    placeholder="Ex: Meu Portfólio"
+                    className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm placeholder-gray-400"
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeContactLink(link.id!)}
+                  className="p-3 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => addContactLink()}
+            className="w-full flex justify-center items-center py-2 px-4 border border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+          >
+            <FaPlus className="mr-2" /> Adicionar Link de Contato
+          </button>
+        </div>
+      </div>
+
       {/* Contador */}
       <div className="bg-gray-50 rounded-lg p-4">
         <div className="text-center">
           <div className="text-2xl font-bold text-gray-900">
-            {state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length}
+            {state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length + state.contactLinks.filter((c: ContactLink) => c.value.trim() !== '').length}
           </div>
           <div className="text-sm text-gray-600">
-            rede{state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length !== 1 ? 's' : ''} social{state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length !== 1 ? 'is' : ''} conectada{state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length !== 1 ? 's' : ''}
+            link{state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length + state.contactLinks.filter((c: ContactLink) => c.value.trim() !== '').length !== 1 ? 's' : ''} conectado{state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '').length + state.contactLinks.filter((c: ContactLink) => c.value.trim() !== '').length !== 1 ? 's' : ''}
           </div>
         </div>
       </div>

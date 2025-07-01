@@ -72,16 +72,16 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
       };
     });
 
-  const finalSocialLinks = (social_links || []).map(social => {
+  type EnrichedSocialLink = SocialLink & { icon: React.FC<any> };
+
+  const finalSocialLinks = (social_links || []).map((social): EnrichedSocialLink | null => {
     const socialData = SOCIAL_PLATFORMS.find(sp => sp.id === social.platform);
     if (!socialData) return null;
     return {
-      id: social.id,
-      platform: social.platform,
-      url: social.url,
+      ...social,
       icon: socialData.icon,
     };
-  }).filter((link): link is SocialLink & { icon: React.FC<any> } => link !== null);
+  }).filter((link): link is EnrichedSocialLink => link !== null);
 
   const hasPlayer = player_url && player_url.includes('open.spotify.com');
 

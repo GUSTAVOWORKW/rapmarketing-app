@@ -1,117 +1,56 @@
 // components/presave/FormSteps/PlatformLinksStep.js
 import React, { useState } from 'react';
-import { FaMusic, FaPlus, FaTrash, FaExternalLinkAlt, FaInfoCircle, FaSpotify, FaApple, FaAmazon, FaYoutube, FaSoundcloud, FaDeezer } from 'react-icons/fa';
-import { SiTidal } from 'react-icons/si';
-import { PLATFORMS } from '../../../data/platforms';
+import { FaMusic, FaPlus, FaTrash, FaExternalLinkAlt, FaInfoCircle } from 'react-icons/fa';
+import { PLATFORMS as STREAMING_PLATFORMS } from '../../../data/platforms';
 import { usePresaveForm } from '../../../context/presave/PresaveFormContext';
-
-// Configuração para o FORMULÁRIO (visual com FaIcons)
-const platformsForForm = [
-  {
-    id: 'spotify',
-    name: 'Spotify',
-    icon: FaSpotify,
-    color: '#1DB954',
-    placeholder: 'https://open.spotify.com/album/...',
-    description: 'A maior plataforma de streaming do mundo'
-  },
-  {
-    id: 'apple-music',
-    name: 'Apple Music',
-    icon: FaApple,
-    color: '#FA243C',
-    placeholder: 'https://music.apple.com/album/...',
-    description: 'Serviço da Apple com alta qualidade'
-  },
-  {
-    id: 'youtube-music',
-    name: 'YouTube Music',
-    icon: FaYoutube,
-    color: '#FF0000',
-    placeholder: 'https://music.youtube.com/playlist?list=...',
-    description: 'Música do YouTube com videoclipes'
-  },
-  {
-    id: 'amazon-music',
-    name: 'Amazon Music',
-    icon: FaAmazon,
-    color: '#FF9900',
-    placeholder: 'https://music.amazon.com/albums/...',
-    description: 'Serviço da Amazon com Alexa'
-  },
-  {
-    id: 'deezer',
-    name: 'Deezer',
-    icon: FaDeezer,
-    color: '#FEAA2D',
-    placeholder: 'https://www.deezer.com/album/...',
-    description: 'Streaming francês com Hi-Fi'
-  },
-  {
-    id: 'tidal',
-    name: 'Tidal',
-    icon: SiTidal, // Restaurado para SiTidal
-    color: '#000000',
-    placeholder: 'https://tidal.com/browse/album/...',
-    description: 'Qualidade lossless e exclusivos'
-  },
-  {
-    id: 'soundcloud',
-    name: 'SoundCloud',
-    icon: FaSoundcloud,
-    color: '#FF5500',
-    placeholder: 'https://soundcloud.com/artist/track',
-    description: 'Plataforma para artistas independentes'
-  }
-];
 
 const PlatformLinksStep = ({ errors = {} }) => {
   const { state, actions } = usePresaveForm();
-  const { addPlatformLink, removePlatformLink, updatePlatformLink } = actions;
+  const { addStreamingLink, removeStreamingLink, updateStreamingLink } = actions;
   const [showAddForm, setShowAddForm] = useState(false);
   const [newPlatform, setNewPlatform] = useState({
     platformId: '',
     url: ''
   });
+
   const handleAddPlatform = () => {
     if (!newPlatform.platformId || !newPlatform.url) {
       return;
     }
 
-    // Buscar dados do formulário (visual)
-    const formPlatform = platformsForForm.find(p => p.id === newPlatform.platformId);
-    // Buscar dados do sistema (para templates)
-    const systemPlatform = PLATFORMS.find(p => p.id === newPlatform.platformId);
+    const systemPlatform = STREAMING_PLATFORMS.find(p => p.id === newPlatform.platformId);
     
-    if (!formPlatform || !systemPlatform) return;
+    if (!systemPlatform) return;
+
     const platformLink = {
-      // Removido tempId: nunca usar id temporário!
-      id: systemPlatform.id, // O id da plataforma, compatível com o template
+      id: Date.now().toString(), // Generate a unique ID for the new link
       platform_id: systemPlatform.id,
-      platformId: systemPlatform.id,
       url: newPlatform.url,
       name: systemPlatform.name,
-      platformName: formPlatform.name,
-      formIcon: formPlatform.icon,
-      formColor: formPlatform.color
+      icon_url: '', // Not directly used here, but part of PlatformLink type
+      brand_color: systemPlatform.brand_color,
     };
 
-    addPlatformLink(platformLink);
+    addStreamingLink(platformLink);
     
-    // Reset form
     setNewPlatform({ platformId: '', url: '' });
     setShowAddForm(false);
-  };  const handleRemovePlatform = (linkId) => {
-    removePlatformLink(linkId);
+  };
+
+  const handleRemovePlatform = (linkId) => {
+    removeStreamingLink(linkId);
   };
 
   const handleUpdatePlatform = (linkId, url) => {
-    updatePlatformLink(linkId, { url });
+    updateStreamingLink(linkId, { url });
   };
+
   const getAvailablePlatformsForAdd = () => {
-    const usedPlatformIds = state.platformLinks.map(link => link.platformId);
-    return platformsForForm.filter(platform => !usedPlatformIds.includes(platform.id));
-  };  return (
+    const usedPlatformIds = state.streamingLinks.map(link => link.platform_id);
+    return STREAMING_PLATFORMS.filter(platform => !usedPlatformIds.includes(platform.id));
+  };
+
+  return (
     <div className="w-full max-w-6xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
@@ -134,8 +73,8 @@ const PlatformLinksStep = ({ errors = {} }) => {
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Suas Plataformas</h2>
                 <p className="text-gray-600">
-                  {state.platformLinks.length > 0 
-                    ? `${state.platformLinks.length} plataforma(s) adicionada(s)`
+                  {state.streamingLinks.length > 0 
+                    ? `${state.streamingLinks.length} plataforma(s) adicionada(s)`
                     : 'Nenhuma plataforma adicionada ainda'
                   }
                 </p>
@@ -154,8 +93,10 @@ const PlatformLinksStep = ({ errors = {} }) => {
           </div>
 
           {/* Lista de Plataformas */}
-          {state.platformLinks.length > 0 ? (
-            <div className="space-y-4">              {state.platformLinks.map((link) => {
+          {state.streamingLinks.length > 0 ? (
+            <div className="space-y-4">              {state.streamingLinks.map((link) => {
+                const platformData = STREAMING_PLATFORMS.find(p => p.id === link.platform_id);
+                const IconComponent = platformData?.icon;
                 return (
                   <div
                     key={link.id} // Usar sempre o id real da plataforma
@@ -164,10 +105,10 @@ const PlatformLinksStep = ({ errors = {} }) => {
                     <div className="flex items-center space-x-4">                      {/* Platform Icon */}
                       <div 
                         className="w-12 h-12 rounded-xl flex items-center justify-center shadow-sm"
-                        style={{ backgroundColor: `${link.formColor}15`, color: link.formColor }}
+                        style={{ backgroundColor: `${platformData?.brand_color}15`, color: platformData?.brand_color }}
                       >
-                        {link.formIcon ? (
-                          <link.formIcon className="text-xl" />
+                        {IconComponent ? (
+                          <IconComponent className="text-xl" />
                         ) : (
                           <span className="text-gray-400">?</span>
                         )}
@@ -176,7 +117,7 @@ const PlatformLinksStep = ({ errors = {} }) => {
                       {/* Platform Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold text-gray-900">{link.name || link.platformName}</h3>
+                          <h3 className="font-semibold text-gray-900">{platformData?.name || link.name}</h3>
                           <a
                             href={link.url}
                             target="_blank"
@@ -191,7 +132,7 @@ const PlatformLinksStep = ({ errors = {} }) => {
                           type="url"
                           value={link.url}
                           onChange={(e) => handleUpdatePlatform(link.id, e.target.value)}
-                          placeholder={platformsForForm.find(p => p.id === (link.platform_id || link.platformId))?.placeholder}
+                          placeholder={platformData?.placeholder_url}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                         />
                       </div>
@@ -272,7 +213,7 @@ const PlatformLinksStep = ({ errors = {} }) => {
                         }`}
                       >                        <div 
                           className="w-8 h-8 mx-auto mb-2 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: `${platform.color}15`, color: platform.color }}
+                          style={{ backgroundColor: `${platform.brand_color}15`, color: platform.brand_color }}
                         >
                           <platform.icon className="text-lg" />
                         </div>
@@ -288,12 +229,12 @@ const PlatformLinksStep = ({ errors = {} }) => {
               {newPlatform.platformId && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Link da {platformsForForm.find(p => p.id === newPlatform.platformId)?.name} *
+                    Link da {STREAMING_PLATFORMS.find(p => p.id === newPlatform.platformId)?.name} *
                   </label>
                   <input                    type="url"
                     value={newPlatform.url}
                     onChange={(e) => setNewPlatform({ ...newPlatform, url: e.target.value })}
-                    placeholder={platformsForForm.find(p => p.id === newPlatform.platformId)?.placeholder}
+                    placeholder={STREAMING_PLATFORMS.find(p => p.id === newPlatform.platformId)?.placeholder_url}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   />
                   <p className="text-gray-500 text-sm mt-2 flex items-center">

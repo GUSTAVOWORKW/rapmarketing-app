@@ -1,5 +1,6 @@
 // context/presave/PresaveFormContext.tsx - Context para estado persistente do formulário
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import { supabase } from '../../services/supabase'; // Import supabase client
 
 // Tipos
 interface PresaveFormState {
@@ -28,7 +29,8 @@ interface PresaveFormState {
     name: string;
     icon_url?: string;
     brand_color?: string;
-  }>;  socialLinks: Array<{
+  }>;
+  socialLinks: Array<{
     platform: string;
     platformName: string;
     url: string;
@@ -39,6 +41,14 @@ interface PresaveFormState {
     type: string;
     url: string;
     name: string;
+  }>;
+  streamingLinks: Array<{
+    id: string;
+    platform_id: string;
+    url: string;
+    name: string;
+    icon_url?: string;
+    brand_color?: string;
   }>;
   
   // Links legados (para compatibilidade)
@@ -81,6 +91,12 @@ interface PresaveFormActions {
   // Ações de redes sociais
   addSocialLink: (link: any) => void;
   removeSocialLink: (platform: string) => void;
+  addStreamingLink: (link: any) => void;
+  removeStreamingLink: (linkId: string) => void;
+  updateStreamingLink: (linkId: string, updates: any) => void;
+  addContactLink: (link: any) => void;
+  removeContactLink: (linkId: string) => void;
+  updateContactLink: (linkId: string, updates: any) => void;
   
   // Ações de artwork
   setArtwork: (file: File | null, url: string, userId?: string) => void;
@@ -88,6 +104,7 @@ interface PresaveFormActions {
   // Persistência
   saveToStorage: () => void;
   loadFromStorage: () => void;
+  loadDraft: (id: string, userId: string) => Promise<void>;
   clearDraft: () => void;
   
   // Estados de carregamento
@@ -115,6 +132,7 @@ const initialState: PresaveFormState = {
   platformLinks: [],
   socialLinks: [],
   contactLinks: [],
+  streamingLinks: [],
   platforms: {
     spotify: '',
     appleMusic: '',
@@ -144,6 +162,12 @@ const ACTIONS = {
   UPDATE_PLATFORM_LINK: 'UPDATE_PLATFORM_LINK',
   ADD_SOCIAL_LINK: 'ADD_SOCIAL_LINK',
   REMOVE_SOCIAL_LINK: 'REMOVE_SOCIAL_LINK',
+  ADD_STREAMING_LINK: 'ADD_STREAMING_LINK',
+  REMOVE_STREAMING_LINK: 'REMOVE_STREAMING_LINK',
+  UPDATE_STREAMING_LINK: 'UPDATE_STREAMING_LINK',
+  ADD_CONTACT_LINK: 'ADD_CONTACT_LINK',
+  REMOVE_CONTACT_LINK: 'REMOVE_CONTACT_LINK',
+  UPDATE_CONTACT_LINK: 'UPDATE_CONTACT_LINK',
   SET_SUBMITTING: 'SET_SUBMITTING',
   SET_LOADING: 'SET_LOADING',
   SET_PRESAVE_ID: 'SET_PRESAVE_ID',
@@ -196,6 +220,46 @@ const presaveFormReducer = (state: PresaveFormState, action: any): PresaveFormSt
       return { 
         ...state, 
         socialLinks: state.socialLinks.filter(link => link.platform !== action.platform) 
+      };
+
+    case ACTIONS.ADD_STREAMING_LINK:
+      return {
+        ...state,
+        streamingLinks: [...state.streamingLinks, action.link]
+      };
+
+    case ACTIONS.REMOVE_STREAMING_LINK:
+      return {
+        ...state,
+        streamingLinks: state.streamingLinks.filter(link => link.id !== action.linkId)
+      };
+
+    case ACTIONS.UPDATE_STREAMING_LINK:
+      return {
+        ...state,
+        streamingLinks: state.streamingLinks.map(link =>
+          link.id === action.linkId ? { ...link, ...action.updates } : link
+        )
+      };
+
+    case ACTIONS.ADD_CONTACT_LINK:
+      return {
+        ...state,
+        contactLinks: [...state.contactLinks, action.link]
+      };
+
+    case ACTIONS.REMOVE_CONTACT_LINK:
+      return {
+        ...state,
+        contactLinks: state.contactLinks.filter(link => link.id !== action.linkId)
+      };
+
+    case ACTIONS.UPDATE_CONTACT_LINK:
+      return {
+        ...state,
+        contactLinks: state.contactLinks.map(link =>
+          link.id === action.linkId ? { ...link, ...action.updates } : link
+        )
       };
       
     case ACTIONS.SET_SUBMITTING:
@@ -294,6 +358,30 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       dispatch({ type: ACTIONS.REMOVE_SOCIAL_LINK, platform });
     }, []),
 
+    addStreamingLink: useCallback((link: any) => {
+      dispatch({ type: ACTIONS.ADD_STREAMING_LINK, link });
+    }, []),
+
+    removeStreamingLink: useCallback((linkId: string) => {
+      dispatch({ type: ACTIONS.REMOVE_STREAMING_LINK, linkId });
+    }, []),
+
+    updateStreamingLink: useCallback((linkId: string, updates: any) => {
+      dispatch({ type: ACTIONS.UPDATE_STREAMING_LINK, linkId, updates });
+    }, []),
+
+    addContactLink: useCallback((link: any) => {
+      dispatch({ type: ACTIONS.ADD_CONTACT_LINK, link });
+    }, []),
+
+    removeContactLink: useCallback((linkId: string) => {
+      dispatch({ type: ACTIONS.REMOVE_CONTACT_LINK, linkId });
+    }, []),
+
+    updateContactLink: useCallback((linkId: string, updates: any) => {
+      dispatch({ type: ACTIONS.UPDATE_CONTACT_LINK, linkId, updates });
+    }, []),
+
     setArtwork: useCallback((file: File | null, url: string, userId?: string) => {
       dispatch({ 
         type: ACTIONS.UPDATE_FIELD, 
@@ -316,7 +404,9 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       } catch (error) {
         console.error('❌ Erro ao salvar draft:', error);
       }
-    }, [state]),    loadFromStorage: useCallback(() => {
+    }, [state]),
+
+    loadFromStorage: useCallback(() => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
@@ -326,7 +416,62 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       } catch (error) {
         console.error('❌ Erro ao carregar draft:', error);
       }
-    }, []),    clearDraft: useCallback(() => {
+    }, []),    loadDraft: useCallback(async (id: string, userId: string) => {
+    dispatch({ type: ACTIONS.SET_LOADING, value: true });
+    try {
+      let presaveData = null;
+      let profileData = null;
+
+      if (id) {
+        // Try to load existing presave
+        const { data, error } = await supabase
+          .from('presaves')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') { // PGRST116: 'No rows found'
+          throw error;
+        }
+        presaveData = data;
+      }
+
+      // Always fetch user profile for default links
+      if (userId) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('social_links, streaming_links, contact_links')
+          .eq('user_id', userId)
+          .single();
+        if (error && error.code !== 'PGRST116') {
+          console.error("Error fetching user profile for default links:", error);
+        }
+        profileData = data;
+      }
+
+      const finalData = {
+        currentPresaveId: presaveData?.id || null,
+        artistName: presaveData?.artist_name || '',
+        trackName: presaveData?.track_name || '',
+        releaseDate: presaveData?.release_date || '',
+        shareableSlug: presaveData?.shareable_slug || '',
+        artworkUrl: presaveData?.artwork_url || '/assets/defaults/default-cover.png',
+        platformLinks: presaveData?.platform_links || profileData?.streaming_links || [],
+        socialLinks: presaveData?.social_links || profileData?.social_links || [],
+        contactLinks: presaveData?.contact_links || profileData?.contact_links || [],
+        selectedTemplate: presaveData?.template_id ? { id: presaveData.template_id, name: presaveData.template_id } : initialState.selectedTemplate,
+        // ... other fields from presaveData
+      };
+
+      dispatch({ type: ACTIONS.LOAD_DRAFT, data: finalData });
+
+    } catch (error) {
+      console.error('Erro ao carregar rascunho/perfil do Supabase:', error);
+      // Optionally set an error state in the context
+    } finally {
+      dispatch({ type: ACTIONS.SET_LOADING, value: false });
+    }
+  }, []),    clearDraft: useCallback(() => {
       try {
         localStorage.removeItem(STORAGE_KEY);
         dispatch({ type: ACTIONS.RESET_FORM, template: null });

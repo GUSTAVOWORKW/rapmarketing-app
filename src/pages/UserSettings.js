@@ -1,26 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaLink, FaDeezer, FaUserCircle } from 'react-icons/fa';
+import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaLink, FaDeezer, FaUserCircle, FaPlus, FaTimes, FaEnvelope, FaPhone, FaGlobe } from 'react-icons/fa';
 import { MdSave, MdErrorOutline, MdCheckCircleOutline, MdFileUpload } from 'react-icons/md';
 import { useSpotifyConnection } from '../hooks/useSpotifyConnection';
-
-const socialPlatforms = [
-    { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'text-pink-500' },
-    { name: 'twitter', Icon: FaTwitter, placeholder: 'https://twitter.com/usuario', color: 'text-sky-500' },
-    { name: 'facebook', Icon: FaFacebookF, placeholder: 'https://facebook.com/usuario', color: 'text-blue-600' },
-    { name: 'tiktok', Icon: FaTiktok, placeholder: 'https://tiktok.com/@usuario', color: 'text-black' },
-    { name: 'spotify', Icon: FaSpotify, placeholder: 'https://open.spotify.com/artist/id', color: 'text-green-500' },
-    { name: 'youtube', Icon: FaYoutube, placeholder: 'https://youtube.com/c/canal', color: 'text-red-600' },
-    { name: 'deezer', Icon: FaDeezer, placeholder: 'https://deezer.com/profile/id', color: 'text-purple-500' },
-    { name: 'other', Icon: FaLink, placeholder: 'https://seuoutrolink.com', color: 'text-gray-500' }
-];
+import { SOCIAL_PLATFORMS } from '../data/socials';
+import { PLATFORMS as STREAMING_PLATFORMS } from '../data/platforms';
+import { SocialLink, PlatformLink, ContactLink } from '../types';
 
 const UserSettings = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
-    const [socialLinks, setSocialLinks] = useState({});
+    const [socialLinks, setSocialLinks] = useState([]);
+    const [streamingLinks, setStreamingLinks] = useState([]);
+    const [contactLinks, setContactLinks] = useState([]);
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null); 
     const [loading, setLoading] = useState(true);
@@ -35,7 +29,7 @@ const UserSettings = () => {
             setError('');
             const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
-                .select('id, user_id, username, avatar_url, email, social_links')
+                .select('id, user_id, username, avatar_url, email, social_links, streaming_links, contact_links')
                 .eq('user_id', sessionUser.id)
                 .single();
 
@@ -43,7 +37,9 @@ const UserSettings = () => {
 
             if (profileData) {
                 setProfile(profileData);
-                setSocialLinks(profileData.social_links || {});
+                setSocialLinks(profileData.social_links || []);
+                setStreamingLinks(profileData.streaming_links || []);
+                setContactLinks(profileData.contact_links || []);
                 setAvatarPreview(profileData.avatar_url || null); 
             } else {
                 setError('Perfil não encontrado.');
@@ -113,10 +109,52 @@ const UserSettings = () => {
         }
     };
 
-    const handleSocialLinkChange = (platform, value) => {
-        setSocialLinks(prev => ({ ...prev, [platform]: value }));
+    const handleSocialLinkChange = (index, field, value) => {
+        const newSocialLinks = [...socialLinks];
+        newSocialLinks[index] = { ...newSocialLinks[index], [field]: value };
+        setSocialLinks(newSocialLinks);
         setSuccessMessage('');
         setError('');
+    };
+
+    const addSocialLink = () => {
+        setSocialLinks(prev => [...prev, { id: Date.now().toString(), platform: '', url: '' }]);
+    };
+
+    const removeSocialLink = (index) => {
+        setSocialLinks(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleStreamingLinkChange = (index, field, value) => {
+        const newStreamingLinks = [...streamingLinks];
+        newStreamingLinks[index] = { ...newStreamingLinks[index], [field]: value };
+        setStreamingLinks(newStreamingLinks);
+        setSuccessMessage('');
+        setError('');
+    };
+
+    const addStreamingLink = () => {
+        setStreamingLinks(prev => [...prev, { id: Date.now().toString(), platform_id: '', url: '' }]);
+    };
+
+    const removeStreamingLink = (index) => {
+        setStreamingLinks(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleContactLinkChange = (index, field, value) => {
+        const newContactLinks = [...contactLinks];
+        newContactLinks[index] = { ...newContactLinks[index], [field]: value };
+        setContactLinks(newContactLinks);
+        setSuccessMessage('');
+        setError('');
+    };
+
+    const addContactLink = () => {
+        setContactLinks(prev => [...prev, { id: Date.now().toString(), type: 'custom', value: '' }]);
+    };
+
+    const removeContactLink = (index) => {
+        setContactLinks(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -156,6 +194,8 @@ const UserSettings = () => {
 
             const updates = {
                 social_links: socialLinks,
+                streaming_links: streamingLinks,
+                contact_links: contactLinks,
                 updated_at: new Date().toISOString(),
             };
 
@@ -284,28 +324,206 @@ const UserSettings = () => {
 
                 <hr className="border-gray-200" />
 
+                <hr className="border-gray-200" />
+
                 <div>
                     <h2 className="text-2xl font-semibold text-[#1c1c1c] mb-1">Seus Links Sociais</h2>
                     <p className="text-sm text-[#1c1c1c]/70 mb-6">Adicione ou atualize os links das suas redes sociais.</p>
                     
-                    <div className="space-y-6">
-                        {socialPlatforms.map(({ name, Icon, placeholder, color }) => (
-                            <div key={name}>
-                                <label htmlFor={name} className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                                    <Icon className={`inline mr-2 mb-0.5 ${color || 'text-[#3100ff]'}`} />
-                                    {name.charAt(0).toUpperCase() + name.slice(1)}
-                                </label>
-                                <input
-                                    type="url"
-                                    id={name}
-                                    name={name}
-                                    value={socialLinks[name] || ''}
-                                    onChange={(e) => handleSocialLinkChange(name, e.target.value)}
-                                    placeholder={placeholder}
-                                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
-                                />
-                            </div>
-                        ))}
+                    <div className="space-y-4">
+                        {socialLinks.map((link, index) => {
+                            const platformData = SOCIAL_PLATFORMS.find(p => p.id === link.platform);
+                            const Icon = platformData ? platformData.icon : FaLink;
+                            const colorClass = platformData ? `text-[${platformData.color}]` : 'text-gray-500';
+
+                            return (
+                                <div key={link.id || index} className="flex items-end space-x-2">
+                                    <div className="flex-grow">
+                                        <label htmlFor={`social-platform-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">Plataforma</label>
+                                        <select
+                                            id={`social-platform-${index}`}
+                                            value={link.platform}
+                                            onChange={(e) => handleSocialLinkChange(index, 'platform', e.target.value)}
+                                            className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm"
+                                        >
+                                            <option value="">Selecione uma plataforma</option>
+                                            {SOCIAL_PLATFORMS.map(p => (
+                                                <option key={p.id} value={p.id}>{p.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex-grow-[2]">
+                                        <label htmlFor={`social-url-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">URL</label>
+                                        <div className="flex items-center mt-1">
+                                            <Icon className={`inline mr-2 text-xl ${colorClass}`} />
+                                            <input
+                                                type="url"
+                                                id={`social-url-${index}`}
+                                                value={link.url}
+                                                onChange={(e) => handleSocialLinkChange(index, 'url', e.target.value)}
+                                                placeholder={platformData?.placeholder || "https://seusocial.com/perfil"}
+                                                className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeSocialLink(index)}
+                                        className="p-3 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                        <button
+                            type="button"
+                            onClick={addSocialLink}
+                            className="w-full flex justify-center items-center py-2 px-4 border border-dashed border-gray-300 rounded-lg text-sm font-medium text-[#1c1c1c] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3100ff]"
+                        >
+                            <FaPlus className="mr-2" /> Adicionar Link Social
+                        </button>
+                    </div>
+                </div>
+
+                <hr className="border-gray-200" />
+
+                <div>
+                    <h2 className="text-2xl font-semibold text-[#1c1c1c] mb-1">Links de Streaming</h2>
+                    <p className="text-sm text-[#1c1c1c]/70 mb-6">Adicione ou atualize os links das suas plataformas de streaming.</p>
+                    
+                    <div className="space-y-4">
+                        {streamingLinks.map((link, index) => {
+                            const platformData = STREAMING_PLATFORMS.find(p => p.id === link.platform_id);
+                            const Icon = platformData ? platformData.icon : FaLink;
+                            const colorClass = platformData ? `text-[${platformData.brand_color}]` : 'text-gray-500';
+
+                            return (
+                                <div key={link.id || index} className="flex items-end space-x-2">
+                                    <div className="flex-grow">
+                                        <label htmlFor={`streaming-platform-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">Plataforma</label>
+                                        <select
+                                            id={`streaming-platform-${index}`}
+                                            value={link.platform_id}
+                                            onChange={(e) => handleStreamingLinkChange(index, 'platform_id', e.target.value)}
+                                            className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm"
+                                        >
+                                            <option value="">Selecione uma plataforma</option>
+                                            {STREAMING_PLATFORMS.map(p => (
+                                                <option key={p.id} value={p.id}>{p.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="flex-grow-[2]">
+                                        <label htmlFor={`streaming-url-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">URL</label>
+                                        <div className="flex items-center mt-1">
+                                            <Icon className={`inline mr-2 text-xl ${colorClass}`} />
+                                            <input
+                                                type="url"
+                                                id={`streaming-url-${index}`}
+                                                value={link.url}
+                                                onChange={(e) => handleStreamingLinkChange(index, 'url', e.target.value)}
+                                                placeholder={platformData?.placeholder_url || "https://plataforma.com/seu-link"}
+                                                className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeStreamingLink(index)}
+                                        className="p-3 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                        <button
+                            type="button"
+                            onClick={addStreamingLink}
+                            className="w-full flex justify-center items-center py-2 px-4 border border-dashed border-gray-300 rounded-lg text-sm font-medium text-[#1c1c1c] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3100ff]"
+                        >
+                            <FaPlus className="mr-2" /> Adicionar Link de Streaming
+                        </button>
+                    </div>
+                </div>
+
+                <hr className="border-gray-200" />
+
+                <div>
+                    <h2 className="text-2xl font-semibold text-[#1c1c1c] mb-1">Links de Contato</h2>
+                    <p className="text-sm text-[#1c1c1c]/70 mb-6">Adicione ou atualize seus links de contato (email, telefone, website, etc.).</p>
+                    
+                    <div className="space-y-4">
+                        {contactLinks.map((link, index) => {
+                            let IconComponent = FaLink;
+                            let placeholderText = "https://seusite.com";
+                            switch (link.type) {
+                                case 'email': IconComponent = FaEnvelope; placeholderText = "seu.email@exemplo.com"; break;
+                                case 'phone': IconComponent = FaPhone; placeholderText = "+5511999999999"; break;
+                                case 'website': IconComponent = FaGlobe; placeholderText = "https://seusite.com"; break;
+                                default: IconComponent = FaLink; placeholderText = "https://link-personalizado.com"; break;
+                            }
+
+                            return (
+                                <div key={link.id || index} className="flex items-end space-x-2">
+                                    <div className="flex-grow">
+                                        <label htmlFor={`contact-type-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">Tipo</label>
+                                        <select
+                                            id={`contact-type-${index}`}
+                                            value={link.type}
+                                            onChange={(e) => handleContactLinkChange(index, 'type', e.target.value)}
+                                            className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm"
+                                        >
+                                            <option value="">Selecione o tipo</option>
+                                            <option value="email">Email</option>
+                                            <option value="phone">Telefone</option>
+                                            <option value="website">Website</option>
+                                            <option value="custom">Personalizado</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex-grow-[2]">
+                                        <label htmlFor={`contact-value-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">Valor/URL</label>
+                                        <div className="flex items-center mt-1">
+                                            <IconComponent className="inline mr-2 text-xl text-gray-500" />
+                                            <input
+                                                type="text"
+                                                id={`contact-value-${index}`}
+                                                value={link.value}
+                                                onChange={(e) => handleContactLinkChange(index, 'value', e.target.value)}
+                                                placeholder={placeholderText}
+                                                className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex-grow">
+                                        <label htmlFor={`contact-label-${index}`} className="block text-sm font-medium text-[#1c1c1c] mb-1">Rótulo (Opcional)</label>
+                                        <input
+                                            type="text"
+                                            id={`contact-label-${index}`}
+                                            value={link.label || ''}
+                                            onChange={(e) => handleContactLinkChange(index, 'label', e.target.value)}
+                                            placeholder="Ex: Meu Portfólio"
+                                            className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeContactLink(index)}
+                                        className="p-3 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-lg"
+                                    >
+                                        <FaTimes />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                        <button
+                            type="button"
+                            onClick={addContactLink}
+                            className="w-full flex justify-center items-center py-2 px-4 border border-dashed border-gray-300 rounded-lg text-sm font-medium text-[#1c1c1c] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3100ff]"
+                        >
+                            <FaPlus className="mr-2" /> Adicionar Link de Contato
+                        </button>
                     </div>
                 </div>
 

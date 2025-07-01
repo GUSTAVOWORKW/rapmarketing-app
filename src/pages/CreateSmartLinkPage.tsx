@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
-import { PlatformLink, SocialLink } from '../types'; // Importar tipos
+import { PlatformLink, SocialLink, ContactLink } from '../types'; // Importar tipos
 
 // Context
 import { useSmartLinkForm } from '../context/smartlink/SmartLinkFormContext';
@@ -156,6 +156,12 @@ const CreateSmartLinkPage: React.FC = () => {
     setErrors,
     publishSmartLink,
     loadDraft, // Adicionar loadDraft aqui
+    addStreamingLink,
+    removeStreamingLink,
+    updateStreamingLink,
+    addContactLink,
+    removeContactLink,
+    updateContactLink,
   } = useSmartLinkForm();
   
   const { 

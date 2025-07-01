@@ -8,11 +8,11 @@ import { PLATFORMS } from '../../../data/platforms';
 interface PlatformLinksStepProps {}
 
 const PlatformLinksStep: React.FC<PlatformLinksStepProps> = () => {
-  const { state, updatePlatformLink, addPlatformLink } = useSmartLinkForm();
+  const { state, updateStreamingLink } = useSmartLinkForm();
   const handlePlatformUrlChange = (platformId: string, url: string) => {
-    const existingLink = state.platforms.find(p => p.platform_id === platformId);
+    const existingLink = state.streamingLinks.find(p => p.platform_id === platformId);
     if (existingLink) {
-      updatePlatformLink(existingLink.id!, { url });
+      updateStreamingLink(existingLink.id!, { url });
     } else {
       // Criar novo link se não existir - usar platformId como id para compatibilidade com templates
       const newLink: PlatformLink = {
@@ -21,12 +21,13 @@ const PlatformLinksStep: React.FC<PlatformLinksStepProps> = () => {
         name: PLATFORMS.find(p => p.id === platformId)?.name || platformId,
         url: url
       };
-      addPlatformLink(newLink);
+      // Add the new streaming link to the context
+      updateStreamingLink(newLink.id!, newLink);
     }
   };
 
   const getPlatformUrl = (platformId: string): string => {
-    const platform = state.platforms.find(p => p.platform_id === platformId);
+    const platform = state.streamingLinks.find(p => p.platform_id === platformId);
     return platform?.url || '';
   };
 
@@ -87,10 +88,10 @@ const PlatformLinksStep: React.FC<PlatformLinksStepProps> = () => {
       <div className="bg-gray-50 rounded-lg p-4">
         <div className="text-center">
           <div className="text-2xl font-bold text-gray-900">
-            {state.platforms.filter((p: PlatformLink) => p.url.trim() !== '').length}
+            {state.streamingLinks.filter((p: PlatformLink) => p.url.trim() !== '').length}
           </div>
           <div className="text-sm text-gray-600">
-            plataforma{state.platforms.filter((p: PlatformLink) => p.url.trim() !== '').length !== 1 ? 's' : ''} conectada{state.platforms.filter((p: PlatformLink) => p.url.trim() !== '').length !== 1 ? 's' : ''}
+            plataforma{state.streamingLinks.filter((p: PlatformLink) => p.url.trim() !== '').length !== 1 ? 's' : ''} conectada{state.streamingLinks.filter((p: PlatformLink) => p.url.trim() !== '').length !== 1 ? 's' : ''}
           </div>
         </div>
       </div>

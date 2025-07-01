@@ -115,12 +115,10 @@ const CreatePresavePage = () => {
   // Load existing presave if editing
   useEffect(() => {
     if (presaveId && user) {
-      // TODO: Load presave data for editing
-      actions.setLoading(true);
-      // Simulate loading
-      setTimeout(() => {
-        actions.setLoading(false);
-      }, 1000);
+      actions.loadDraft(presaveId, user.id);
+    } else if (user) {
+      // If no presaveId, but user is logged in, load default profile links
+      actions.loadDraft(null, user.id);
     }
   }, [presaveId, user, actions]);
 
