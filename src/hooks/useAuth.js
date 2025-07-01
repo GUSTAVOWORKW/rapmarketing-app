@@ -102,11 +102,13 @@ export const useAuth = () => {
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        console.log('[useAuth] Evento: Usuário na sessão, buscando perfil...');
-        fetchProfile(session.user.id); // Não aguarda a conclusão
+        console.log('[useAuth] Evento: Usuário na sessão.');
+        setUser(session.user);
       } else {
         console.log('[useAuth] Evento: Nenhum usuário na sessão, limpando perfil.');
+        setUser(null);
         setProfile(null);
+        setProfileFetched(false);
       }
       console.log('[useAuth] Evento: Finalizando carregamento do onAuthStateChange.');
       setLoading(false);
@@ -117,12 +119,12 @@ export const useAuth = () => {
         console.log('[useAuth] Verificação inicial: Sessão encontrada.');
         setSession(session);
         setUser(session.user);
-        fetchProfile(session.user.id); // Não aguarda a conclusão
       } else {
         console.log('[useAuth] Verificação inicial: Nenhuma sessão encontrada.');
         setSession(null);
         setUser(null);
         setProfile(null);
+        setProfileFetched(false);
       }
       console.log('[useAuth] Verificação inicial: Finalizando carregamento.');
       setLoading(false);
@@ -136,7 +138,15 @@ export const useAuth = () => {
       console.log('[useAuth] useEffect: Desinscrevendo listener de autenticação.');
       subscription?.unsubscribe();
     };
-  }, [fetchProfile]);
+  }, []);
+
+  // Novo useEffect para buscar o perfil quando o usuário estiver disponível e o perfil ainda não tiver sido buscado
+  useEffect(() => {
+    if (user && !profileFetched) {
+      console.log('[useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...');
+      fetchProfile(user.id);
+    }
+  }, [user, profileFetched, fetchProfile]);
 
   return { session, user, profile, loading, fetchProfile };
 };

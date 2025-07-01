@@ -390,12 +390,12 @@ const loadUserAvatar = async (user: any) => {
 const STORAGE_KEY = 'smartlink_form_draft_v1';
 
 // Provider do contexto
-export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode; userProfile: any }> = ({ children, userProfile }) => {
   const [state, dispatch] = useReducer(smartLinkFormReducer, {
     ...initialState,
     currentSmartLinkId: `smartlink-${Date.now()}`, // Usar timestamp para id único
   });
-  const { user } = useAuth() as { user: any };
+  const { user, profile } = useAuth() as { user: any, profile: any };
 
   // Carregar draft do localStorage na inicialização
   useEffect(() => {
@@ -593,17 +593,11 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         smartLinkData = data;
       }
 
-      // Always fetch user profile for default links
-      if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('social_links, streaming_links, contact_links')
-          .eq('user_id', user.id)
-          .single();
-        if (error && error.code !== 'PGRST116') {
-          console.error("Error fetching user profile for default links:", error);
-        }
-        profileData = data;
+      // Use userProfile passed as prop for default links
+      if (userProfile) {
+        profileData = userProfile;
+      } else {
+        console.warn("SmartLinkFormContext: userProfile not provided, cannot load default links.");
       }
 
       const finalData = {

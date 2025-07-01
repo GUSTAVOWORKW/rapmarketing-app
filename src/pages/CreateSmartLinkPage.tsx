@@ -7,7 +7,7 @@ import { supabase } from '../services/supabase';
 import { PlatformLink, SocialLink, ContactLink } from '../types'; // Importar tipos
 
 // Context
-import { useSmartLinkForm } from '../context/smartlink/SmartLinkFormContext';
+import { SmartLinkFormProvider, useSmartLinkForm } from '../context/smartlink/SmartLinkFormContext';
 
 // Steps
 import ArtistInfoStep from '../components/smartlink/FormSteps/ArtistInfoStep';
@@ -146,7 +146,7 @@ const CreateSmartLinkPage: React.FC = () => {
   console.log('DEBUG: CreateSmartLinkPage renderizou');
 
   const navigate = useNavigate();
-  const { id: smartLinkId } = useParams();  const { user, loading: authLoading } = useAuth() as { user: User | null, loading: boolean };
+  const { id: smartLinkId } = useParams();  const { user, loading: authLoading, profile } = useAuth() as { user: User | null, loading: boolean, profile: any };
   
   const { 
     state, 
@@ -345,7 +345,7 @@ const CreateSmartLinkPage: React.FC = () => {
     }
   };
 
-  if (authLoading || isLoading) {
+  if (authLoading || !user || !profile || isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <FaSpinner className="animate-spin text-4xl text-purple-500" />
@@ -353,7 +353,7 @@ const CreateSmartLinkPage: React.FC = () => {
     );
   }
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-blue-50">
+    <SmartLinkFormProvider userProfile={profile}>
       <div className="container mx-auto p-4 max-w-7xl">
         {notification && (
           <div 
@@ -474,7 +474,7 @@ const CreateSmartLinkPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </SmartLinkFormProvider>
   );
 };
 

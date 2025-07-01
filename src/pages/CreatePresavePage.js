@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 // Context para estado persistente
-import { usePresaveFormContext } from '../context/presave/PresaveFormContext';
+import { PresaveFormProvider, usePresaveFormContext } from '../context/presave/PresaveFormContext';
 
 // Custom hooks e services
 import { useAuth } from '../hooks/useAuth';
@@ -58,7 +58,7 @@ const CreatePresavePage = () => {
   const { id: presaveId } = useParams();
   
   // Auth
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, profile } = useAuth();
   
   // Local state
   const [previewMode, setPreviewMode] = useState('mobile');
@@ -115,10 +115,10 @@ const CreatePresavePage = () => {
   // Load existing presave if editing
   useEffect(() => {
     if (presaveId && user) {
-      actions.loadDraft(presaveId, user.id);
+      actions.loadDraft(presaveId);
     } else if (user) {
       // If no presaveId, but user is logged in, load default profile links
-      actions.loadDraft(null, user.id);
+      actions.loadDraft(null);
     }
   }, [presaveId, user, actions]);
 
@@ -226,7 +226,7 @@ const CreatePresavePage = () => {
   };
 
   // Show loading state
-  if (state.isLoadingData) {
+  if (authLoading || !user || !profile || state.isLoadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -236,7 +236,8 @@ const CreatePresavePage = () => {
       </div>
     );
   }  return (
-    <div className="min-h-screen bg-gray-50">
+    <PresaveFormProvider userProfile={profile}>
+      <div className="min-h-screen bg-gray-50">
       {/* Notificação personalizada */}
       {notification && (
         <div className={`fixed top-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
@@ -443,6 +444,7 @@ const CreatePresavePage = () => {
         </div>
       </div>
     </div>
+    </PresaveFormProvider>
   );
 };
 

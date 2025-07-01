@@ -96,7 +96,7 @@ interface PresaveFormActions {
   // Persistência
   saveToStorage: () => void;
   loadFromStorage: () => void;
-  loadDraft: (id: string, userId: string) => Promise<void>;
+  loadDraft: (id: string) => Promise<void>;
   clearDraft: () => void;
   
   // Estados de carregamento
@@ -262,7 +262,7 @@ const PresaveFormContext = createContext<PresaveFormContextValue | null>(null);
 const STORAGE_KEY = 'presave_form_draft_v2';
 
 // Provider
-export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PresaveFormProvider: React.FC<{ children: React.ReactNode; userProfile: any }> = ({ children, userProfile }) => {
   const [state, dispatch] = useReducer(presaveFormReducer, initialState);
   // Auto-save no localStorage com debounce
   useEffect(() => {
@@ -372,7 +372,7 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       } catch (error) {
         console.error('❌ Erro ao carregar draft:', error);
       }
-    }, []),    loadDraft: useCallback(async (id: string, userId: string) => {
+    }, []),    loadDraft: useCallback(async (id: string) => {
     dispatch({ type: ACTIONS.SET_LOADING, value: true });
     try {
       let presaveData = null;
@@ -392,17 +392,11 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
         presaveData = data;
       }
 
-      // Always fetch user profile for default links
-      if (userId) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('social_links, streaming_links, contact_links')
-          .eq('user_id', userId)
-          .single();
-        if (error && error.code !== 'PGRST116') {
-          console.error("Error fetching user profile for default links:", error);
-        }
-        profileData = data;
+      // Use userProfile passed as prop for default links
+      if (userProfile) {
+        profileData = userProfile;
+      } else {
+        console.warn("PresaveFormContext: userProfile not provided, cannot load default links.");
       }
 
       const finalData = {
@@ -426,7 +420,7 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, value: false });
     }
-  }, []),    clearDraft: useCallback(() => {
+  }, [userProfile]),    clearDraft: useCallback(() => {
       try {
         localStorage.removeItem(STORAGE_KEY);
         dispatch({ type: ACTIONS.RESET_FORM, template: null });
