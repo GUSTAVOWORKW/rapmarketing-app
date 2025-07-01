@@ -70,7 +70,10 @@ export const useAuth = () => {
       if (error && error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil atualizado:', error);
       } else if (data) {
-        console.log('[useAuth] fetchProfile: Perfil atualizado encontrado.');
+        console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
+        console.log('[useAuth] Links no perfil - social_links:', data.social_links);
+        console.log('[useAuth] Links no perfil - streaming_links:', data.streaming_links);
+        console.log('[useAuth] Links no perfil - contact_links:', data.contact_links);
         // Só atualiza se o perfil realmente mudou
         const currentProfileStr = JSON.stringify(profile);
         const newProfileStr = JSON.stringify(data);

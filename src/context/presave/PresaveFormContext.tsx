@@ -395,6 +395,9 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode; userProf
       // Use userProfile passed as prop for default links
       if (userProfile) {
         profileData = userProfile;
+        console.log('[PresaveFormContext] userProfile recebido:', userProfile);
+        console.log('[PresaveFormContext] streaming_links no userProfile:', userProfile.streaming_links);
+        console.log('[PresaveFormContext] social_links no userProfile:', userProfile.social_links);
       } else {
         console.warn("PresaveFormContext: userProfile not provided, cannot load default links.");
       }

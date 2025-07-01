@@ -596,6 +596,10 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode; userPr
       // Use userProfile passed as prop for default links
       if (userProfile) {
         profileData = userProfile;
+        console.log('[SmartLinkFormContext] userProfile recebido:', userProfile);
+        console.log('[SmartLinkFormContext] streaming_links no userProfile:', userProfile.streaming_links);
+        console.log('[SmartLinkFormContext] social_links no userProfile:', userProfile.social_links);
+        console.log('[SmartLinkFormContext] contact_links no userProfile:', userProfile.contact_links);
       } else {
         console.warn("SmartLinkFormContext: userProfile not provided, cannot load default links.");
       }
