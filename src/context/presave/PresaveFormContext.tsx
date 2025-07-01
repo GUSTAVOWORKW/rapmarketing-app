@@ -36,12 +36,7 @@ interface PresaveFormState {
     url: string;
     color: string;
   }>;
-  contactLinks: Array<{
-    id: string;
-    type: string;
-    url: string;
-    name: string;
-  }>;
+  
   streamingLinks: Array<{
     id: string;
     platform_id: string;
@@ -94,9 +89,6 @@ interface PresaveFormActions {
   addStreamingLink: (link: any) => void;
   removeStreamingLink: (linkId: string) => void;
   updateStreamingLink: (linkId: string, updates: any) => void;
-  addContactLink: (link: any) => void;
-  removeContactLink: (linkId: string) => void;
-  updateContactLink: (linkId: string, updates: any) => void;
   
   // Ações de artwork
   setArtwork: (file: File | null, url: string, userId?: string) => void;
@@ -131,7 +123,6 @@ const initialState: PresaveFormState = {
   artworkFile: null,
   platformLinks: [],
   socialLinks: [],
-  contactLinks: [],
   streamingLinks: [],
   platforms: {
     spotify: '',
@@ -165,9 +156,6 @@ const ACTIONS = {
   ADD_STREAMING_LINK: 'ADD_STREAMING_LINK',
   REMOVE_STREAMING_LINK: 'REMOVE_STREAMING_LINK',
   UPDATE_STREAMING_LINK: 'UPDATE_STREAMING_LINK',
-  ADD_CONTACT_LINK: 'ADD_CONTACT_LINK',
-  REMOVE_CONTACT_LINK: 'REMOVE_CONTACT_LINK',
-  UPDATE_CONTACT_LINK: 'UPDATE_CONTACT_LINK',
   SET_SUBMITTING: 'SET_SUBMITTING',
   SET_LOADING: 'SET_LOADING',
   SET_PRESAVE_ID: 'SET_PRESAVE_ID',
@@ -238,26 +226,6 @@ const presaveFormReducer = (state: PresaveFormState, action: any): PresaveFormSt
       return {
         ...state,
         streamingLinks: state.streamingLinks.map(link =>
-          link.id === action.linkId ? { ...link, ...action.updates } : link
-        )
-      };
-
-    case ACTIONS.ADD_CONTACT_LINK:
-      return {
-        ...state,
-        contactLinks: [...state.contactLinks, action.link]
-      };
-
-    case ACTIONS.REMOVE_CONTACT_LINK:
-      return {
-        ...state,
-        contactLinks: state.contactLinks.filter(link => link.id !== action.linkId)
-      };
-
-    case ACTIONS.UPDATE_CONTACT_LINK:
-      return {
-        ...state,
-        contactLinks: state.contactLinks.map(link =>
           link.id === action.linkId ? { ...link, ...action.updates } : link
         )
       };
@@ -370,18 +338,6 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       dispatch({ type: ACTIONS.UPDATE_STREAMING_LINK, linkId, updates });
     }, []),
 
-    addContactLink: useCallback((link: any) => {
-      dispatch({ type: ACTIONS.ADD_CONTACT_LINK, link });
-    }, []),
-
-    removeContactLink: useCallback((linkId: string) => {
-      dispatch({ type: ACTIONS.REMOVE_CONTACT_LINK, linkId });
-    }, []),
-
-    updateContactLink: useCallback((linkId: string, updates: any) => {
-      dispatch({ type: ACTIONS.UPDATE_CONTACT_LINK, linkId, updates });
-    }, []),
-
     setArtwork: useCallback((file: File | null, url: string, userId?: string) => {
       dispatch({ 
         type: ACTIONS.UPDATE_FIELD, 
@@ -458,7 +414,6 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
         artworkUrl: presaveData?.artwork_url || '/assets/defaults/default-cover.png',
         platformLinks: presaveData?.platform_links || profileData?.streaming_links || [],
         socialLinks: presaveData?.social_links || profileData?.social_links || [],
-        contactLinks: presaveData?.contact_links || profileData?.contact_links || [],
         selectedTemplate: presaveData?.template_id ? { id: presaveData.template_id, name: presaveData.template_id } : initialState.selectedTemplate,
         // ... other fields from presaveData
       };

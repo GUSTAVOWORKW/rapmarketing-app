@@ -27,21 +27,27 @@ const UserSettings = () => {
         try {
             setLoading(true);
             setError('');
+            console.log("DEBUG: Fetching profile for user_id:", sessionUser.id);
             const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('id, user_id, username, avatar_url, email, social_links, streaming_links, contact_links')
                 .eq('user_id', sessionUser.id)
                 .single();
 
-            if (profileError) throw profileError;
+            if (profileError) {
+                console.error("DEBUG: Erro ao buscar perfil no Supabase:", profileError);
+                throw profileError;
+            }
 
             if (profileData) {
+                console.log("DEBUG: Perfil encontrado:", profileData);
                 setProfile(profileData);
                 setSocialLinks(profileData.social_links || []);
                 setStreamingLinks(profileData.streaming_links || []);
                 setContactLinks(profileData.contact_links || []);
                 setAvatarPreview(profileData.avatar_url || null); 
             } else {
+                console.warn("DEBUG: Perfil não encontrado para o usuário.");
                 setError('Perfil não encontrado.');
             }
         } catch (err) {
@@ -63,9 +69,11 @@ const UserSettings = () => {
                 return;
             }
             if (session?.user) {
+                console.log("DEBUG: User session found:", session.user.id);
                 setUser(session.user);
                 fetchProfileDataForForm(session.user);
             } else {
+                console.log("DEBUG: No user session found, redirecting to login.");
                 setLoading(false);
                 setError("Usuário não autenticado.");
                 navigate('/login');

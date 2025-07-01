@@ -1,77 +1,39 @@
-useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:90 [useAuth] Evento: SIGNED_IN
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:74 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:74
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
-ChooseUsername.js:37 ChooseUsername (1750994421591): useEffect - useEffect disparado. currentUserId: undefined. Definindo isUserDataLoading como true.
-ChooseUsername.js:89 ChooseUsername (1750994421591): useEffect - currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.
-(anônimo) @ ChooseUsername.js:89
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
+create table public.smart_links (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  user_id uuid null,
+  artist_name character varying(255) null,
+  release_title character varying(255) null,
+  cover_image_url text null,
+  template_id character varying(50) not null default 'inspiration'::character varying,
+  custom_colors jsonb null default '{}'::jsonb,
+  platform_links jsonb null default '[]'::jsonb,
+  slug character varying(100) not null,
+  is_public boolean null default true,
+  view_count integer null default 0,
+  description text null,
+  title text null,
+  cover_image_click_url text null,
+  artist_title text null,
+  contact_button_url text null,
+  contact_button_text text null,
+  social_links jsonb null,
+  platforms jsonb null,
+  player_url text null,
+  feat text null,
+  bio text null,
+  avatar_url text null,
+  constraint smart_links_pkey primary key (id),
+  constraint smart_links_slug_key unique (slug),
+  constraint unique_user_smart_link_slug unique (user_id, slug),
+  constraint smart_links_user_id_fkey foreign KEY (user_id) references auth.users (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_smart_links_user_id_slug on public.smart_links using btree (user_id, slug) TABLESPACE pg_default;
+
+create index IF not exists idx_smart_links_user_id_created_at on public.smart_links using btree (user_id, created_at desc) TABLESPACE pg_default;
+
+create trigger update_smart_links_updated_at BEFORE
+update on smart_links for EACH row
+execute FUNCTION update_updated_at_column ();

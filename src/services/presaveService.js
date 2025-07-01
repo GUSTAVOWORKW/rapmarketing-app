@@ -100,7 +100,6 @@ export const savePresave = async (formData, userId) => {
       status: 'publicado',      // Dados estruturados como JSONB
       streaming_links: formData.streamingLinks || [],
       social_links: formData.socialLinks || [],
-      contact_links: formData.contactLinks || [],
       
       // Inicializar contadores
       view_count: 0,
