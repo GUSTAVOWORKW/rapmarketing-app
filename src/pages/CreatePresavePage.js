@@ -268,7 +268,7 @@ const CreatePresavePageContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ position: 'relative', zIndex: 1 }}>
       {/* Notificação personalizada */}
       {notification && (
         <div className={`fixed top-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
@@ -291,7 +291,7 @@ const CreatePresavePageContent = () => {
         </div>
       )}
       
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -404,13 +404,20 @@ const CreatePresavePageContent = () => {
                 </div>
 
                 {state.selectedTemplate && (
-                  <div className="mb-4 relative" style={{ pointerEvents: 'none' }}>
+                  <div className="mb-4 relative" style={{ 
+                    pointerEvents: 'none', 
+                    isolation: 'isolate',
+                    zIndex: 0
+                  }}>
                     <TemplatePreview
                       templateId={state.selectedTemplate?.id}
                       formState={state}
                       isMobilePreview={true}
                       className="w-full"
-                      style={{ pointerEvents: 'none' }}
+                      style={{ 
+                        pointerEvents: 'none',
+                        isolation: 'isolate'
+                      }}
                     />
                   </div>
                 )}
