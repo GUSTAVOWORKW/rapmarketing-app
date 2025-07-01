@@ -1,92 +1,64 @@
-useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:92 [useAuth] Evento: SIGNED_IN
-useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
-useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token:1 
-            
-            
-           Failed to load resource: the server responded with a status of 500 ()
-spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: Object
-_performTokenRefresh @ spotifyTokenService.js:114
-UserSettings.js:72 DEBUG: User session found: f856fde1-c284-4d3f-99ba-aa884f2635ee
-UserSettings.js:30 DEBUG: Fetching profile for user_id: f856fde1-c284-4d3f-99ba-aa884f2635ee
-UserSettings.js:43 DEBUG: Perfil encontrado: Object
-UserSettings.js:342 Uncaught TypeError: i.map is not a function
-    at $t (UserSettings.js:342:38)
-    at Ps (react-dom-client.production.js:3502:21)
-    at Oi (react-dom-client.production.js:6239:15)
-    at $i (react-dom-client.production.js:7243:14)
-    at $c (react-dom-client.production.js:10855:14)
-    at Xc (react-dom-client.production.js:10736:37)
-    at Kc (react-dom-client.production.js:10717:7)
-    at Ic (react-dom-client.production.js:10322:40)
-    at Cd (react-dom-client.production.js:11626:3)
-    at MessagePort.A (scheduler.production.js:151:44)
-useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
-useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
-useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
-ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token:1 
-            
-            
-           Failed to load resource: the server responded with a status of 500 ()
-spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: Object
-_performTokenRefresh @ spotifyTokenService.js:114
+The Netlify deploy errored, with the following guidance provided:
+
+**Diagnosis:**
+The build failed with the error message "TS2304: Cannot find name 'useMemo'." This error indicates a TypeScript error where the name 'useMemo' is not recognized.
+
+**Solution:**
+To resolve this issue, you need to ensure that the 'useMemo' function is imported from the correct package in your TypeScript files. Verify that the proper import statement is included at the top of your file where 'useMemo' is used.
+
+If 'useMemo' is a React hook, you should import it from 'react' like this:
+```javascript
+import { useMemo } from 'react';
+```
+
+After making the necessary changes, commit the updated code to your repository and trigger a new build to verify if the issue is resolved.
+
+The relevant error logs are:
+
+Line 59: [36m[1m❯ Context[22m[39m
+Line 60:   production
+Line 61: [96m[1m​[22m[39m
+Line 62: [96m[1mBuild command from Netlify app                                [22m[39m
+Line 63: [96m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 64: ​
+Line 65: [36m$ npm run build[39m
+Line 66: > rapmarketing-app@0.1.0 build
+Line 67: > react-scripts build
+Line 68: Creating an optimized production build...
+Line 69: Failed during stage 'building site': Build script returned non-zero exit code: 2
+Line 70: [31mFailed to compile.[39m
+Line 71: [31m[39m
+Line 72: [90mTS2304: [39mCannot find name 'useMemo'.
+Line 73:   [0m [90m 449 |[39m   }[33m;[39m
+Line 74:    [90m 450 |[39m
+Line 75:   [31m[1m>[22m[39m[90m 451 |[39m   [36mconst[39m contextValue[33m:[39m [33mPresaveFormContextValue[39m [33m=[39m u
+Line 76:    [90m     |[39m                                                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+Line 77:    [90m 452 |[39m     state[33m,[39m
+Line 78:    [90m 453 |[39m     actions
+Line 79:    [90m 454 |[39m   })[33m,[39m [state[33m,[39m actions])[33m;[39m[0m
+Line 80: [91m[1m​[22m[39m
+Line 81: [91m[1m"build.command" failed                                        [22m[39m
+Line 82: [91m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 83: ​
+Line 84:   [31m[1mError message[22m[39m
+Line 85:   Command failed with exit code 1: npm run build
+Line 86: ​
+Line 87:   [31m[1mError location[22m[39m
+Line 88:   In Build command from Netlify app:
+Line 89:   npm run build
+Line 90: ​
+Line 91:   [31m[1mResolved config[22m[39m
+Line 92:   build:
+Line 93:     command: npm run build
+Line 94:     commandOrigin: ui
+Line 95:     environment:
+Line 96:       - CI
+Line 97:       - REACT_APP_SPOTIFY_CLIENT_ID
+Line 98:       - REACT_APP_SPOTIFY_CLIENT_SECRET
+Line 99:       - REACT_APP_SUPABASE_ANON_KEY
+Line 100:       - REACT_APP_SUPABASE_URL
+Line 101:     publish: /opt/build/repo/build
+Line 102:     publishOrigin: ui
+Line 103: Build failed due to a user error: Build script returned non-zero exit code: 2
+Line 104: Failing build: Failed to build site
+Line 105: Finished processing build request in 45.027s
