@@ -33,83 +33,74 @@ export const useAuth = () => {
     if (!userId) {
       console.log('[useAuth] fetchProfile: userId é nulo, definindo profile como nulo.');
       setProfile(null);
-      setProfileFetched(false); // Reset on logout
+      setProfileFetched(false);
+      setIsFetchingProfile(false);
       return;
     }
 
-    if (profileFetched && profile && !isFetchingProfile) {
-      console.log('[useAuth] fetchProfile: Perfil já foi buscado e está presente, pulando busca.');
-      return;
-    }
-
-    if (isFetchingProfile) {
-      console.log('[useAuth] fetchProfile: Já está buscando perfil, pulando.');
+    // Evita chamadas redundantes
+    if (profileFetched || isFetchingProfile) {
+      console.log('[useAuth] fetchProfile: Perfil já buscado ou busca em andamento, pulando.');
       return;
     }
 
     setIsFetchingProfile(true);
 
-    // 1. Tenta carregar o perfil do localStorage primeiro
-    const cachedProfile = localStorage.getItem(`profile_${userId}`);
-    if (cachedProfile) {
-      try {
-        const parsedProfile = JSON.parse(cachedProfile);
-        setProfile(parsedProfile);
-        console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
-      } catch (parseError) {
-        console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
-        localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
+    try {
+      // 1. Tenta carregar o perfil do localStorage primeiro
+      const cachedProfile = localStorage.getItem(`profile_${userId}`);
+      if (cachedProfile) {
+        try {
+          const parsedProfile = JSON.parse(cachedProfile);
+          setProfile(parsedProfile);
+          console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
+        } catch (parseError) {
+          console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
+          localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
+        }
       }
-    } else {
-      setProfile(null); // Garante que o perfil é nulo se não houver cache
+
+      // 2. Busca perfil atualizado do Supabase
+      console.log(`[useAuth] fetchProfile: Buscando perfil atualizado para userId: ${userId}`);
+      
+      const { data, error } = await timeout(
+        5000, // 5 segundos
+        supabase.from('profiles').select('*').eq('user_id', userId).single()
+      );
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao buscar perfil atualizado:', error);
+      } else if (data) {
+        console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
+        // Só atualiza se o perfil realmente mudou
+        const currentProfileStr = JSON.stringify(profile);
+        const newProfileStr = JSON.stringify(data);
+        if (currentProfileStr !== newProfileStr) {
+          setProfile(data);
+          localStorage.setItem(`profile_${userId}`, newProfileStr);
+        }
+      }
+    } catch (e) {
+      if (e.message === 'Timeout: Supabase profile fetch took too long.') {
+        console.warn('A busca do perfil Supabase excedeu o tempo limite, usando dados em cache se disponíveis.');
+      } else {
+        console.error('Exceção ao buscar perfil atualizado:', e);
+      }
+    } finally {
+      console.log('[useAuth] fetchProfile: Finalizando busca de perfil.');
+      setProfileFetched(true);
+      setIsFetchingProfile(false);
     }
-
-    // 2. Inicia a busca do perfil no Supabase em segundo plano
-    // Não usamos 'await' aqui para não bloquear a execução e permitir que o cache seja exibido imediatamente
-    (async () => {
-      try {
-        console.log(`[useAuth] fetchProfile: Buscando perfil atualizado para userId: ${userId}`);
-        console.log('[useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.');
-        
-        const { data, error } = await timeout(
-          5000, // 5 segundos
-          supabase.from('profiles').select('*').eq('user_id', userId).single()
-        );
-        
-        console.log('[useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.');
-
-        if (error && error.code !== 'PGRST116') {
-          console.error('Erro ao buscar perfil atualizado:', error);
-          // Não limpa o perfil se já foi carregado do cache
-        } else if (data) {
-          console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
-          // Só atualiza se o perfil realmente mudou
-          if (JSON.stringify(profile) !== JSON.stringify(data)) {
-            setProfile(data); // Atualiza o estado com o perfil mais recente
-            localStorage.setItem(`profile_${userId}`, JSON.stringify(data)); // Atualiza o cache
-          }
-          setProfileFetched(true);
-        }
-      } catch (e) {
-        if (e.message === 'Timeout: Supabase profile fetch took too long.') {
-          console.warn('A busca do perfil Supabase excedeu o tempo limite, usando dados em cache se disponíveis.');
-        } else {
-          console.error('Exceção ao buscar perfil atualizado:', e);
-        }
-        // Não limpa o perfil se já foi carregado do cache
-      } finally {
-        console.log('[useAuth] fetchProfile: Finalizando busca de perfil atualizado.');
-        setProfileFetched(true);
-        setIsFetchingProfile(false);
-      }
-    })(); // Executa a função imediatamente
-  }, []);
+  }, [profile, profileFetched, isFetchingProfile]);
 
   useEffect(() => {
+    let mounted = true;
     setLoading(true);
     console.log('[useAuth] useEffect: Iniciando listener de autenticação.');
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      
       console.log(`[useAuth] Evento: ${event}`);
       setSession(session);
       
@@ -121,6 +112,7 @@ export const useAuth = () => {
           // Reset flags when user changes
           setProfileFetched(false);
           setIsFetchingProfile(false);
+          setProfile(null);
         }
       } else {
         console.log('[useAuth] Evento: Nenhum usuário na sessão, limpando perfil.');
@@ -133,7 +125,10 @@ export const useAuth = () => {
       setLoading(false);
     });
 
+    // Verificação inicial da sessão
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      
       if (session) {
         console.log('[useAuth] Verificação inicial: Sessão encontrada.');
         setSession(session);
@@ -143,6 +138,7 @@ export const useAuth = () => {
           // Reset flags for new user
           setProfileFetched(false);
           setIsFetchingProfile(false);
+          setProfile(null);
         }
       } else {
         console.log('[useAuth] Verificação inicial: Nenhuma sessão encontrada.');
@@ -155,16 +151,18 @@ export const useAuth = () => {
       console.log('[useAuth] Verificação inicial: Finalizando carregamento.');
       setLoading(false);
     }).catch(e => {
-      console.error('[useAuth] Erro na verificação inicial da sessão:', e);
-      setLoading(false);
+      if (mounted) {
+        console.error('[useAuth] Erro na verificação inicial da sessão:', e);
+        setLoading(false);
+      }
     });
 
-
     return () => {
+      mounted = false;
       console.log('[useAuth] useEffect: Desinscrevendo listener de autenticação.');
       subscription?.unsubscribe();
     };
-  }, []);
+  }, []); // Removido user da dependência para evitar loops
 
   // Novo useEffect para buscar o perfil quando o usuário estiver disponível e o perfil ainda não tiver sido buscado
   useEffect(() => {

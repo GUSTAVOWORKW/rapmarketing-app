@@ -32,8 +32,8 @@ const ChooseUsername = ({ currentUserId }) => {
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false); // Novo estado
 
   useEffect(() => {
-    // Evita execução redundante se os dados já foram carregados
-    if (hasLoadedInitialData) {
+    // Evita execução redundante se os dados já foram carregados ou se não há usuário
+    if (hasLoadedInitialData || !currentUserId) {
       return;
     }
 
@@ -88,6 +88,7 @@ const ChooseUsername = ({ currentUserId }) => {
       } finally {
         console.log(`${logPrefix} Bloco finally. Definindo isUserDataLoading como false.`);
         setIsUserDataLoading(false);
+        setHasLoadedInitialData(true); // Marca que os dados foram carregados
       }
     };
 

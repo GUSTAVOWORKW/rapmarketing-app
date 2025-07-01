@@ -30,8 +30,6 @@ import {
   FaTimes
 } from 'react-icons/fa';
 
-// Debug logs removidos para evitar problemas em produção
-
 // Templates disponíveis
 const templates = [
   { id: 'holographic', name: 'Trap Future', description: 'Holograma futurista com efeitos trap' },
@@ -52,13 +50,10 @@ const STEPS = [
   { id: 5, title: 'Preview', description: 'Visualização final' },
 ];
 
-// Main component - agora usa contexto diretamente
-const CreatePresavePage = () => {
+// Componente interno que usa o contexto
+const CreatePresavePageContent = () => {
   const navigate = useNavigate();
   const { id: presaveId } = useParams();
-  
-  // Auth
-  const { user, loading: authLoading, profile } = useAuth();
   
   // Local state
   const [previewMode, setPreviewMode] = useState('mobile');
@@ -82,6 +77,7 @@ const CreatePresavePage = () => {
         return false;
     }
   };
+  
   const canSubmit = () => {
     return validateStep(1) && validateStep(2) && validateStep(3);
   };
@@ -89,14 +85,9 @@ const CreatePresavePage = () => {
   const createDraft = async (userId) => {
     // TODO: Implementar criação de draft real
     return 'draft-' + Date.now();
-  };// FIXME: useEffect problemático temporariamente desabilitado
-  // Criar rascunho inicial quando usuário entra na página
-  /* 
-  useEffect(() => {
-    // Lógica de criação de rascunho desabilitada temporariamente
-    // para resolver problema de múltiplas criações
-  }, []); 
-  */  // Local UI state
+  };
+
+  // Local UI state
   const [submitStatus, setSubmitStatus] = useState(null);
   const [notification, setNotification] = useState(null);
 
@@ -105,24 +96,16 @@ const CreatePresavePage = () => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
   };
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-      return;
-    }
-  }, [user, authLoading, navigate]);
+
   // Load existing presave if editing
   useEffect(() => {
-    if (user && profile) { // Ensure user and profile are available
-      if (presaveId) {
-        actions.loadDraft(presaveId);
-      } else {
-        // If no presaveId, but user is logged in, load default profile links
-        actions.loadDraft(null); // This will use the userProfile prop in the context
-      }
+    if (presaveId) {
+      actions.loadDraft(presaveId);
+    } else {
+      // If no presaveId, but user is logged in, load default profile links
+      actions.loadDraft(null); // This will use the userProfile prop in the context
     }
-  }, [presaveId, user, profile, actions]);
+  }, [presaveId, actions]);
 
   // Cleanup quando sair da página
   useEffect(() => {
@@ -142,81 +125,127 @@ const CreatePresavePage = () => {
   };
 
   const nextStep = () => {
-    if (state.currentStep < STEPS.length) {
-      actions.setStep(state.currentStep + 1);
-    }
-  };
-  const prevStep = () => {
-    if (state.currentStep > 1) {
-      actions.setStep(state.currentStep - 1);
+    const currentStepIndex = STEPS.findIndex(s => s.id === state.currentStep);
+    if (currentStepIndex < STEPS.length - 1) {
+      const nextStepId = STEPS[currentStepIndex + 1].id;
+      goToStep(nextStepId);
     }
   };
 
-  // Submit handler
+  const prevStep = () => {
+    const currentStepIndex = STEPS.findIndex(s => s.id === state.currentStep);
+    if (currentStepIndex > 0) {
+      const prevStepId = STEPS[currentStepIndex - 1].id;
+      goToStep(prevStepId);
+    }
+  };
+
+  // Handle form submission
   const handleSubmit = async () => {
     if (!canSubmit()) {
-      showNotification('Preencha todos os campos obrigatórios', 'error');
+      showNotification('Por favor, preencha todos os campos obrigatórios', 'error');
       return;
     }
 
+    setSubmitStatus('submitting');
+    
     try {
-      setSubmitStatus('submitting');
+      const formData = {
+        artistName: state.artistName,
+        trackName: state.trackName,
+        releaseDate: state.releaseDate,
+        artworkUrl: state.artworkUrl,
+        selectedTemplate: state.selectedTemplate,
+        platformLinks: state.platformLinks,
+        socialLinks: state.socialLinks,
+        platforms: state.platforms,
+        shareableSlug: state.shareableSlug || `${state.artistName}-${state.trackName}`.toLowerCase().replace(/\s+/g, '-')
+      };
+
+      console.log('Enviando dados do presave:', formData);
       
-      // Salvar pré-save no Supabase
-      const result = await savePresave(state, user.id);
+      // Chamar serviço de save
+      const result = await savePresave(formData);
       
-      setSubmitStatus('success');
-      
-      // Atualizar contexto com ID gerado
-      actions.setPresaveId(result.id);
-      
-      // Limpar draft após publicação bem-sucedida
-      actions.clearDraft();
-        // Copiar link para clipboard
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(result.url);
-        showNotification(`Pré-save publicado! Link copiado para área de transferência.`, 'success');
+      if (result.success) {
+        setSubmitStatus('success');
+        showNotification('Pré-Save criado com sucesso!', 'success');
+        
+        // Redirecionar após 2 segundos
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
       } else {
-        showNotification(`Pré-save publicado! Link: ${result.url}`, 'success');
+        throw new Error(result.message || 'Erro ao salvar pré-save');
       }
-      
-      // Abrir o pré-save publicado em nova aba
-      window.open(result.url, '_blank');
-      
-      setTimeout(() => {
-        // Redirecionar direto para o dashboard
-        navigate('/dashboard');
-      }, 2000);
-      
     } catch (error) {
-      console.error('Submit error:', error);
+      console.error('Erro ao criar presave:', error);
       setSubmitStatus('error');
       showNotification(error.message || 'Erro ao criar pré-save', 'error');
     }
-  };// Render step content
-  const renderStepContent = () => {    
+  };
+
+  // Render step content
+  const renderStepContent = () => {
     switch (state.currentStep) {
       case 1:
         return (
-          <BasicInfoStep />
+          <BasicInfoStep
+            templates={templates}
+            onDataChange={actions.updateField}
+            onValidationChange={(isValid) => actions.setValidation(1, isValid)}
+            artistName={state.artistName}
+            trackName={state.trackName}
+            releaseDate={state.releaseDate}
+            selectedTemplate={state.selectedTemplate}
+          />
         );
       
       case 2:
         return (
-          <ArtworkUploadStep userId={user?.id} />
+          <ArtworkUploadStep
+            artworkUrl={state.artworkUrl}
+            artworkFile={state.artworkFile}
+            onArtworkChange={actions.setArtwork}
+            onValidationChange={(isValid) => actions.setValidation(2, isValid)}
+            isUploading={state.isUploadingArtwork}
+          />
         );
       
       case 3:
         return (
-          <PlatformLinksStep />
+          <PlatformLinksStep
+            platformLinks={state.platformLinks}
+            platforms={state.platforms}
+            onPlatformLinkAdd={actions.addPlatformLink}
+            onPlatformLinkRemove={actions.removePlatformLink}
+            onPlatformLinkUpdate={actions.updatePlatformLink}
+            onStreamingLinkAdd={actions.addStreamingLink}
+            onStreamingLinkRemove={actions.removeStreamingLink}
+            onStreamingLinkUpdate={actions.updateStreamingLink}
+            streamingLinks={state.streamingLinks}
+            onLegacyPlatformUpdate={(platform, url) => {
+              actions.updateField('platforms', { ...state.platforms, [platform]: url });
+            }}
+            onValidationChange={(isValid) => actions.setValidation(3, isValid)}
+          />
         );
       
       case 4:
         return (
-          <SocialLinksStep />
-        );        case 5:
+          <SocialLinksStep
+            socialLinks={state.socialLinks}
+            onSocialLinkAdd={actions.addSocialLink}
+            onSocialLinkRemove={actions.removeSocialLink}
+            onValidationChange={(isValid) => actions.setValidation(4, isValid)}
+          />
+        );
+      
+      case 5:
         return (
-          <FinalPreviewStep 
+          <FinalPreviewStep
+            state={state}
+            templates={templates}
             onSubmit={handleSubmit}
             submitStatus={submitStatus}
           />
@@ -228,7 +257,7 @@ const CreatePresavePage = () => {
   };
 
   // Show loading state
-  if (authLoading || !user || !profile || state.isLoadingData) {
+  if (state.isLoadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -238,9 +267,9 @@ const CreatePresavePage = () => {
       </div>
     );
   }
+
   return (
-    <PresaveFormProvider userProfile={profile}>
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Notificação personalizada */}
       {notification && (
         <div className={`fixed top-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
@@ -263,7 +292,8 @@ const CreatePresavePage = () => {
         </div>
       )}
       
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{/* Header */}
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {presaveId ? 'Editar Pré-Save' : 'Criar Novo Pré-Save'}
@@ -282,171 +312,169 @@ const CreatePresavePage = () => {
                   className={`flex items-center space-x-2 cursor-pointer ${
                     state.currentStep === step.id
                       ? 'text-blue-600'
-                      : state.currentStep > step.id
+                      : state.currentStep > step.id || validateStep(step.id)
                       ? 'text-green-600'
                       : 'text-gray-400'
                   }`}
                   onClick={() => goToStep(step.id)}
                 >
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                       state.currentStep === step.id
                         ? 'bg-blue-600 text-white'
-                        : state.currentStep > step.id
+                        : state.currentStep > step.id || validateStep(step.id)
                         ? 'bg-green-600 text-white'
-                        : 'bg-gray-200 text-gray-600'
+                        : 'bg-gray-300 text-gray-600'
                     }`}
                   >
-                    {state.currentStep > step.id ? '✓' : step.id}
+                    {state.currentStep > step.id || validateStep(step.id) ? (
+                      <FaCheckCircle className="w-4 h-4" />
+                    ) : (
+                      step.id
+                    )}
                   </div>
-                  <div className="hidden md:block">
-                    <div className="font-medium">{step.title}</div>
-                    <div className="text-xs text-gray-500">{step.description}</div>
+                  <div className="hidden sm:block">
+                    <p className="text-sm font-medium">{step.title}</p>
+                    <p className="text-xs text-gray-500">{step.description}</p>
                   </div>
                 </div>
-                
                 {index < STEPS.length - 1 && (
                   <div className="w-8 h-0.5 bg-gray-300"></div>
                 )}
               </React.Fragment>
             ))}
           </div>
-        </div>        {/* Main content with improved responsive layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 lg:gap-8">
-          {/* Form section - Takes more space */}
-          <div className="xl:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm p-6 lg:p-8">
-              <ErrorBoundary>
-                {renderStepContent()}
-              </ErrorBoundary>
+        </div>
 
-              {/* Navigation buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+        {/* Main content area */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form content */}
+          <div className="lg:col-span-2">
+            <ErrorBoundary>
+              {renderStepContent()}
+            </ErrorBoundary>
+
+            {/* Navigation buttons */}
+            {state.currentStep !== 5 && (
+              <div className="flex justify-between mt-8">
                 <button
                   onClick={prevStep}
                   disabled={state.currentStep === 1}
-                  className="inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 ${
+                    state.currentStep === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-600 text-white hover:bg-gray-700 transition-colors'
+                  }`}
                 >
-                  <FaArrowLeft className="mr-2" />
-                  Anterior
+                  <FaArrowLeft className="w-4 h-4" />
+                  <span>Anterior</span>
                 </button>
 
-                {state.currentStep < STEPS.length && (
-                  <button
-                    onClick={nextStep}
-                    disabled={!validateStep(state.currentStep)}
-                    className="inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
-                  >
-                    Próximo
-                    <FaArrowRight className="ml-2" />
-                  </button>
-                )}
+                <button
+                  onClick={nextStep}
+                  disabled={!validateStep(state.currentStep)}
+                  className={`px-6 py-3 rounded-lg font-medium flex items-center space-x-2 ${
+                    !validateStep(state.currentStep)
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 transition-colors'
+                  }`}
+                >
+                  <span>Próximo</span>
+                  <FaArrowRight className="w-4 h-4" />
+                </button>
               </div>
-            </div>
-          </div>          {/* Preview section - Positioned to the right */}
-          <div className="xl:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                  <FaEye className="mr-2 text-blue-600" />
-                  Preview
-                </h3>
-                <div className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-md">
-                  {state.selectedTemplate?.name || 'Nenhum template'}
-                </div>
-              </div>
+            )}
+          </div>
 
-              {/* Preview mode selector - Mobile/Desktop toggle */}
-              <div className="flex justify-center mb-4">
-                <div className="bg-gray-100 rounded-lg p-1 flex">
-                  <button
-                    onClick={() => setPreviewMode('mobile')}
-                    className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                      previewMode === 'mobile'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    📱 Mobile
-                  </button>
-                  <button
-                    onClick={() => setPreviewMode('desktop')}
-                    className={`px-3 py-1 rounded-md text-sm transition-colors ${
-                      previewMode === 'desktop'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    🖥️ Desktop
-                  </button>
-                </div>
-              </div>
-
-              <ErrorBoundary
-                fallback={(error) => (
-                  <div className="h-96 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-red-600 mb-2">Erro no preview</p>
-                      <p className="text-sm text-gray-500">{error?.message}</p>
-                    </div>
-                  </div>
-                )}
-              >
-                {state.selectedTemplate ? (
-                  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                    {previewMode === 'mobile' ? (
-                      <SmartLinkMobilePreview>
-                        <TemplatePreview
-                          templateId={state.selectedTemplate.id}
-                          formState={state}
-                          isMobilePreview={true}
-                        />
-                      </SmartLinkMobilePreview>
-                    ) : (
-                      <div className="max-w-sm mx-auto">
-                        <TemplatePreview
-                          templateId={state.selectedTemplate.id}
-                          formState={state}
-                          isMobilePreview={false}
-                        />
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="h-80 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-                    <div className="text-center">
-                      <FaEye className="text-4xl text-gray-400 mb-2 mx-auto" />
-                      <p className="text-gray-500 text-sm">Selecione um template para ver o preview</p>
-                    </div>
-                  </div>
-                )}
-              </ErrorBoundary>
-
-              {/* Quick Info Panel */}
-              {state.selectedTemplate && (
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <h4 className="text-sm font-semibold text-blue-900 mb-2">Informações Rápidas</h4>
-                  <div className="space-y-1 text-xs text-blue-800">
-                    {state.artistName && (
-                      <div><span className="font-medium">Artista:</span> {state.artistName}</div>
-                    )}
-                    {state.trackName && (
-                      <div><span className="font-medium">Música:</span> {state.trackName}</div>
-                    )}
-                    {state.releaseDate && (
-                      <div><span className="font-medium">Lançamento:</span> {new Date(state.releaseDate).toLocaleDateString('pt-BR')}</div>
-                    )}
-                    {state.platformLinks && state.platformLinks.length > 0 && (
-                      <div><span className="font-medium">Plataformas:</span> {state.platformLinks.length}</div>
-                    )}
+          {/* Preview sidebar */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Preview</h3>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => setPreviewMode('mobile')}
+                      className={`p-2 rounded ${
+                        previewMode === 'mobile' ? 'bg-blue-100 text-blue-600' : 'text-gray-400'
+                      }`}
+                    >
+                      <FaEye className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-              )}
+
+                {state.selectedTemplate && (
+                  <div className="mb-4">
+                    <SmartLinkMobilePreview
+                      data={{
+                        artistName: state.artistName,
+                        trackName: state.trackName,
+                        artworkUrl: state.artworkUrl,
+                        platformLinks: state.platformLinks,
+                        socialLinks: state.socialLinks,
+                        templateId: state.selectedTemplate?.id
+                      }}
+                      template={state.selectedTemplate}
+                    />
+                  </div>
+                )}
+
+                {/* Data summary */}
+                <div className="text-sm text-gray-600 space-y-1">
+                  <div className="font-medium text-gray-900 mb-2">Dados:</div>
+                  {state.artistName && (
+                    <div><span className="font-medium">Artista:</span> {state.artistName}</div>
+                  )}
+                  {state.trackName && (
+                    <div><span className="font-medium">Música:</span> {state.trackName}</div>
+                  )}
+                  {state.releaseDate && (
+                    <div><span className="font-medium">Lançamento:</span> {new Date(state.releaseDate).toLocaleDateString('pt-BR')}</div>
+                  )}
+                  {state.platformLinks && state.platformLinks.length > 0 && (
+                    <div><span className="font-medium">Plataformas:</span> {state.platformLinks.length}</div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+};
+
+// Componente principal que gerencia auth e provider
+const CreatePresavePage = () => {
+  const navigate = useNavigate();
+  
+  // Auth
+  const { user, loading: authLoading, profile } = useAuth();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+      return;
+    }
+  }, [user, authLoading, navigate]);
+
+  // Show loading state
+  if (authLoading || !user || !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <FaSpinner className="animate-spin text-4xl text-blue-600 mb-4 mx-auto" />
+          <p className="text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <PresaveFormProvider userProfile={profile}>
+      <CreatePresavePageContent />
     </PresaveFormProvider>
   );
 };
