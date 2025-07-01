@@ -11,6 +11,7 @@ export const useSpotifyConnection = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [spotifyError, setSpotifyError] = useState(null);
   const [user, setUser] = useState(null);
   const checkSpotifyConnection = useCallback(async () => {
     try {
@@ -42,16 +43,25 @@ export const useSpotifyConnection = () => {
 
       // Se conectado, verificar se o token é válido
       if (connected) {
-        const validToken = await spotifyTokenService.hasValidSpotifyConnection(currentUser.id);
-        setHasValidToken(validToken);
+        try {
+          const validToken = await spotifyTokenService.hasValidSpotifyConnection(currentUser.id);
+          setHasValidToken(validToken);
+          setSpotifyError(null); // Clear any previous error
+        } catch (tokenError) {
+          console.error('[useSpotifyConnection] Erro ao verificar token Spotify:', tokenError);
+          setHasValidToken(false);
+          setSpotifyError(tokenError.message || 'Erro ao validar token Spotify.');
+        }
       } else {
         setHasValidToken(false);
+        setSpotifyError(null);
       }
 
     } catch (error) {
       console.error('[useSpotifyConnection] Erro ao verificar conexão:', error);
       setIsConnected(false);
       setHasValidToken(false);
+      setSpotifyError(error.message || 'Erro desconhecido ao verificar conexão Spotify.');
     } finally {
       setLoading(false);
     }

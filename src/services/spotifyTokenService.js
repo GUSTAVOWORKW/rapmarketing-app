@@ -119,8 +119,8 @@ class SpotifyTokenService {
         
         // Se for erro 500, pode ser temporário - não remover o token imediatamente
         if (error.status === 500) {
-          console.warn('Erro 500 na Edge Function - token pode ainda estar válido');
-          return null;
+          console.error('Erro 500 na Edge Function - falha ao renovar token');
+          throw new Error('Falha interna do servidor ao renovar token Spotify. Tente novamente mais tarde.');
         }
         
         // Para outros erros, limpar conexão
@@ -129,7 +129,7 @@ class SpotifyTokenService {
           await this._clearSpotifyConnection(userId);
         }
         
-        return null;
+        throw new Error(`Erro ao renovar token Spotify: ${error.message}`);
       }
 
       if (!data?.access_token) {
@@ -160,11 +160,11 @@ class SpotifyTokenService {
 
       return data.access_token;
     } catch (error) {
-      console.warn('Erro geral ao renovar token Spotify:', {
+      console.error('Erro geral ao renovar token Spotify:', {
         error: error.message,
         userId: userId?.substring(0, 8) + '...'
       });
-      return null;
+      throw error; // Re-throw the error
     }
   }
 

@@ -21,7 +21,7 @@ const UserSettings = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { isConnected: spotifyConnected, loading: spotifyLoading, connectSpotify, hasValidToken } = useSpotifyConnection();
+    const { isConnected: spotifyConnected, loading: spotifyLoading, connectSpotify, hasValidToken, spotifyError } = useSpotifyConnection();
 
     const fetchProfileDataForForm = useCallback(async (sessionUser) => {
         try {
@@ -266,6 +266,10 @@ const UserSettings = () => {
                 ) : spotifyConnected && hasValidToken ? (
                     <div className="flex items-center space-x-3">
                         <span className="text-green-700 font-semibold">Conta do Spotify conectada!</span>
+                    </div>
+                ) : spotifyError ? (
+                    <div className="text-red-500">
+                        <MdErrorOutline className="inline mr-2" /> {spotifyError}
                     </div>
                 ) : (
                     <button

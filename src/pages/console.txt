@@ -1,116 +1,284 @@
 useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
 useAuth.js:100 [useAuth] Evento: SIGNED_IN
-useAuth.js:105 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:105 [useAuth] Evento: Usuário na sessão.
+useAuth.js:113 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:111 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
 useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
 useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:138 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+useAuth.js:138 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+ChooseUsername.js:37 ChooseUsername (1751388454121): useEffect - useEffect disparado. currentUserId: f856fde1-c284-4d3f-99ba-aa884f2635ee. Definindo isUserDataLoading como true.
+ChooseUsername.js:41 ChooseUsername (1751388454121): useEffect - getUserAndProfile iniciado.
+ChooseUsername.js:45 ChooseUsername (1751388454121): useEffect - User ID (currentUserId) fornecido: f856fde1-c284-4d3f-99ba-aa884f2635ee.
 useAuth.js:100 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:105 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:105 [useAuth] Evento: Usuário na sessão.
+useAuth.js:113 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:111 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:117 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:119 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:129 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:127 [useAuth] Verificação inicial: Finalizando carregamento.
 useAuth.js:100 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:105 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:105 [useAuth] Evento: Usuário na sessão.
+useAuth.js:113 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:111 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:117 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:119 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:129 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:127 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:119 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:129 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:119 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:129 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+ChooseUsername.js:52 ChooseUsername (1751388454121): useEffect - Depois de buscar perfil. Erro: null, Perfil: {"username":"username","email":null,"avatar_url":"https://ntreksvrwflivedhvixs.supabase.co/storage/v1/object/public/avatars/f856fde1-c284-4d3f-99ba-aa884f2635ee_1749054203642.png","social_links":[{"id":"1751385482416","url":"https://www.instagram.com/juliana.pha/","platform":"instagram"}]}
+ChooseUsername.js:61 ChooseUsername (1751388454121): useEffect - Usuário já tem username (username). Redirecionando para /dashboard.
+ChooseUsername.js:81 ChooseUsername (1751388454121): useEffect - Bloco finally. Definindo isUserDataLoading como false.
+useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
 useAuth.js:100 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:105 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:105 [useAuth] Evento: Usuário na sessão.
+useAuth.js:113 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:111 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:117 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:119 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:129 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
+useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:127 [useAuth] Verificação inicial: Finalizando carregamento.
 useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
 useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
 useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
 useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token:1 
+spotifyTokenService.js:109 
             
             
-           Failed to load resource: the server responded with a status of 500 ()
-spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: Object
+           POST https://ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token 500 (Internal Server Error)
+(anônimo) @ fetch.ts:15
+(anônimo) @ fetch.ts:46
+o @ constants.ts:35
+Promise.then
+l @ constants.ts:35
+(anônimo) @ constants.ts:35
+ke @ constants.ts:35
+(anônimo) @ fetch.ts:34
+(anônimo) @ helper.ts:13
+(anônimo) @ FunctionsClient.ts:91
+(anônimo) @ types.ts:44
+l @ types.ts:44
+invoke @ FunctionsClient.ts:51
+_performTokenRefresh @ spotifyTokenService.js:109
+refreshAccessToken @ spotifyTokenService.js:92
+getAccessToken @ spotifyTokenService.js:52
+await in getAccessToken
+hasValidSpotifyConnection @ spotifyTokenService.js:198
+(anônimo) @ useSpotifyConnection.js:45
+await in (anônimo)
+(anônimo) @ useSpotifyConnection.js:62
+ol @ react-dom-client.production.js:8292
+Hl @ react-dom-client.production.js:9771
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9782
+ld @ react-dom-client.production.js:11313
+(anônimo) @ react-dom-client.production.js:11048
+A @ scheduler.production.js:151
+spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: {error: 'Edge Function returned a non-2xx status code', status: undefined, userId: 'f856fde1...'}
 _performTokenRefresh @ spotifyTokenService.js:114
+await in _performTokenRefresh
+refreshAccessToken @ spotifyTokenService.js:92
+getAccessToken @ spotifyTokenService.js:52
+await in getAccessToken
+hasValidSpotifyConnection @ spotifyTokenService.js:198
+(anônimo) @ useSpotifyConnection.js:45
+await in (anônimo)
+(anônimo) @ useSpotifyConnection.js:62
+ol @ react-dom-client.production.js:8292
+Hl @ react-dom-client.production.js:9771
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9782
+ld @ react-dom-client.production.js:11313
+(anônimo) @ react-dom-client.production.js:11048
+A @ scheduler.production.js:151
 useAuth.js:97 [useAuth] useEffect: Iniciando listener de autenticação.
 useAuth.js:100 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:105 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:105 [useAuth] Evento: Usuário na sessão.
+useAuth.js:113 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:146 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
 useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
 useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
 useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:111 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:117 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:50 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:63 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:64 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:127 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-useAuth.js:71 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:77 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
-fetch.ts:15 
-            
-            
-           GET https://ntreksvrwflivedhvixs.supabase.co/rest/v1/profiles?select=social_links%2Cstreaming_links%2Ccontact_links&user_id=eq.f856fde1-c284-4d3f-99ba-aa884f2635ee net::ERR_INSUFFICIENT_RESOURCES
-(anônimo) @ fetch.ts:15
-(anônimo) @ fetch.ts:46
-o @ constants.ts:35
-PresaveFormContext.tsx:403 Error fetching user profile for default links: {message: 'TypeError: Failed to fetch', details: 'TypeError: Failed to fetch\n    at https://teal-sta….netlify.app/static/js/main.64a480b3.js:2:227633)', hint: '', code: ''}
-(anônimo) @ PresaveFormContext.tsx:403
-fetch.ts:15 
-            
-            
-           GET https://ntreksvrwflivedhvixs.supabase.co/rest/v1/profiles?select=social_links%2Cstreaming_links%2Ccontact_links&user_id=eq.f856fde1-c284-4d3f-99ba-aa884f2635ee net::ERR_INSUFFICIENT_RESOURCES
-(anônimo) @ fetch.ts:15
-(anônimo) @ fetch.ts:46
-o @ constants.ts:35
-PresaveFormContext.tsx:403 Error fetching user profile for default links: {message: 'TypeError: Failed to fetch', details: 'TypeError: Failed to fetch\n    at https://teal-sta….netlify.app/static/js/main.64a480b3.js:2:227633)', hint: '', code: ''}
-(anônimo) @ PresaveFormContext.tsx:403
-fetch.ts:15 
-            
-            
-           GET https://ntreksvrwflivedhvixs.supabase.co/rest/v1/profiles?select=social_links%2Cstreaming_links%2Ccontact_links&user_id=eq.f856fde1-c284-4d3f-99ba-aa884f2635ee net::ERR_INSUFFICIENT_RESOURCES
-(anônimo) @ fetch.ts:15
-(anônimo) @ fetch.ts:46
-o @ constants.ts:35
-PresaveFormContext.tsx:403 Error fetching user profile for default links: {message: 'TypeError: Failed to fetch', details: 'TypeError: Failed to fetch\n    at https://teal-sta….netlify.app/static/js/main.64a480b3.js:2:227633)', hint: '', code: ''}
-(anônimo) @ PresaveFormContext.tsx:403
-fetch.ts:15 
-            
+PresaveFormContext.tsx:399 PresaveFormContext: userProfile not provided, cannot load default links.
+(anônimo) @ PresaveFormContext.tsx:399
+(anônimo) @ CreatePresavePage.js:121
+ol @ react-dom-client.production.js:8292
+Hl @ react-dom-client.production.js:9771
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9765
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9878
+Vl @ react-dom-client.production.js:9746
+Hl @ react-dom-client.production.js:9782
+ld @ react-dom-client.production.js:11313
+(anônimo) @ react-dom-client.production.js:11048

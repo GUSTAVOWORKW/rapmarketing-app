@@ -52,11 +52,7 @@ const ProtectedRoutes = ({ session, profile }) => {
 function App() {
   const { session, loading, profile, fetchProfile } = useAuth();
 
-  const handleProfileUpdate = () => {
-    if (session?.user?.id) {
-      fetchProfile(session.user.id);
-    }
-  };
+  
 
   // Mostra a tela de carregamento enquanto o hook de autenticação processa a sessão.
   if (loading) {
@@ -65,8 +61,6 @@ function App() {
 
   return (
     <>
-      <SmartLinkFormProvider>
-        <PresaveFormProvider>
           <Routes>
             {/* Rotas Públicas */}
             <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
@@ -84,7 +78,6 @@ function App() {
                 session ? (
                   <ChooseUsername
                     currentUserId={session.user.id}
-                    onProfileUpdate={handleProfileUpdate}
                   />
                 ) : (
                   <Navigate to="/login" />
@@ -106,8 +99,6 @@ function App() {
             {/* Rota de fallback */}
             <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
           </Routes>
-        </PresaveFormProvider>
-      </SmartLinkFormProvider>
     </>
   );
 }

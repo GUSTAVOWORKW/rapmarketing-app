@@ -27,6 +27,7 @@ export const useAuth = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileFetched, setProfileFetched] = useState(false);
+  const [isFetchingProfile, setIsFetchingProfile] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
@@ -36,10 +37,17 @@ export const useAuth = () => {
       return;
     }
 
-    if (profileFetched && profile) {
+    if (profileFetched && profile && !isFetchingProfile) {
       console.log('[useAuth] fetchProfile: Perfil já foi buscado e está presente, pulando busca.');
       return;
     }
+
+    if (isFetchingProfile) {
+      console.log('[useAuth] fetchProfile: Já está buscando perfil, pulando.');
+      return;
+    }
+
+    setIsFetchingProfile(true);
 
     // 1. Tenta carregar o perfil do localStorage primeiro
     const cachedProfile = localStorage.getItem(`profile_${userId}`);
@@ -75,8 +83,11 @@ export const useAuth = () => {
           // Não limpa o perfil se já foi carregado do cache
         } else if (data) {
           console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
-          setProfile(data); // Atualiza o estado com o perfil mais recente
-          localStorage.setItem(`profile_${userId}`, JSON.stringify(data)); // Atualiza o cache
+          // Só atualiza se o perfil realmente mudou
+          if (JSON.stringify(profile) !== JSON.stringify(data)) {
+            setProfile(data); // Atualiza o estado com o perfil mais recente
+            localStorage.setItem(`profile_${userId}`, JSON.stringify(data)); // Atualiza o cache
+          }
           setProfileFetched(true);
         }
       } catch (e) {
@@ -88,6 +99,8 @@ export const useAuth = () => {
         // Não limpa o perfil se já foi carregado do cache
       } finally {
         console.log('[useAuth] fetchProfile: Finalizando busca de perfil atualizado.');
+        setProfileFetched(true);
+        setIsFetchingProfile(false);
       }
     })(); // Executa a função imediatamente
   }, []);
@@ -99,16 +112,22 @@ export const useAuth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log(`[useAuth] Evento: ${event}`);
       setSession(session);
-      setUser(session?.user ?? null);
-
+      
       if (session?.user) {
         console.log('[useAuth] Evento: Usuário na sessão.');
-        setUser(session.user);
+        // Só atualiza se o ID do usuário realmente mudou
+        if (user?.id !== session.user.id) {
+          setUser(session.user);
+          // Reset flags when user changes
+          setProfileFetched(false);
+          setIsFetchingProfile(false);
+        }
       } else {
         console.log('[useAuth] Evento: Nenhum usuário na sessão, limpando perfil.');
         setUser(null);
         setProfile(null);
         setProfileFetched(false);
+        setIsFetchingProfile(false);
       }
       console.log('[useAuth] Evento: Finalizando carregamento do onAuthStateChange.');
       setLoading(false);
@@ -118,13 +137,20 @@ export const useAuth = () => {
       if (session) {
         console.log('[useAuth] Verificação inicial: Sessão encontrada.');
         setSession(session);
-        setUser(session.user);
+        // Só atualiza se o ID do usuário realmente mudou
+        if (user?.id !== session.user.id) {
+          setUser(session.user);
+          // Reset flags for new user
+          setProfileFetched(false);
+          setIsFetchingProfile(false);
+        }
       } else {
         console.log('[useAuth] Verificação inicial: Nenhuma sessão encontrada.');
         setSession(null);
         setUser(null);
         setProfile(null);
         setProfileFetched(false);
+        setIsFetchingProfile(false);
       }
       console.log('[useAuth] Verificação inicial: Finalizando carregamento.');
       setLoading(false);
@@ -142,11 +168,11 @@ export const useAuth = () => {
 
   // Novo useEffect para buscar o perfil quando o usuário estiver disponível e o perfil ainda não tiver sido buscado
   useEffect(() => {
-    if (user && !profileFetched) {
+    if (user && !profileFetched && !isFetchingProfile) {
       console.log('[useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...');
       fetchProfile(user.id);
     }
-  }, [user, profileFetched, fetchProfile]);
+  }, [user, profileFetched, isFetchingProfile, fetchProfile]);
 
   return { session, user, profile, loading, fetchProfile };
 };

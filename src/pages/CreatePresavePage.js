@@ -114,13 +114,15 @@ const CreatePresavePage = () => {
   }, [user, authLoading, navigate]);
   // Load existing presave if editing
   useEffect(() => {
-    if (presaveId && user) {
-      actions.loadDraft(presaveId);
-    } else if (user) {
-      // If no presaveId, but user is logged in, load default profile links
-      actions.loadDraft(null);
+    if (user && profile) { // Ensure user and profile are available
+      if (presaveId) {
+        actions.loadDraft(presaveId);
+      } else {
+        // If no presaveId, but user is logged in, load default profile links
+        actions.loadDraft(null); // This will use the userProfile prop in the context
+      }
     }
-  }, [presaveId, user, actions]);
+  }, [presaveId, user, profile, actions]);
 
   // Cleanup quando sair da página
   useEffect(() => {
@@ -235,7 +237,8 @@ const CreatePresavePage = () => {
         </div>
       </div>
     );
-  }  return (
+  }
+  return (
     <PresaveFormProvider userProfile={profile}>
       <div className="min-h-screen bg-gray-50">
       {/* Notificação personalizada */}

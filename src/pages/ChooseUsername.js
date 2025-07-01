@@ -10,7 +10,7 @@ const predefinedAvatars = [
   '/avatars/perfilmulher2.png',
 ];
 
-const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
+const ChooseUsername = ({ currentUserId }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState(''); // Novo estado para email
   const [avatarFile, setAvatarFile] = useState(null); // Novo estado para arquivo do avatar
@@ -29,12 +29,18 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [selectedPredefinedAvatar, setSelectedPredefinedAvatar] = useState(null);
   const navigate = useNavigate();
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false); // Novo estado
 
   useEffect(() => {
+    // Evita execução redundante se os dados já foram carregados
+    if (hasLoadedInitialData) {
+      return;
+    }
+
     const instanceId = Date.now(); 
     const logPrefix = `ChooseUsername (${instanceId}): useEffect -`;
 
-    console.log(`${logPrefix} useEffect disparado. currentUserId: ${currentUserId}. Definindo isUserDataLoading como true.`);
+    console.log(`${logPrefix} useEffect disparado. currentUserId: ${currentUserId}.`);
     setIsUserDataLoading(true); 
 
     const getUserAndProfile = async () => {
@@ -43,7 +49,6 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       try {
         if (currentUserId) {
           console.log(`${logPrefix} User ID (currentUserId) fornecido: ${currentUserId}.`);
-          // Buscar também email, avatar_url e social_links se já existirem
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, email, avatar_url, social_links')
@@ -54,23 +59,26 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
           if (profileError) {
             console.error(`${logPrefix} Erro ao buscar perfil existente:`, profileError);
             setMessage({ text: 'Erro ao verificar perfil existente.', type: 'error' });
+            return;
           }
-          // Se o usuário já tem username, redireciona.
-          // Poderíamos permitir a edição aqui, mas o fluxo atual é para novos usuários.
+
           if (profile && profile.username) {
             console.log(`${logPrefix} Usuário já tem username (${profile.username}). Redirecionando para /dashboard.`);
+            setHasLoadedInitialData(true);
             navigate('/dashboard');
             return; 
           }
-          // Preencher campos se já houver dados (improvável neste fluxo, mas bom ter)
+
           if (profile) {
             if (profile.email) setEmail(profile.email);
             if (profile.avatar_url) setAvatarPreview(profile.avatar_url);
             if (profile.social_links) setSocialLinks(prev => ({...prev, ...profile.social_links}));
           }
+          
+          setHasLoadedInitialData(true);
           console.log(`${logPrefix} Usuário não tem username no perfil ou perfil não encontrado. Permanece na página.`);
         } else {
-          console.warn(`${logPrefix} Nenhum currentUserId fornecido. Isso não deveria acontecer. Redirecionando para /login.`);
+          console.warn(`${logPrefix} Nenhum currentUserId fornecido. Redirecionando para /login.`);
           navigate('/login');
           return; 
         }
@@ -83,17 +91,14 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       }
     };
 
-    if (currentUserId) { // Só executa se currentUserId estiver presente
+    if (currentUserId) { 
         getUserAndProfile();
     } else {
-        console.warn(`${logPrefix} currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.`);
-        // Poderia redirecionar para /login aqui também ou mostrar uma mensagem, 
-        // mas App.js já deve cuidar do redirecionamento se não houver usuário.
-        // Definir isUserDataLoading como false para não ficar em loop de carregamento se currentUserId nunca chegar.
+        console.warn(`${logPrefix} currentUserId não está disponível no momento da chamada do useEffect.`);
         setIsUserDataLoading(false); 
     }
 
-  }, [navigate, currentUserId]); // Adicionado currentUserId às dependências do useEffect
+  }, [navigate, currentUserId, hasLoadedInitialData]);
 
   const handleUsernameChange = (e) => {
     const value = e.target.value.toLowerCase();
@@ -297,11 +302,11 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       }
 
       console.log(`${logPrefix} Username e perfil atualizados com sucesso. Perfil atualizado:`, updatedProfile);
-      setMessage({ text: 'Perfil salvo com sucesso!', type: 'success' });
+      // setMessage({ text: 'Perfil salvo com sucesso!', type: 'success' });
       
-      if (typeof onProfileUpdate === 'function') {
-        await onProfileUpdate(); // Chama a função para atualizar o perfil no App.js
-      }
+      // if (typeof onProfileUpdate === 'function') {
+      //   await onProfileUpdate(); // Chama a função para atualizar o perfil no App.js
+      // }
       
       setTimeout(() => navigate('/dashboard'), 1500);
 
