@@ -18,6 +18,7 @@ import CreateSmartLinkPage from './pages/CreateSmartLinkPage.tsx';
 import PublicProfileSmartLink from './pages/PublicProfileSmartLink.js';
 import SmartLinkMetrics from './components/dashboard/SmartLinkMetrics.tsx';
 import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler';
+import StreamingCallback from './pages/StreamingCallback';
 
 // Seus Contexts
 import { PresaveFormProvider } from './context/presave/PresaveFormContext';
@@ -74,6 +75,7 @@ function App() {
             <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
             <Route path="/:slug" element={<PublicProfileSmartLink />} />
             <Route path="/presave/:slug" element={<PresavePage />} />
+            <Route path="/streaming-callback" element={<StreamingCallback />} />
 
             {/* Rotas que exigem apenas login (sem perfil completo) */}
             <Route

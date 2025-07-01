@@ -1,15 +1,25 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown, FaBars } from 'react-icons/fa';
 
-export default function HeaderBar({ user, avatar, onLogout }) {
+export default function HeaderBar({ user, avatar, onLogout, onToggleSidebar }) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   return (
     <header className="w-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-b border-gray-200 shadow-sm py-1 px-3 flex items-center justify-between z-50 relative min-h-[48px] h-12">
-      <div className="flex items-center cursor-pointer select-none" onClick={() => navigate('/dashboard')}>
-        <img src="/logob.png" alt="Logo Rapmarketing" className="h-10 w-auto object-contain transition-all duration-300" />
+      <div className="flex items-center">
+        {/* Ícone do menu hambúrguer visível em telas pequenas */}
+        <button 
+          onClick={onToggleSidebar} 
+          className="md:hidden mr-2 p-2 rounded-md text-gray-700 hover:bg-gray-200"
+          aria-label="Abrir menu"
+        >
+          <FaBars />
+        </button>
+        <div className="flex items-center cursor-pointer select-none" onClick={() => navigate('/dashboard')}>
+          <img src="/logob.png" alt="Logo Rapmarketing" className="h-10 w-auto object-contain transition-all duration-300" />
+        </div>
       </div>
       <div className="flex items-center gap-2 relative">
         {avatar && <img className="w-8 h-8 rounded-full border border-red-400 shadow-sm object-cover" src={avatar} alt="avatar" />}

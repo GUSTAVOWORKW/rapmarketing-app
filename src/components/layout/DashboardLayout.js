@@ -14,9 +14,7 @@ const DashboardLayout = ({ children }) => {
     const [activeSmartLink, setActiveSmartLink] = useState(null);
     const [loadingSidebarData, setLoadingSidebarData] = useState(true);
     const [showOnboardingCards, setShowOnboardingCards] = useState(false);
-    const [isSidebarOpen, setSidebarOpen] = useState(true);
-    // const [sidebarData, setSidebarData] = useState({ smartLinks: [], presaves: [] });
-    // const [isLoading, setIsLoading] = useState(true);
+    const [isSidebarOpen, setSidebarOpen] = useState(false); // Inicia fechada em mobile
     const { user, profile } = useAuth(); // Obter profile do useAuth
     const currentUserId = user?.id; // Definir currentUserId a partir do user
 
@@ -29,11 +27,9 @@ const DashboardLayout = ({ children }) => {
         }
     };
 
-    /*
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
-    */
 
     const fetchSidebarData = useCallback(async () => {
         if (!user) {
@@ -123,60 +119,19 @@ const DashboardLayout = ({ children }) => {
         );
     }    return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden h-screen">
-        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} />
-        {/* Onboarding Visual com Cards Animados */}
-        {showOnboardingCards && location.pathname === '/dashboard' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-3xl w-full relative animate-fade-in pointer-events-auto">{/* Adicionar pointer-events-auto para o modal */}
-              <button onClick={handleCloseOnboarding} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-2xl font-bold">×</button>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-8 text-[#3100ff]">Bem-vindo ao seu Dashboard!</h2>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {/* Card 1 */}
-                <div className="group relative bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:z-10 border border-[#e9e6ff] animate-card-pop">
-                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#3100ff]/10 mb-4">
-                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M12 3v18m9-9H3" stroke="#3100ff" strokeWidth="2" strokeLinecap="round"/></svg>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 text-[#3100ff]">Crie seu Smart Link</h3>
-                  <p className="text-gray-600 text-center">Centralize todos os seus lançamentos e redes em um único link personalizado. Clique em "Criar Smart Link" na barra lateral!</p>
-                </div>
-                {/* Card 2 */}
-                <div className="group relative bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:z-10 border border-[#e9e6ff] animate-card-pop delay-100">
-                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#a259ff]/10 mb-4">
-                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M17 9V7a5 5 0 00-10 0v2M5 9h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9z" stroke="#a259ff" strokeWidth="2" strokeLinecap="round"/></svg>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 text-[#a259ff]">Ative o Pré-save</h3>
-                  <p className="text-gray-600 text-center">Engaje sua audiência antes do lançamento. Use o Pré-save para garantir mais ouvintes no dia do drop!</p>
-                </div>
-                {/* Card 3 */}
-                <div className="group relative bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:z-10 border border-[#e9e6ff] animate-card-pop delay-200">
-                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#ffb300]/10 mb-4">
-                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M3 12h18M12 3v18" stroke="#ffb300" strokeWidth="2" strokeLinecap="round"/></svg>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 text-[#ffb300]">Acompanhe Resultados</h3>
-                  <p className="text-gray-600 text-center">Veja métricas em tempo real, descubra onde sua música está bombando e otimize sua estratégia!</p>
-                </div>
-                {/* Card 4: Conecte o Spotify */}
-                <div className="group relative bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] rounded-xl shadow-lg p-6 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:z-10 border border-[#e9e6ff] animate-card-pop delay-300">
-                  <div className="w-16 h-16 flex items-center justify-center rounded-full bg-[#1db954]/10 mb-4">
-                    <svg width="32" height="32" viewBox="0 0 496 512" fill="#1db954" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="248" cy="256" r="160" fill="#1db954" opacity="0.15"/>
-                      <path d="M248 8C111 8 0 119 0 256c0 137 111 248 248 248s248-111 248-248C496 119 385 8 248 8zm121.7 365.6c-4.1 0-6.6-1.3-10.4-3.8-62.7-37.3-168.8-45.7-229.8-26.1-4.8 1.5-11.2 3.1-14.7 3.1-8.2 0-14.1-6.4-14.1-15.2 0-9.2 5.2-14.7 16.2-18.1 66.2-20.2 180.1-13.5 249.2 29.5 7.7 4.7 10.1 9.7 10.1 15.3 0 8.7-6.9 15.3-16.5 15.3zm31.5-61.6c-5.2 0-8.5-2-13.1-4.5-71.7-42.5-181.1-54.7-265.1-31.2-5.9 1.6-9.4 3.2-13.9 3.2-10.2 0-17.1-8-17.1-17.1 0-10.2 5.7-16.2 16.5-19.5 30.2-9.2 63.2-15.2 100.8-15.2 82.2 0 163.2 20.7 221.2 59.1 6.2 4.1 9.2 8.7 9.2 15.1 0 9.2-7.5 16.1-18.5 16.1zm34.3-65.8c-4.7 0-7.7-1.3-12.1-3.8-79.5-47.2-211.5-51.7-288.2-29.5-4.6 1.3-7.2 2.6-11.7 2.6-12.1 0-20.2-9.4-20.2-20.2 0-11.2 6.2-18.1 18.5-21.5 35.2-10.1 74.2-15.6 118.2-15.6 89.7 0 176.7 19.1 242.7 55.2 8.1 4.5 12.1 10.1 12.1 18.1 0 11.1-8.9 19.6-19.2 19.6z"/>
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2 text-[#1db954]">Conecte sua conta Spotify</h3>
-                  <p className="text-gray-600 text-center">Conecte sua conta do Spotify para liberar o painel de métricas reais de seguidores e engajamento. Assim você acompanha seu crescimento de verdade!</p>
-                </div>
-              </div>
-              <div className="mt-8 flex justify-center">
-                <button onClick={handleCloseOnboarding} className="bg-[#3100ff] hover:bg-[#1c1c1c] text-white font-bold py-3 px-8 rounded-lg shadow transition-colors text-lg">Começar</button>
-              </div>
-            </div>
-          </div>
+        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} onToggleSidebar={toggleSidebar} />
+        
+        {/* Overlay para mobile */}
+        {isSidebarOpen && (
+            <div 
+                className="fixed inset-0 bg-black/30 z-30 md:hidden"
+                onClick={toggleSidebar}
+            ></div>
         )}
-        {/* Layout principal: sidebar à esquerda, conteúdo à direita */}
+
         <div className="flex flex-row flex-1 min-h-0 w-full h-0">
           {/* Sidebar */}
-          <aside className="w-60 min-w-[180px] max-w-[240px] bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-4 space-y-4 shadow-2xl flex flex-col relative z-30 transition-all duration-300 h-full overflow-y-auto">
+          <aside className={`fixed top-0 left-0 w-64 h-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-4 space-y-4 shadow-2xl flex flex-col z-40 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex flex-col items-center mb-4 group">
               <div className="relative mb-1">
                 {userProfile?.avatar_url ? (
@@ -324,3 +279,4 @@ const DashboardLayout = ({ children }) => {
 };
 
 export default DashboardLayout;
+

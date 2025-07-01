@@ -247,3 +247,32 @@ export const checkSlugAvailability = async (slug) => {
     return { available: false, message: 'Erro ao verificar disponibilidade' };
   }
 };
+
+/**
+ * Salva os dados de interação de um fã com uma campanha de pré-save.
+ * @param {object} fanData - Objeto contendo os dados do fã e da interação.
+ * @param {number} fanData.campaign_id - ID da campanha de pré-save.
+ * @param {string} fanData.fan_email - Email do fã.
+ * @param {string} [fanData.fan_name] - Nome do fã (opcional).
+ * @param {string} fanData.streaming_provider - Provedor de streaming (ex: 'spotify').
+ * @returns {Promise<object>} O registro do fã salvo.
+ */
+export const saveFanInteraction = async (fanData) => {
+  try {
+    const { data, error } = await supabase
+      .from('presave_fans')
+      .insert([fanData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao salvar interação do fã:', error);
+      throw new Error(error.message || 'Erro ao salvar interação do fã');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Erro no serviço de interação do fã:', error);
+    throw error;
+  }
+};

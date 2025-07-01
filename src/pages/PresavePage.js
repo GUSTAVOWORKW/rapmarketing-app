@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaSpotify, FaApple, FaAmazon, FaYoutube, FaPlay, FaShare, FaArrowLeft, FaCheck, FaExclamationTriangle, FaTimes, FaInstagram, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { SiTidal, SiDeezer, SiSoundcloud, SiYoutubemusic, SiThreads } from 'react-icons/si';
 import { getPresaveBySlug } from '../services/presaveService';
+import { getSpotifyAuthUrl } from '../services/streamingService';
 import PresaveTemplateRenderer from '../components/presave/PresaveTemplateRenderer';
 
 const PresavePage = () => {
@@ -20,6 +21,23 @@ const PresavePage = () => {
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);  };
+
+  // Efeito para lidar com notificações de callback
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const status = params.get('status');
+    const message = params.get('message');
+
+    if (status) {
+      if (status === 'success') {
+        showNotification('Pré-save realizado com sucesso!', 'success');
+      } else if (status === 'error') {
+        showNotification(message || 'Ocorreu um erro ao realizar o pré-save.', 'error');
+      }
+      // Limpar os parâmetros da URL para evitar que a notificação reapareça
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.search, navigate]);
 
   // ✅ Tracking removido - será feito pelos templates usando useMetricsTracking hook
   // Removidas funções handleRecordView e handleRecordClick
@@ -51,11 +69,15 @@ const PresavePage = () => {
 
   const handlePlatformClick = (platformId, url) => {
     if (!url) return;
-    
-    // Registrar clique para analytics (opcional)
-    // trackClick(presave.id, platformId);
-    
-    window.open(url, '_blank');
+
+    if (platformId === 'spotify' && !isReleased) {
+      // Lógica de pré-save para Spotify
+      const authUrl = getSpotifyAuthUrl(presave.id);
+      window.location.href = authUrl;
+    } else {
+      // Comportamento padrão para outras plataformas ou após o lançamento
+      window.open(url, '_blank');
+    }
   };
 
   const handleShare = async () => {
