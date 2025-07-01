@@ -211,7 +211,7 @@ const DashboardLayout = ({ children }) => {
               <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#a259ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
               <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3100ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
             </div>
-            <div className="relative z-20 pointer-events-auto">{/* Aumentar z-index para garantir que esteja acima de outros elementos */}
+            <div className="relative z-10 pointer-events-auto">{/* Reduzido z-index para garantir que não interfira com a sidebar */}
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">

@@ -268,7 +268,14 @@ const CreatePresavePageContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen bg-gray-50"
+      style={{
+        position: 'relative',
+        zIndex: 'auto',
+        pointerEvents: 'auto'
+      }}
+    >
       {/* Notificação personalizada */}
       {notification && (
         <div className={`fixed top-4 right-4 z-30 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
@@ -346,9 +353,23 @@ const CreatePresavePageContent = () => {
         </div>
 
         {/* Main content area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div 
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+          style={{
+            position: 'relative',
+            zIndex: 5,
+            pointerEvents: 'auto'
+          }}
+        >
           {/* Form content */}
-          <div className="lg:col-span-2">
+          <div 
+            className="lg:col-span-2"
+            style={{
+              position: 'relative',
+              zIndex: 10,
+              pointerEvents: 'auto'
+            }}
+          >
             <ErrorBoundary>
               {renderStepContent()}
             </ErrorBoundary>
@@ -404,19 +425,12 @@ const CreatePresavePageContent = () => {
                 </div>
 
                 {state.selectedTemplate && (
-                  <div className="mb-4 relative" style={{ 
-                    pointerEvents: 'none', 
-                    isolation: 'isolate'
-                  }}>
+                  <div className="mb-4">
                     <TemplatePreview
                       templateId={state.selectedTemplate?.id}
                       formState={state}
                       isMobilePreview={true}
                       className="w-full"
-                      style={{ 
-                        pointerEvents: 'none',
-                        isolation: 'isolate'
-                      }}
                     />
                   </div>
                 )}

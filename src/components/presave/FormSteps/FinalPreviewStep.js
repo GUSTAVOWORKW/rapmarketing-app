@@ -111,7 +111,7 @@ const FinalPreviewStep = ({ onSubmit, submitStatus }) => {
     <div className="w-full max-w-6xl mx-auto">
       {/* Notificação personalizada */}
       {notification && (
-        <div className={`fixed top-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
+        <div className={`fixed top-4 right-4 z-30 max-w-sm w-full transform transition-all duration-300 ease-in-out ${
           notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
         } text-white p-4 rounded-lg shadow-lg flex items-center justify-between`}>
           <div className="flex items-center">
