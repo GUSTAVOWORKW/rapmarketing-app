@@ -8,7 +8,7 @@ import { PLATFORMS } from '../../../data/platforms';
 interface PlatformLinksStepProps {}
 
 const PlatformLinksStep: React.FC<PlatformLinksStepProps> = () => {
-  const { state, updateStreamingLink } = useSmartLinkForm();
+  const { state, addStreamingLink, updateStreamingLink } = useSmartLinkForm();
   const handlePlatformUrlChange = (platformId: string, url: string) => {
     const existingLink = state.streamingLinks.find(p => p.platform_id === platformId);
     if (existingLink) {
@@ -22,7 +22,7 @@ const PlatformLinksStep: React.FC<PlatformLinksStepProps> = () => {
         url: url
       };
       // Add the new streaming link to the context
-      updateStreamingLink(newLink.id!, newLink);
+      addStreamingLink(newLink);
     }
   };
 

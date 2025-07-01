@@ -616,8 +616,14 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         feat: smartLinkData?.feat || '',
         coverImageUrl: sanitizeUrl(smartLinkData?.cover_image_url, initialState.coverImageUrl),
         playerUrl: smartLinkData?.player_url || '',
-        platforms: smartLinkData?.platforms || profileData?.streaming_links || [],
-                socialLinks: (smartLinkData?.social_links || profileData?.social_links || [])
+        platforms: smartLinkData?.platforms || (profileData?.streaming_links || []).map((link: PlatformLink) => ({
+          ...link,
+          id: link.id || Date.now().toString() + Math.random().toString(36).substring(2, 9), // Ensure unique ID
+        })),
+        socialLinks: (smartLinkData?.social_links || (profileData?.social_links || []).map((link: SocialLink) => ({
+          ...link,
+          id: link.id || Date.now().toString() + Math.random().toString(36).substring(2, 9), // Ensure unique ID
+        })))
           .filter((link: SocialLink) => link.url && link.platform)
           .map((link: SocialLink) => {
             const socialData = SOCIAL_PLATFORMS.find(sp => sp.id === link.platform);

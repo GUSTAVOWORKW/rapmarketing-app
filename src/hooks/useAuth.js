@@ -26,11 +26,18 @@ export const useAuth = () => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileFetched, setProfileFetched] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) {
       console.log('[useAuth] fetchProfile: userId é nulo, definindo profile como nulo.');
       setProfile(null);
+      setProfileFetched(false); // Reset on logout
+      return;
+    }
+
+    if (profileFetched && profile) {
+      console.log('[useAuth] fetchProfile: Perfil já foi buscado e está presente, pulando busca.');
       return;
     }
 
@@ -70,6 +77,7 @@ export const useAuth = () => {
           console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
           setProfile(data); // Atualiza o estado com o perfil mais recente
           localStorage.setItem(`profile_${userId}`, JSON.stringify(data)); // Atualiza o cache
+          setProfileFetched(true);
         }
       } catch (e) {
         if (e.message === 'Timeout: Supabase profile fetch took too long.') {
