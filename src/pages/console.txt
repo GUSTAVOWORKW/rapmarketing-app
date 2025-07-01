@@ -1,39 +1,92 @@
-create table public.smart_links (
-  id uuid not null default gen_random_uuid (),
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  user_id uuid null,
-  artist_name character varying(255) null,
-  release_title character varying(255) null,
-  cover_image_url text null,
-  template_id character varying(50) not null default 'inspiration'::character varying,
-  custom_colors jsonb null default '{}'::jsonb,
-  platform_links jsonb null default '[]'::jsonb,
-  slug character varying(100) not null,
-  is_public boolean null default true,
-  view_count integer null default 0,
-  description text null,
-  title text null,
-  cover_image_click_url text null,
-  artist_title text null,
-  contact_button_url text null,
-  contact_button_text text null,
-  social_links jsonb null,
-  platforms jsonb null,
-  player_url text null,
-  feat text null,
-  bio text null,
-  avatar_url text null,
-  constraint smart_links_pkey primary key (id),
-  constraint smart_links_slug_key unique (slug),
-  constraint unique_user_smart_link_slug unique (user_id, slug),
-  constraint smart_links_user_id_fkey foreign KEY (user_id) references auth.users (id)
-) TABLESPACE pg_default;
-
-create index IF not exists idx_smart_links_user_id_slug on public.smart_links using btree (user_id, slug) TABLESPACE pg_default;
-
-create index IF not exists idx_smart_links_user_id_created_at on public.smart_links using btree (user_id, created_at desc) TABLESPACE pg_default;
-
-create trigger update_smart_links_updated_at BEFORE
-update on smart_links for EACH row
-execute FUNCTION update_updated_at_column ();
+useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:92 [useAuth] Evento: SIGNED_IN
+useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:89 [useAuth] useEffect: Iniciando listener de autenticação.
+useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:92 [useAuth] Evento: INITIAL_SESSION
+useAuth.js:97 [useAuth] Evento: Usuário na sessão, buscando perfil...
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:103 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
+useAuth.js:109 [useAuth] Verificação inicial: Sessão encontrada.
+useAuth.js:43 [useAuth] fetchProfile: Perfil carregado do cache: Object
+useAuth.js:56 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useAuth.js:57 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
+useAuth.js:119 [useAuth] Verificação inicial: Finalizando carregamento.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: Object
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 ()
+spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: Object
+_performTokenRefresh @ spotifyTokenService.js:114
+UserSettings.js:72 DEBUG: User session found: f856fde1-c284-4d3f-99ba-aa884f2635ee
+UserSettings.js:30 DEBUG: Fetching profile for user_id: f856fde1-c284-4d3f-99ba-aa884f2635ee
+UserSettings.js:43 DEBUG: Perfil encontrado: Object
+UserSettings.js:342 Uncaught TypeError: i.map is not a function
+    at $t (UserSettings.js:342:38)
+    at Ps (react-dom-client.production.js:3502:21)
+    at Oi (react-dom-client.production.js:6239:15)
+    at $i (react-dom-client.production.js:7243:14)
+    at $c (react-dom-client.production.js:10855:14)
+    at Xc (react-dom-client.production.js:10736:37)
+    at Kc (react-dom-client.production.js:10717:7)
+    at Ic (react-dom-client.production.js:10322:40)
+    at Cd (react-dom-client.production.js:11626:3)
+    at MessagePort.A (scheduler.production.js:151:44)
+useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+useAuth.js:128 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 ()
+spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: Object
+_performTokenRefresh @ spotifyTokenService.js:114

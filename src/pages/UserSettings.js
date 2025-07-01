@@ -42,9 +42,9 @@ const UserSettings = () => {
             if (profileData) {
                 console.log("DEBUG: Perfil encontrado:", profileData);
                 setProfile(profileData);
-                setSocialLinks(profileData.social_links || []);
-                setStreamingLinks(profileData.streaming_links || []);
-                setContactLinks(profileData.contact_links || []);
+                setSocialLinks(Array.isArray(profileData.social_links) ? profileData.social_links : []);
+                setStreamingLinks(Array.isArray(profileData.streaming_links) ? profileData.streaming_links : []);
+                setContactLinks(Array.isArray(profileData.contact_links) ? profileData.contact_links : []);
                 setAvatarPreview(profileData.avatar_url || null); 
             } else {
                 console.warn("DEBUG: Perfil não encontrado para o usuário.");

@@ -448,10 +448,10 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }, [])
   };
 
-  const contextValue: PresaveFormContextValue = {
+  const contextValue: PresaveFormContextValue = useMemo(() => ({
     state,
     actions
-  };
+  }), [state, actions]);
 
   return (
     <PresaveFormContext.Provider value={contextValue}>
