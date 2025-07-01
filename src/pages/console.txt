@@ -1,717 +1,130 @@
-Agora ao navegar pelas paginas em https://teal-starburst-98236d.netlify.app/criar-smart-link tambem está ficando em branco e não carregando:
-useAuth.js:99 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:104 [useAuth] Evento: SIGNED_IN
-useAuth.js:108 [useAuth] Evento: Usuário na sessão.
-useAuth.js:124 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:170 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
-useAuth.js:56 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:64 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:99 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:104 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:108 [useAuth] Evento: Usuário na sessão.
-useAuth.js:124 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:162 [useAuth] useEffect: Desinscrevendo listener de autenticação.
-ChooseUsername.js:43 ChooseUsername (1751394310887): useEffect - useEffect disparado. currentUserId: f856fde1-c284-4d3f-99ba-aa884f2635ee.
-ChooseUsername.js:47 ChooseUsername (1751394310887): useEffect - getUserAndProfile iniciado.
-ChooseUsername.js:51 ChooseUsername (1751394310887): useEffect - User ID (currentUserId) fornecido: f856fde1-c284-4d3f-99ba-aa884f2635ee.
-useAuth.js:170 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
-useAuth.js:56 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:64 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:133 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:151 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:170 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
-useAuth.js:56 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:64 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:74 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:74 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil.
-ChooseUsername.js:57 ChooseUsername (1751394310887): useEffect - Depois de buscar perfil. Erro: null, Perfil: {"username":"username","email":null,"avatar_url":"https://ntreksvrwflivedhvixs.supabase.co/storage/v1/object/public/avatars/f856fde1-c284-4d3f-99ba-aa884f2635ee_1749054203642.png","social_links":[{"id":"1751385482416","url":"https://www.instagram.com/juliana.pha/","platform":"instagram"}]}
-ChooseUsername.js:66 ChooseUsername (1751394310887): useEffect - Usuário já tem username (username). Redirecionando para /dashboard.
-ChooseUsername.js:89 ChooseUsername (1751394310887): useEffect - Bloco finally. Definindo isUserDataLoading como false.
-useAuth.js:99 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:104 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:108 [useAuth] Evento: Usuário na sessão.
-useAuth.js:124 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:170 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
-useAuth.js:56 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:64 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:133 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:151 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:170 [useAuth] useEffect: Usuário disponível e perfil não buscado, buscando perfil...
-useAuth.js:56 [useAuth] fetchProfile: Perfil carregado do cache: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:64 [useAuth] fetchProfile: Buscando perfil atualizado para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:74 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:74 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:74 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:90 [useAuth] fetchProfile: Finalizando busca de perfil.
-spotifyTokenService.js:109 
-            
-            
-           POST https://ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token 500 (Internal Server Error)
-(anônimo) @ fetch.ts:15
-(anônimo) @ fetch.ts:46
-o @ constants.ts:35
-Promise.then
-l @ constants.ts:35
-(anônimo) @ constants.ts:35
-ke @ constants.ts:35
-(anônimo) @ fetch.ts:34
-(anônimo) @ helper.ts:13
-(anônimo) @ FunctionsClient.ts:91
-(anônimo) @ types.ts:44
-l @ types.ts:44
-invoke @ FunctionsClient.ts:51
-_performTokenRefresh @ spotifyTokenService.js:109
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: {error: 'Edge Function returned a non-2xx status code', status: undefined, userId: 'f856fde1...'}
-_performTokenRefresh @ spotifyTokenService.js:114
-await in _performTokenRefresh
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:165 Erro geral ao renovar token Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-_performTokenRefresh @ spotifyTokenService.js:165
-await in _performTokenRefresh
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:78
-(anônimo) @ GoTrueClient.ts:1884
-_useSession @ GoTrueClient.ts:1276
-await in _useSession
-_emitInitialSession @ GoTrueClient.ts:1876
-(anônimo) @ GoTrueClient.ts:1868
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-UserSettings.js:72 DEBUG: User session found: f856fde1-c284-4d3f-99ba-aa884f2635ee
-UserSettings.js:30 DEBUG: Fetching profile for user_id: f856fde1-c284-4d3f-99ba-aa884f2635ee
-UserSettings.js:43 DEBUG: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', avatar_url: 'https://ntreksvrwflivedhvixs.supabase.co/storage/v…de1-c284-4d3f-99ba-aa884f2635ee_1749054203642.png', email: null, …}
-spotifyTokenService.js:109 
-            
-            
-           POST https://ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token 500 (Internal Server Error)
-(anônimo) @ fetch.ts:15
-(anônimo) @ fetch.ts:46
-o @ constants.ts:35
-Promise.then
-l @ constants.ts:35
-(anônimo) @ constants.ts:35
-ke @ constants.ts:35
-(anônimo) @ fetch.ts:34
-(anônimo) @ helper.ts:13
-(anônimo) @ FunctionsClient.ts:91
-(anônimo) @ types.ts:44
-l @ types.ts:44
-invoke @ FunctionsClient.ts:51
-_performTokenRefresh @ spotifyTokenService.js:109
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: {error: 'Edge Function returned a non-2xx status code', status: undefined, userId: 'f856fde1...'}
-_performTokenRefresh @ spotifyTokenService.js:114
-await in _performTokenRefresh
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:165 Erro geral ao renovar token Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-_performTokenRefresh @ spotifyTokenService.js:165
-await in _performTokenRefresh
-refreshAccessToken @ spotifyTokenService.js:92
-getAccessToken @ spotifyTokenService.js:52
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:72
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-spotifyTokenService.js:67 Erro ao obter token de acesso Spotify: {error: 'Erro ao renovar token Spotify: Edge Function returned a non-2xx status code', userId: 'f856fde1...'}
-getAccessToken @ spotifyTokenService.js:67
-await in getAccessToken
-hasValidSpotifyConnection @ spotifyTokenService.js:200
-(anônimo) @ useSpotifyConnection.js:47
-await in (anônimo)
-(anônimo) @ useSpotifyConnection.js:78
-(anônimo) @ GoTrueClient.ts:1884
-_useSession @ GoTrueClient.ts:1276
-await in _useSession
-_emitInitialSession @ GoTrueClient.ts:1876
-(anônimo) @ GoTrueClient.ts:1868
-(anônimo) @ GoTrueClient.ts:1206
-(anônimo) @ locks.ts:107
-DashboardLayout.js:105 Navegando para /dashboard/metrics
-SmartLinkMetrics.tsx:669 🚨 ALERTA: Números muito altos detectados! {smartLinks: 18, presaves: 840, user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee'}
-(anônimo) @ SmartLinkMetrics.tsx:669
-await in (anônimo)
-(anônimo) @ SmartLinkMetrics.tsx:696
-(anônimo) @ SmartLinkMetrics.tsx:707
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-CreateSmartLinkPage.tsx:146 DEBUG: CreateSmartLinkPage renderizou
-SmartLinkFormContext.tsx:824 Uncaught Error: useSmartLinkForm deve ser usado dentro de um SmartLinkFormProvider
-    at Yi (SmartLinkFormContext.tsx:824:11)
-    at hl (CreateSmartLinkPage.tsx:165:7)
-    at Ps (react-dom-client.production.js:3502:21)
-    at Oi (react-dom-client.production.js:6239:15)
-    at $i (react-dom-client.production.js:7243:14)
-    at $c (react-dom-client.production.js:10855:14)
-    at Xc (react-dom-client.production.js:10736:37)
-    at Kc (react-dom-client.production.js:10717:7)
-    at Ic (react-dom-client.production.js:10322:40)
-    at Cd (react-dom-client.production.js:11626:3)
-Yi @ SmartLinkFormContext.tsx:824
-hl @ CreateSmartLinkPage.tsx:165
-Ps @ react-dom-client.production.js:3502
-Oi @ react-dom-client.production.js:6239
-$i @ react-dom-client.production.js:7243
-$c @ react-dom-client.production.js:10855
-Xc @ react-dom-client.production.js:10736
-Kc @ react-dom-client.production.js:10717
-Ic @ react-dom-client.production.js:10322
-Cd @ react-dom-client.production.js:11626
-A @ scheduler.production.js:151
-useAuth.js:162 [useAuth] useEffect: Desinscrevendo listener de autenticação.
-useAuth.js:162 [useAuth] useEffect: Desinscrevendo listener de autenticação.
+[eslint] 
+src\App.js
+  Line 24:10:  'PresaveFormProvider' is defined but never used    no-unused-vars
+  Line 25:10:  'SmartLinkFormProvider' is defined but never used  no-unused-vars
+  Line 53:38:  'fetchProfile' is assigned a value but never used  no-unused-vars
+
+src\components\PresaveTemplates\HolographicPresave.tsx
+  Line 4:32:  'PlatformLink' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 4:46:  'SocialLink' is defined but never used    @typescript-eslint/no-unused-vars
+
+src\components\PresaveTemplates\NeonGlow.tsx
+  Line 3:32:   'PlatformLink' is defined but never used           @typescript-eslint/no-unused-vars
+  Line 3:46:   'SocialLink' is defined but never used             @typescript-eslint/no-unused-vars
+  Line 28:11:  'timeLeft' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  Line 28:21:  'hasCountdown' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src\components\PresaveTemplates\NoiteCariocaPresave.tsx
+  Line 4:8:  'PlatformIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+src\components\PresaveTemplates\RepenteRusticoPresave.tsx
+  Line 4:8:  'PlatformIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+src\components\PresaveTemplates\VintageVinyl.tsx
+  Line 3:32:  'PlatformLink' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 3:46:  'SocialLink' is defined but never used    @typescript-eslint/no-unused-vars
+
+src\components\Templates\Holographic.tsx
+  Line 3:10:  'FaInstagram' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 3:23:  'FaTwitter' is defined but never used    @typescript-eslint/no-unused-vars
+  Line 3:34:  'FaFacebook' is defined but never used   @typescript-eslint/no-unused-vars
+  Line 3:46:  'FaYoutube' is defined but never used    @typescript-eslint/no-unused-vars
+  Line 3:57:  'FaTiktok' is defined but never used     @typescript-eslint/no-unused-vars
+  Line 3:67:  'FaAt' is defined but never used         @typescript-eslint/no-unused-vars
+
+src\components\Templates\SavanaVibrante.tsx
+  Line 5:10:  'FaMicrophone' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 5:32:  'FaSun' is defined but never used         @typescript-eslint/no-unused-vars
+
+src\components\dashboard\UserDashboard.tsx
+  Line 6:23:   'PlatformLink' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 7:10:   'FaTrash' is defined but never used                       @typescript-eslint/no-unused-vars
+  Line 7:19:   'FaLink' is defined but never used                        @typescript-eslint/no-unused-vars
+  Line 7:27:   'FaMusic' is defined but never used                       @typescript-eslint/no-unused-vars
+  Line 7:36:   'FaThList' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 7:46:   'FaUserCircle' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 17:10:  'activePresavesCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 20:10:  'smartLinksCount' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  Line 22:10:  'smartBiosCount' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 29:12:  'linkError' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 121:9:  'handleDeleteLink' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  Line 133:9:  'publicLinkUrl' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+src\components\layout\DashboardLayout.js
+  Line 14:12:  'activeSmartLink' is assigned a value but never used        no-unused-vars
+  Line 16:12:  'showOnboardingCards' is assigned a value but never used    no-unused-vars
+  Line 18:19:  'profile' is assigned a value but never used                no-unused-vars
+  Line 99:11:  'handleCloseOnboarding' is assigned a value but never used  no-unused-vars
+
+src\components\presave\FormSteps\ArtworkUploadStep.js
+  Line 123:6:  React Hook useCallback has a missing dependency: 'uploadToSupabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\components\presave\FormSteps\SocialLinksStep.js
+  Line 15:3:  'FaEdit' is defined but never used  no-unused-vars
+
+src\context\presave\PresaveFormContext.tsx
+  Line 298:9:  The 'actions' object makes the dependencies of useMemo Hook (at line 448) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'actions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\context\smartlink\SmartLinkFormContext.tsx
+  Line 398:17:  'profile' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+  Line 652:6:   React Hook useCallback has a missing dependency: 'userProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\hooks\useAuth.js
+  Line 93:6:   React Hook useCallback has missing dependencies: 'isFetchingProfile', 'profile', and 'profileFetched'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 164:6:  React Hook useEffect has a missing dependency: 'user?.id'. Either include it or remove the dependency array                        
+                        react-hooks/exhaustive-deps
+
+src\hooks\useMetricsTracking.ts
+  Line 106:4:  React Hook useCallback has a missing dependency: 'recentEvents'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\hooks\useSmartLink.ts
+  Line 4:21:  'PlatformLink' is defined but never used  @typescript-eslint/no-unused-vars
+
+src\hooks\useSpotifyConnection.js
+  Line 14:10:  'spotifyError' is assigned a value but never used  no-unused-vars
+
+src\pages\CreatePresavePage.js
+  Line 18:8:  'TemplatePreview' is defined but never used       no-unused-vars
+  Line 85:9:  'createDraft' is assigned a value but never used  no-unused-vars
+
+src\pages\CreateSmartLinkPage.tsx
+  Line 2:38:   'useMemo' is defined but never used                       @typescript-eslint/no-unused-vars
+  Line 6:10:   'supabase' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 7:10:   'PlatformLink' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 7:24:   'SocialLink' is defined but never used                    @typescript-eslint/no-unused-vars
+  Line 7:36:   'ContactLink' is defined but never used                   @typescript-eslint/no-unused-vars
+  Line 147:5:  'updateField' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 150:5:  'setErrors' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 153:5:  'addStreamingLink' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  Line 154:5:  'removeStreamingLink' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 155:5:  'updateStreamingLink' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 156:5:  'addContactLink' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 157:5:  'removeContactLink' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 158:5:  'updateContactLink' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 163:5:  'errors' is assigned a value but never used               @typescript-eslint/no-unused-vars
+  Line 169:5:  'avatarUrl' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 170:5:  'coverImageUrl' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  Line 246:9:  'showNotification' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+src\pages\LandingPage.js
+  Line 98:11:   'heroStyle' is assigned a value but never used                                                                                    
+                                                               no-unused-vars
+  Line 188:49:  Redundant alt attribute. Screen-readers already announce `img` tags as an image. You don’t need to use the words `image`, `photo,` or `picture` (or any specified custom words) in the alt prop  jsx-a11y/img-redundant-alt
+  Line 191:53:  Redundant alt attribute. Screen-readers already announce `img` tags as an image. You don’t need to use the words `image`, `photo,` or `picture` (or any specified custom words) in the alt prop  jsx-a11y/img-redundant-alt
+
+src\pages\StreamingCallback.js
+  Line 36:39:  'refresh_token' is assigned a value but never used  no-unused-vars
+
+src\pages\UserSettings.js
+  Line 4:10:   'FaInstagram' is defined but never used              no-unused-vars
+  Line 4:23:   'FaTwitter' is defined but never used                no-unused-vars
+  Line 4:34:   'FaFacebookF' is defined but never used              no-unused-vars
+  Line 4:47:   'FaTiktok' is defined but never used                 no-unused-vars
+  Line 4:68:   'FaYoutube' is defined but never used                no-unused-vars
+  Line 4:87:   'FaDeezer' is defined but never used                 no-unused-vars
+  Line 9:10:   'SocialLink' is defined but never used               no-unused-vars
+  Line 9:22:   'PlatformLink' is defined but never used             no-unused-vars
+  Line 9:36:   'ContactLink' is defined but never used              no-unused-vars
+  Line 24:69:  'connectSpotify' is assigned a value but never used  no-unused-vars
+
+Search for the keywords to learn more about each warning.
