@@ -1,6 +1,6 @@
 // pages/PresavePage.js - Página pública do pré-save (Mobile-First)
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FaSpotify, FaApple, FaAmazon, FaYoutube, FaPlay, FaShare, FaArrowLeft, FaCheck, FaExclamationTriangle, FaTimes, FaInstagram, FaTwitter, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { SiTidal, SiDeezer, SiSoundcloud, SiYoutubemusic, SiThreads } from 'react-icons/si';
 import { getPresaveBySlug } from '../services/presaveService';
@@ -17,6 +17,8 @@ const PresavePage = () => {
   const [isReleased, setIsReleased] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  const locationHook = useLocation();
+
   // Função para mostrar notificação
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -24,7 +26,7 @@ const PresavePage = () => {
 
   // Efeito para lidar com notificações de callback
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
+    const params = new URLSearchParams(locationHook.search);
     const status = params.get('status');
     const message = params.get('message');
 
@@ -35,9 +37,9 @@ const PresavePage = () => {
         showNotification(message || 'Ocorreu um erro ao realizar o pré-save.', 'error');
       }
       // Limpar os parâmetros da URL para evitar que a notificação reapareça
-      navigate(location.pathname, { replace: true });
+      navigate(locationHook.pathname, { replace: true });
     }
-  }, [location.search, navigate]);
+  }, [locationHook.search, navigate, locationHook.pathname]);
 
   // ✅ Tracking removido - será feito pelos templates usando useMetricsTracking hook
   // Removidas funções handleRecordView e handleRecordClick
