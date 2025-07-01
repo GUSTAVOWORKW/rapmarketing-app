@@ -208,7 +208,7 @@ const CreateSmartLinkPageContent: React.FC = () => {
       case 4:
         return <SocialLinksStep />;
       case 5:
-        return <ReviewStep />;
+        return <ReviewStep onPublish={handlePublish} />;
       default:
         return <ArtistInfoStep />;
     }
@@ -221,7 +221,7 @@ const CreateSmartLinkPageContent: React.FC = () => {
       case 2:
         return !!releaseTitle?.trim();
       case 3:
-        return platforms && platforms.some(platform => platform.url?.trim());
+        return platforms && Object.values(platforms).some(url => url?.trim());
       case 4:
         return true; // Social links são opcionais
       case 5:
@@ -339,41 +339,6 @@ const CreateSmartLinkPageContent: React.FC = () => {
                   >
                     <span>Próximo</span>
                     <FaArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
-              {/* Botão de Publicação no último step */}
-              {currentStep === 5 && (
-                <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                  <button
-                    onClick={prevStep}
-                    className="px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition-all duration-200 bg-gray-600 text-white hover:bg-gray-700 hover:shadow-lg"
-                  >
-                    <FaArrowLeft className="w-4 h-4" />
-                    <span>Anterior</span>
-                  </button>
-
-                  <button
-                    onClick={handlePublish}
-                    disabled={isSaving}
-                    className={`px-8 py-3 rounded-lg font-medium flex items-center space-x-2 transition-all duration-200 ${
-                      isSaving
-                        ? 'bg-gray-400 text-white cursor-not-allowed'
-                        : 'bg-green-600 text-white hover:bg-green-700 hover:shadow-lg'
-                    }`}
-                  >
-                    {isSaving ? (
-                      <>
-                        <FaSpinner className="w-4 h-4 animate-spin" />
-                        <span>Publicando...</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaCheckCircle className="w-4 h-4" />
-                        <span>Publicar Smart Link</span>
-                      </>
-                    )}
                   </button>
                 </div>
               )}

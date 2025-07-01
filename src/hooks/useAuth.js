@@ -33,17 +33,18 @@ export const useAuth = () => {
     if (!userId) {
       console.log('[useAuth] fetchProfile: userId é nulo, definindo profile como nulo.');
       setProfile(null);
-      setProfileFetched(false);
+      setProfileFetched(true); // Marcar como "buscado" para evitar tentativas
       setIsFetchingProfile(false);
       return;
     }
 
-    // Evita chamadas redundantes
+    // Evita chamadas redundantes - mais rigoroso
     if (profileFetched || isFetchingProfile) {
       console.log('[useAuth] fetchProfile: Perfil já buscado ou busca em andamento, pulando.');
       return;
     }
 
+    console.log('[useAuth] fetchProfile: Iniciando busca para userId:', userId?.substring(0, 8) + '...');
     setIsFetchingProfile(true);
 
     try {
@@ -53,7 +54,7 @@ export const useAuth = () => {
         try {
           const parsedProfile = JSON.parse(cachedProfile);
           setProfile(parsedProfile);
-          console.log('[useAuth] fetchProfile: Perfil carregado do cache:', parsedProfile);
+          console.log('[useAuth] fetchProfile: Perfil carregado do cache.');
         } catch (parseError) {
           console.error('[useAuth] Erro ao parsear perfil do cache:', parseError);
           localStorage.removeItem(`profile_${userId}`); // Limpa cache inválido
@@ -61,8 +62,6 @@ export const useAuth = () => {
       }
 
       // 2. Busca perfil atualizado do Supabase
-      console.log(`[useAuth] fetchProfile: Buscando perfil atualizado para userId: ${userId}`);
-      
       const { data, error } = await timeout(
         5000, // 5 segundos
         supabase.from('profiles').select('*').eq('user_id', userId).single()
@@ -71,7 +70,7 @@ export const useAuth = () => {
       if (error && error.code !== 'PGRST116') {
         console.error('Erro ao buscar perfil atualizado:', error);
       } else if (data) {
-        console.log('[useAuth] fetchProfile: Perfil atualizado encontrado:', data);
+        console.log('[useAuth] fetchProfile: Perfil atualizado encontrado.');
         // Só atualiza se o perfil realmente mudou
         const currentProfileStr = JSON.stringify(profile);
         const newProfileStr = JSON.stringify(data);
@@ -81,17 +80,17 @@ export const useAuth = () => {
         }
       }
     } catch (e) {
-      if (e.message === 'Timeout: Supabase profile fetch took too long.') {
-        console.warn('A busca do perfil Supabase excedeu o tempo limite, usando dados em cache se disponíveis.');
+      if (e.message?.includes('Timeout')) {
+        console.warn('A busca do perfil excedeu o tempo limite.');
       } else {
-        console.error('Exceção ao buscar perfil atualizado:', e);
+        console.error('Exceção ao buscar perfil:', e);
       }
     } finally {
       console.log('[useAuth] fetchProfile: Finalizando busca de perfil.');
       setProfileFetched(true);
       setIsFetchingProfile(false);
     }
-  }, [profile, profileFetched, isFetchingProfile]);
+  }, []); // Removidas TODAS as dependências que causavam loops
 
   useEffect(() => {
     let mounted = true;
