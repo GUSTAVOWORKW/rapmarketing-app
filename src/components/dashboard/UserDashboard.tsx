@@ -23,7 +23,7 @@ const UserDashboard: React.FC = () => {
     loading: loadingLink, 
     error: linkError, 
     clearUserSmartLinkState
-  } = useUserSmartLink(user?.id); 
+  } = useUserSmartLink(); 
   
   const { deleteSmartLink } = useSmartLink(null); 
 

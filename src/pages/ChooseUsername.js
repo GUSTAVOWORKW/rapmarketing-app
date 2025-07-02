@@ -14,7 +14,7 @@ const predefinedAvatars = [
 ];
 
 const ChooseUsername = () => {
-  const { user, updateUserProfile } = useAuth(); // Usar o hook useAuth para obter o usuário e a função de atualização
+  const { user, updateUserProfile, signOut } = useAuth(); // Usar o hook useAuth para obter o usuário e a função de atualização
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState(''); // Novo estado para email
   const [avatarFile, setAvatarFile] = useState(null); // Novo estado para arquivo do avatar
@@ -502,7 +502,7 @@ const ChooseUsername = () => {
                 type="button"
                 className="w-full md:w-auto py-2 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition"
                 onClick={async () => {
-                  await supabase.auth.signOut();
+                  await signOut();
                   navigate('/login');
                 }}
               >

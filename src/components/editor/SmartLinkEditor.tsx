@@ -127,7 +127,7 @@ const SmartLinkEditor: React.FC = () => {
       }
     };
     fetchInitialData();
-  }, [user, profile, templateIdFromParams, smartLinkIdFromParams, fetchSmartLinkByUserId]);
+  }, [user, profile, templateIdFromParams, smartLinkIdFromParams, fetchSmartLinkByUserIdFromHook]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
