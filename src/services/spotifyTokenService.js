@@ -106,8 +106,9 @@ class SpotifyTokenService {
   async _performTokenRefresh(userId, refreshToken) {
     try {
       // Chama a Edge Function do Supabase para renovar o token
+      // O userId é obtido automaticamente a partir do token JWT do usuário autenticado
       const { data, error } = await supabase.functions.invoke('refresh-spotify-token', {
-        body: { userId, refreshToken }
+        body: { refreshToken }
       });
 
       if (error) {
