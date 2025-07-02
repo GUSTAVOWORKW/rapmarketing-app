@@ -127,6 +127,8 @@ export const useSpotifyConnection = () => {
         return { success: false, error: 'O ID da identidade não é um UUID válido: ' + identityId };
       }
       console.log('[DEBUG] Final identityId being passed to unlinkIdentity:', identityId);
+      console.log('[DEBUG] Type of identityId:', typeof identityId);
+      console.log('[DEBUG] spotifyIdentity object before unlinkIdentity:', spotifyIdentity);
       const { error: unlinkError } = await supabase.auth.unlinkIdentity(identityId);
       if (unlinkError) {
         console.error('[DEBUG unlinkIdentity] Erro ao desvincular identidade:', unlinkError);
