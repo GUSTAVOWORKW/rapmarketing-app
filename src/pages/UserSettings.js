@@ -257,7 +257,26 @@ const UserSettings = () => {
                     </div>
                 ) : (
                     <button
-                        onClick={connectSpotify}
+                        onClick={() => {
+                            if (!user) {
+                                setError('Usuário não autenticado.');
+                                return;
+                            }
+                            
+                            // Detectar ambiente e usar URL correta
+                            const isDevelopment = window.location.hostname === 'localhost';
+                            const baseUrl = isDevelopment 
+                                ? 'http://localhost:3000' 
+                                : window.location.origin;
+                            
+                            supabase.auth.signInWithOAuth({ 
+                                provider: 'spotify',
+                                options: {
+                                    redirectTo: `${baseUrl}/spotify-callback`,
+                                    scopes: 'user-read-private user-read-email user-follow-read user-top-read'
+                                },
+                            });
+                        }}
                         className="flex items-center px-6 py-3 bg-[#1db954] text-white font-bold rounded-lg shadow hover:bg-[#169c46] transition"
                     >
                         <FaSpotify className="mr-2" /> Conectar com Spotify
