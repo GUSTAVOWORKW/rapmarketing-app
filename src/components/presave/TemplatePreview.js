@@ -165,7 +165,8 @@ const TemplatePreview = ({
   isMobilePreview = false,
   className = '',
   style = {},
-  onError 
+  onError,
+  disableInteractions = false // Adiciona a nova prop
 }) => {
   // Get template component
   const TemplateComponent = TEMPLATE_MAP[templateId];
@@ -203,6 +204,7 @@ const TemplatePreview = ({
         <TemplateComponent
           {...templateProps}
           isMobilePreview={isMobilePreview}
+          disableInteractions={disableInteractions}
         />
       </ErrorBoundary>
     </div>

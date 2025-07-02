@@ -7,7 +7,7 @@ import usePlatformClick from '../../hooks/common/usePlatformClick';
 import useCompatibleLinks from '../../hooks/common/useCompatibleLinks';
 import { formatReleaseDate } from '../../utils/common/dateUtils';
 
-const VintageVinyl: React.FC<PresaveTemplateProps> = ({
+const VintageVinyl: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
   artistName,
   trackName,
   releaseDate,
@@ -38,7 +38,10 @@ const VintageVinyl: React.FC<PresaveTemplateProps> = ({
   });
 
   return (
-    <div className={`${styles.vintageContainer} ${isMobilePreview ? styles.mobile : ''}`}>
+    <div 
+      className={`${styles.vintageContainer} ${isMobilePreview ? styles.mobile : ''}`}
+      style={disableInteractions ? { pointerEvents: 'none' } : {}}
+    >
       {/* Background textures */}
       <div className={styles.paperTexture}></div>
       <div className={styles.vinylPattern}></div>

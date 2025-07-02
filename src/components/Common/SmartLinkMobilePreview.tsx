@@ -11,6 +11,7 @@ interface SmartLinkMobilePreviewProps {
   deviceColor?: 'black' | 'white' | 'gold' | 'purple';
   size?: 'normal' | 'compact';
   showLabel?: boolean;
+  disableInteractions?: boolean; // Nova prop
 }
 
 const SmartLinkMobilePreview: React.FC<SmartLinkMobilePreviewProps> = ({ 
@@ -66,7 +67,7 @@ const SmartLinkMobilePreview: React.FC<SmartLinkMobilePreviewProps> = ({
         <div className={`absolute inset-0 bg-black/20 blur-xl transform translate-y-8 scale-95 ${dimensions.rounded}`}></div>
         
         {/* Corpo do smartphone */}
-        <div className={`relative ${dimensions.width} ${dimensions.height} ${colors.frame} ${dimensions.rounded} shadow-2xl border-2 p-2`}>
+        <div className={`relative ${dimensions.width} ${dimensions.height} ${colors.frame} ${dimensions.rounded} shadow-2xl border-2 p-2 ${disableInteractions ? 'pointer-events-none' : ''}`}>
           {/* Detalhes realistas do iPhone */}
           
           {/* Notch (entalhe) */}

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import styles from './StreetHoloPresave.module.css';
 
-const StreetHoloPresave: React.FC<PresaveTemplateProps> = ({
+const StreetHoloPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
   artistName,
   trackName,
   releaseDate,
@@ -79,7 +79,10 @@ const StreetHoloPresave: React.FC<PresaveTemplateProps> = ({
   };
 
   return (
-    <div className={`${styles.d17Container} ${isMobilePreview ? styles.mobile : ''}`}>
+    <div 
+      className={`${styles.d17Container} ${isMobilePreview ? styles.mobile : ''}`}
+      style={disableInteractions ? { pointerEvents: 'none' } : {}}
+    >
       {/* Background de Rua com Textura */}
       <div className={styles.streetBackground}>
         <div className={styles.concreteTexture}></div>

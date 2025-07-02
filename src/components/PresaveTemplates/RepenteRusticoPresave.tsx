@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import PlatformIcon from '../ui/PlatformIcon';
 import styles from './RepenteRusticoPresave.module.css';
 
-const RepenteRusticoPresave: React.FC<PresaveTemplateProps> = ({
+const RepenteRusticoPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
   artistName,
   trackName,
   releaseDate,
@@ -80,7 +80,10 @@ const RepenteRusticoPresave: React.FC<PresaveTemplateProps> = ({
   return (
     <div 
       className={`${styles.repenteContainer} ${isMobilePreview ? styles.mobile : ''}`}
-      style={cssCustomProperties}
+      style={{
+        ...cssCustomProperties,
+        ...(disableInteractions ? { pointerEvents: 'none' } : {}),
+      }}
     >
       {/* Background com textura de papel e juta */}
       <div className={styles.textureBackground}>

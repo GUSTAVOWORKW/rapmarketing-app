@@ -431,6 +431,7 @@ const CreatePresavePageContent = () => {
                       formState={state}
                       isMobilePreview={true}
                       className="w-full"
+                      disableInteractions={true}
                     />
                   </div>
                 )}

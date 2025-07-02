@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import PlatformIcon from '../ui/PlatformIcon';
 import styles from './NoiteCariocaPresave.module.css';
 
-const NoiteCariocaPresave: React.FC<PresaveTemplateProps> = ({
+const NoiteCariocaPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
   artistName,
   trackName,
   releaseDate,
@@ -79,7 +79,10 @@ const NoiteCariocaPresave: React.FC<PresaveTemplateProps> = ({
   return (
     <div 
       className={`${styles.noiteContainer} ${isMobilePreview ? styles.mobile : ''}`}
-      style={cssCustomProperties}
+      style={{
+        ...cssCustomProperties,
+        ...(disableInteractions ? { pointerEvents: 'none' } : {}),
+      }}
     >
       {/* Background Video/Image */}
       <div className={styles.backgroundMedia}>

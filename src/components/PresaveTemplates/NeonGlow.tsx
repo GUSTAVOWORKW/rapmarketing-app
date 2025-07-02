@@ -8,7 +8,7 @@ import usePlatformClick from '../../hooks/common/usePlatformClick';
 import useCompatibleLinks from '../../hooks/common/useCompatibleLinks';
 import { formatReleaseDate } from '../../utils/common/dateUtils';
 
-const NeonGlow: React.FC<PresaveTemplateProps> = ({
+const NeonGlow: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
   artistName,
   trackName,
   releaseDate,
@@ -19,6 +19,7 @@ const NeonGlow: React.FC<PresaveTemplateProps> = ({
   isMobilePreview = false,
   isReleased = false,
   onPlatformClick,
+  disableInteractions = false, // Adiciona a nova prop
   // Compatibilidade com props legadas
   streamingLinks = [],
   socialMediaLinks = [],
@@ -40,7 +41,10 @@ const NeonGlow: React.FC<PresaveTemplateProps> = ({
   });
 
   return (
-    <div className={`${styles.neonContainer} ${isMobilePreview ? styles.mobile : ''}`}>
+    <div 
+      className={`${styles.neonContainer} ${isMobilePreview ? styles.mobile : ''}`}
+      style={disableInteractions ? { pointerEvents: 'none' } : {}}
+    >
       {/* Background com efeito matrix */}
       <div className={styles.matrixBackground}>
         <div className={styles.matrixLines}></div>

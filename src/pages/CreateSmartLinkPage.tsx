@@ -392,6 +392,7 @@ const CreateSmartLinkPageContent: React.FC = () => {
                   deviceColor="black" 
                   size="compact" 
                   showLabel={false}
+                  disableInteractions={true}
                 >
                   <SmartLinkMobileView />
                 </SmartLinkMobilePreview>

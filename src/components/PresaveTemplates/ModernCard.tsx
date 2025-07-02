@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import { useMetricsTracking } from '../../hooks/useMetricsTracking';
 import styles from './ModernCard.module.css';
 
-const ModernCard: React.FC<PresaveTemplateProps & { id?: string }> = ({
+const ModernCard: React.FC<PresaveTemplateProps & { id?: string, disableInteractions?: boolean }> = ({
   id, // Adicionado para tracking
   artistName,
   trackName,
@@ -80,7 +80,10 @@ const ModernCard: React.FC<PresaveTemplateProps & { id?: string }> = ({
     }
     return '� ACESSA';
   };  return (
-    <div className={`${styles.sunsetContainer} ${isMobilePreview ? styles.mobile : ''}`}>
+    <div 
+      className={`${styles.sunsetContainer} ${isMobilePreview ? styles.mobile : ''}`}
+      style={disableInteractions ? { pointerEvents: 'none' } : {}}
+    >
       {/* Background de Pôr do Sol com Paralaxe */}
       <div 
         className={styles.sunsetBackground}

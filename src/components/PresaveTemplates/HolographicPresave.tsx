@@ -357,6 +357,8 @@ const styles = {
 };
 
 const HolographicPresave: React.FC<PresaveTemplateProps> = ({
+  disableInteractions = false, // Adiciona a nova prop
+
   id, // Adicionando ID para tracking
   artistName,
   trackName,
@@ -568,7 +570,13 @@ const HolographicPresave: React.FC<PresaveTemplateProps> = ({
           }
         `}
       </style>
-      <div style={styles.container} className="holographic-container">
+      <div 
+        style={{
+          ...styles.container,
+          ...(disableInteractions ? { pointerEvents: 'none' } : {}),
+        }}
+        className="holographic-container"
+      >
         {/* Background de chuva de dinheiro */}
         <div style={styles.moneyBackground}>
           {moneySymbols.map((symbol, index) => (
