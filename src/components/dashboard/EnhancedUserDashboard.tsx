@@ -22,9 +22,12 @@ import {
   FaDownload, 
   FaSearch,
   FaBell,
-  FaExclamationTriangle
+  FaExclamationTriangle,
+  FaSpotify,
+  FaUserAlt
 } from 'react-icons/fa'; 
 import { PLATFORMS as platforms } from '../../data/platforms';
+import { spotifyTokenService } from '../../services/spotifyTokenService';
 
 // Comentado temporariamente até instalar as dependências
 // import { format } from 'date-fns';
@@ -52,6 +55,12 @@ const EnhancedUserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) 
   const [loadingRecentActivity, setLoadingRecentActivity] = useState(true);
   const [topPerformingLinks, setTopPerformingLinks] = useState<any[]>([]);
   const [loadingTopLinks, setLoadingTopLinks] = useState(true);
+
+  // Novos estados para Top Artists e Top Tracks do Spotify
+  const [topArtists, setTopArtists] = useState<any[]>([]);
+  const [loadingTopArtists, setLoadingTopArtists] = useState(true);
+  const [topTracks, setTopTracks] = useState<any[]>([]);
+  const [loadingTopTracks, setLoadingTopTracks] = useState(true);
   
   // Estados para a lista de smart links
   const [allSmartLinks, setAllSmartLinks] = useState<SmartLinkType[]>([]);
@@ -276,6 +285,62 @@ const EnhancedUserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) 
     fetchTopPerformingLinks();
   }, [currentUserId]);
 
+  // Buscar Top Artists do Spotify
+  useEffect(() => {
+    const fetchTopArtists = async () => {
+      if (!currentUserId) {
+        setLoadingTopArtists(false);
+        setTopArtists([]);
+        return;
+      }
+      setLoadingTopArtists(true);
+      try {
+        const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=medium_term');
+        if (response.ok) {
+          const data = await response.json();
+          setTopArtists(data.items);
+        } else {
+          console.error('Erro ao buscar Top Artists do Spotify:', response.status, await response.text());
+          setTopArtists([]);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar Top Artists do Spotify:', error);
+        setTopArtists([]);
+      } finally {
+        setLoadingTopArtists(false);
+      }
+    };
+    fetchTopArtists();
+  }, [currentUserId]);
+
+  // Buscar Top Tracks do Spotify
+  useEffect(() => {
+    const fetchTopTracks = async () => {
+      if (!currentUserId) {
+        setLoadingTopTracks(false);
+        setTopTracks([]);
+        return;
+      }
+      setLoadingTopTracks(true);
+      try {
+        const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=medium_term');
+        if (response.ok) {
+          const data = await response.json();
+          setTopTracks(data.items);
+        } else {
+          console.error('Erro ao buscar Top Tracks do Spotify:', response.status, await response.text());
+          setTopTracks([]);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar Top Tracks do Spotify:', error);
+        setTopTracks([]);
+      } finally {
+        setLoadingTopTracks(false);
+      }
+    };
+    fetchTopTracks();
+  }, [currentUserId]);
+
   // Filtrar smart links com base no termo de pesquisa e filtros
   useEffect(() => {
     if (allSmartLinks.length === 0) {
@@ -372,11 +437,81 @@ const EnhancedUserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) 
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-      <h1 className="text-3xl font-bold text-[#3100ff] mb-4">Bem-vindo ao seu novo Dashboard!</h1>
-      <p className="text-lg text-gray-700 text-center max-w-xl">
-        Aqui você encontra o novo painel de impacto visual, conquistas e estatísticas animadas. Use a barra lateral para navegar pelas funções principais.
-      </p>
+    <div className="p-8 bg-gray-50 min-h-screen">
+      <h1 className="text-4xl font-extrabold text-[#1c1c1c] mb-8">Seu Dashboard</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Card de Seguidores do Spotify (existente) */}
+        <div className="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4">
+          <FaSpotify className="text-green-500 text-4xl" />
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">Seguidores do Spotify</h2>
+            <p className="text-gray-600">{/* Aqui você colocaria o contador de seguidores */}</p>
+          </div>
+        </div>
+
+        {/* Card de Top Artistas do Spotify */}
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
+            <FaUserAlt className="text-blue-500 text-2xl mr-2" /> Seus Top Artistas
+          </h2>
+          {loadingTopArtists ? (
+            <p className="text-gray-500">Carregando artistas...</p>
+          ) : topArtists.length > 0 ? (
+            <ul className="space-y-2">
+              {topArtists.map((artist: any) => (
+                <li key={artist.id} className="flex items-center">
+                  {artist.images && artist.images.length > 0 && (
+                    <img src={artist.images[0].url} alt={artist.name} className="w-8 h-8 rounded-full mr-3 object-cover" />
+                  )}
+                  <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-blue-600 font-medium">
+                    {artist.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
+          )}
+        </div>
+
+        {/* Card de Top Músicas do Spotify */}
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
+            <FaMusic className="text-purple-500 text-2xl mr-2" /> Suas Top Músicas
+          </h2>
+          {loadingTopTracks ? (
+            <p className="text-gray-500">Carregando músicas...</p>
+          ) : topTracks.length > 0 ? (
+            <ul className="space-y-2">
+              {topTracks.map((track: any) => (
+                <li key={track.id} className="flex items-center">
+                  {track.album.images && track.album.images.length > 0 && (
+                    <img src={track.album.images[0].url} alt={track.name} className="w-8 h-8 rounded-md mr-3 object-cover" />
+                  )}
+                  <div>
+                    <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-purple-600 font-medium block">
+                      {track.name}
+                    </a>
+                    <span className="text-sm text-gray-500">{track.artists.map((artist: any) => artist.name).join(', ')}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
+          )}
+        </div>
+      </div>
+
+      {/* Conteúdo existente do dashboard (se houver) */}
+      <div className="bg-white p-8 rounded-xl shadow-lg">
+        <h2 className="text-2xl font-bold text-[#1c1c1c] mb-4">Visão Geral</h2>
+        {/* ... outros elementos do dashboard ... */}
+        <p className="text-lg text-gray-700 text-center max-w-xl">
+          Aqui você encontra o novo painel de impacto visual, conquistas e estatísticas animadas. Use a barra lateral para navegar pelas funções principais.
+        </p>
+      </div>
     </div>
   );
 };
