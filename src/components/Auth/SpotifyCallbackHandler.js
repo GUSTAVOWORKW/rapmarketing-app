@@ -46,13 +46,53 @@ export const SpotifyCallbackHandler = () => {
           .single();
 
         if (tokenError || !tokenData) {
-          console.warn('⚠️ [SpotifyCallback] Tokens não encontrados, pode ser que webhook ainda esteja processando');
-          setError('Conexão em processamento. Verifique em alguns segundos na página de configurações.');
-          setTimeout(() => navigate('/settings'), 3000);
-          return;
+          console.warn('⚠️ [SpotifyCallback] Tokens não encontrados via webhook, tentando fallback...');
+          
+          // FALLBACK: Extrair tokens da URL e salvar manualmente
+          const capturedHash = window.location.hash;
+          if (capturedHash) {
+            const params = new URLSearchParams(capturedHash.substring(1));
+            const accessToken = params.get('provider_token');
+            const refreshToken = params.get('provider_refresh_token');
+            const expiresIn = params.get('expires_in') || '3600';
+
+            if (accessToken) {
+              console.log('🔧 [SpotifyCallback] Salvando tokens manualmente...');
+              setStatus('Salvando tokens do Spotify...');
+
+              const tokenData = {
+                user_id: user.id,
+                access_token: accessToken,
+                refresh_token: refreshToken || '',
+                expires_at: Date.now() + (parseInt(expiresIn) * 1000),
+              };
+
+              const { error: saveError } = await supabase
+                .from('spotify_tokens')
+                .upsert([tokenData], { onConflict: 'user_id' });
+
+              if (saveError) {
+                console.error('❌ [SpotifyCallback] Erro ao salvar tokens manualmente:', saveError);
+                setError('Erro ao salvar conexão. Verifique se a tabela spotify_tokens existe.');
+                setTimeout(() => navigate('/settings'), 3000);
+                return;
+              }
+              
+              console.log('✅ [SpotifyCallback] Tokens salvos manualmente com sucesso!');
+            } else {
+              setError('Tokens não encontrados na URL. Tente conectar novamente.');
+              setTimeout(() => navigate('/settings'), 3000);
+              return;
+            }
+          } else {
+            setError('Webhook não funcionou e não há tokens na URL. Verifique a configuração.');
+            setTimeout(() => navigate('/settings'), 3000);
+            return;
+          }
+        } else {
+          console.log('✅ [SpotifyCallback] Tokens encontrados via webhook!');
         }
 
-        console.log('✅ [SpotifyCallback] Tokens encontrados na base de dados!');
         setStatus('Conexão estabelecida com sucesso!');
         
         // Dispara evento para atualizar outros componentes
