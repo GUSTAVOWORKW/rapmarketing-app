@@ -441,7 +441,7 @@ const EnhancedUserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) 
       <h1 className="text-4xl font-extrabold text-[#1c1c1c] mb-8">Seu Dashboard</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Card de Seguidores do Spotify (existente) */}
+        {/* Card de Seguidores do Spotify */}
         <div className="bg-white p-6 rounded-xl shadow-lg flex items-center space-x-4">
           <FaSpotify className="text-green-500 text-4xl" />
           <div>
@@ -502,15 +502,6 @@ const EnhancedUserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) 
             <p className="text-gray-500">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
           )}
         </div>
-      </div>
-
-      {/* Conteúdo existente do dashboard (se houver) */}
-      <div className="bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold text-[#1c1c1c] mb-4">Visão Geral</h2>
-        {/* ... outros elementos do dashboard ... */}
-        <p className="text-lg text-gray-700 text-center max-w-xl">
-          Aqui você encontra o novo painel de impacto visual, conquistas e estatísticas animadas. Use a barra lateral para navegar pelas funções principais.
-        </p>
       </div>
     </div>
   );
