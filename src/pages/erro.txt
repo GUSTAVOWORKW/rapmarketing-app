@@ -1,3 +1,59 @@
-Diagnosis: The build failure occurred due to a SyntaxError in the file src/components/layout/DashboardLayout.js. The error specifically states "Expected corresponding JSX closing tag for <section>" at line 72.
+"Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_grant\",\"error_description\":\"Refresh token revoked\"}\n"
+{
+  "event_message": "Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_grant\",\"error_description\":\"Refresh token revoked\"}\n",
+  "id": "62cdf889-cac4-430b-a8f3-081f04bf8665",
+  "metadata": [
+    {
+      "boot_time": null,
+      "cpu_time_used": null,
+      "deployment_id": "ntreksvrwflivedhvixs_561be191-f07e-4e98-aa20-53a72bf07cd2_13",
+      "event_type": "Log",
+      "execution_id": "30382903-8bf4-4ab9-bd19-542b0d66f7f9",
+      "function_id": "561be191-f07e-4e98-aa20-53a72bf07cd2",
+      "level": "error",
+      "memory_used": [],
+      "project_ref": "ntreksvrwflivedhvixs",
+      "reason": null,
+      "region": "sa-east-1",
+      "served_by": "supabase-edge-runtime-1.67.4 (compatible with Deno v1.45.2)",
+      "timestamp": "2025-07-02T07:11:37.947Z",
+      "version": "13"
+    }
+  ],
+  "timestamp": 1751440300033705
+}
 
-Solution: To resolve this issue, the developer needs to ensure that the JSX tags in the DashboardLayout.js file are properly closed. The error points to a missing closing tag corresponding to the opening <section> tag. The developer should review the file DashboardLayout.js and add the necessary closing tag to match the opening <section> tag at line 72. They need to verify that all JSX tags are correctly opened and closed throughout the file.
+
+spotifyTokenService.js:109 
+            
+            
+           POST https://ntreksvrwflivedhvixs.supabase.co/functions/v1/refresh-spotify-token 500 (Internal Server Error)
+(anônimo) @ fetch.ts:15
+(anônimo) @ fetch.ts:46
+o @ constants.ts:35
+Promise.then
+l @ constants.ts:35
+(anônimo) @ constants.ts:35
+ye @ constants.ts:35
+(anônimo) @ fetch.ts:34
+(anônimo) @ helper.ts:13
+(anônimo) @ FunctionsClient.ts:91
+(anônimo) @ types.ts:44
+l @ types.ts:44
+invoke @ FunctionsClient.ts:51
+_performTokenRefresh @ spotifyTokenService.js:109
+refreshAccessToken @ spotifyTokenService.js:92
+getAccessToken @ spotifyTokenService.js:52
+await in getAccessToken
+hasValidSpotifyConnection @ spotifyTokenService.js:198
+(anônimo) @ useSpotifyConnection.js:45
+await in (anônimo)
+(anônimo) @ useSpotifyConnection.js:68
+(anônimo) @ GoTrueClient.ts:2252
+_notifyAllSubscribers @ GoTrueClient.ts:2250
+_recoverAndRefresh @ GoTrueClient.ts:2172
+await in _recoverAndRefresh
+(anônimo) @ GoTrueClient.ts:2522
+(anônimo) @ GoTrueClient.ts:1206
+(anônimo) @ locks.ts:107Entenda o erro
+spotifyTokenService.js:114 Erro na Edge Function refresh-spotify-token: {error: 'Edge Function returned a non-2xx status code', status: undefined, userId: 'f856fde1...'}
