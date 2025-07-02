@@ -13,7 +13,8 @@ const socialIconMapping = {
 };
 
 const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmptyMessage = true }) => {
-  if (!socialLinks || typeof socialLinks !== 'object') {
+  // Validação robusta dos dados de entrada
+  if (!socialLinks || typeof socialLinks !== 'object' || Array.isArray(socialLinks)) {
     return showEmptyMessage ? (
       <div className="bg-gray-50 p-4 rounded-lg">
         <p className="text-gray-500 text-sm text-center">Nenhuma rede social configurada</p>
@@ -21,7 +22,18 @@ const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmp
     ) : null;
   }
 
-  const activeSocialLinks = Object.entries(socialLinks).filter(([platform, url]) => url && url.trim() !== '');
+  // Filtrar apenas entradas válidas (strings não vazias)
+  const activeSocialLinks = Object.entries(socialLinks).filter(([platform, url]) => {
+    // Verificação defensiva para garantir que url é string antes de usar trim
+    if (!url || typeof url !== 'string') return false;
+    if (!platform || typeof platform !== 'string') return false;
+    
+    try {
+      return url.trim() !== '';
+    } catch (e) {
+      return false;
+    }
+  });
 
   if (activeSocialLinks.length === 0) {
     return showEmptyMessage ? (
@@ -38,10 +50,14 @@ const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmp
         {activeSocialLinks.map(([platform, url]) => {
           const { icon: Icon, color, name } = socialIconMapping[platform] || socialIconMapping.other;
           
+          // Validação adicional para garantir que a URL é válida
+          const safeUrl = typeof url === 'string' ? url.trim() : '';
+          if (!safeUrl) return null;
+          
           return (
             <a
               key={platform}
-              href={url}
+              href={safeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-3 p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 group"
@@ -49,7 +65,7 @@ const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmp
               <Icon className={`text-xl ${color} group-hover:scale-110 transition-transform duration-200`} />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-[#1c1c1c] truncate">{name}</div>
-                <div className="text-xs text-gray-500 truncate">{url}</div>
+                <div className="text-xs text-gray-500 truncate">{safeUrl}</div>
               </div>
             </a>
           );

@@ -45,8 +45,12 @@ const UserSettings = () => {
 
             if (profileData) {
                 setProfile(profileData);
-                setSocialLinks(profileData.social_links || {});
-                setAvatarPreview(profileData.avatar_url || null); 
+                // Garantir que social_links seja sempre um objeto válido
+                const safeSocialLinks = profileData.social_links && typeof profileData.social_links === 'object' && !Array.isArray(profileData.social_links)
+                    ? profileData.social_links 
+                    : {};
+                setSocialLinks(safeSocialLinks);
+                setAvatarPreview(profileData.avatar_url || null);  
             } else {
                 setError('Perfil não encontrado.');
             }

@@ -68,7 +68,10 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
           if (profile) {
             if (profile.email) setEmail(profile.email);
             if (profile.avatar_url) setAvatarPreview(profile.avatar_url);
-            if (profile.social_links) setSocialLinks(prev => ({...prev, ...profile.social_links}));
+            // Garantir que social_links seja sempre um objeto válido
+            if (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) {
+              setSocialLinks(prev => ({...prev, ...profile.social_links}));
+            }
           }
           console.log(`${logPrefix} Usuário não tem username no perfil ou perfil não encontrado. Permanece na página.`);
         } else {
