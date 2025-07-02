@@ -21,7 +21,7 @@ const socialPlatforms = [
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const { user, profile, loading: authLoading, refreshProfile } = useAuth(); // Usar o novo useAuth
+    const { user, profile, loading: authLoading, refreshProfile, signInWithSpotify } = useAuth(); // Usar o novo useAuth
     const [socialLinks, setSocialLinks] = useState({});
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null); 
@@ -159,6 +159,13 @@ const UserSettings = () => {
         }
     };
 
+    // Se não há perfil ou usuário após o carregamento, redireciona para o login
+    useEffect(() => {
+        if (!authLoading && (!profile || !user)) {
+            navigate('/login');
+        }
+    }, [authLoading, profile, user, navigate]);
+
     if (authLoading) {
         return (
             <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
@@ -168,12 +175,6 @@ const UserSettings = () => {
     }
 
     if (!profile || !user) {
-        // Se não há perfil ou usuário após o carregamento, redireciona para o login
-        useEffect(() => {
-            if (!authLoading && (!profile || !user)) {
-                navigate('/login');
-            }
-        }, [authLoading, profile, user, navigate]);
         return null; // Não renderiza nada enquanto redireciona
     }
 
