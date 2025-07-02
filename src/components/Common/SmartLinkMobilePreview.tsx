@@ -19,7 +19,8 @@ const SmartLinkMobilePreview: React.FC<SmartLinkMobilePreviewProps> = ({
   className = '',
   deviceColor = 'black',
   size = 'normal',
-  showLabel = true
+  showLabel = true,
+  disableInteractions = false
 }) => {
   const getDeviceColors = () => {
     switch (deviceColor) {

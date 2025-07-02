@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import styles from './StreetHoloPresave.module.css';
 
-const StreetHoloPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
+const StreetHoloPresave: React.FC<PresaveTemplateProps> = ({
   artistName,
   trackName,
   releaseDate,
@@ -13,6 +13,7 @@ const StreetHoloPresave: React.FC<PresaveTemplateProps & { disableInteractions?:
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
+  disableInteractions = false,
   onPlatformClick,
   // Compatibilidade com props legadas
   streamingLinks = [],

@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import { useMetricsTracking } from '../../hooks/useMetricsTracking';
 import styles from './ModernCard.module.css';
 
-const ModernCard: React.FC<PresaveTemplateProps & { id?: string, disableInteractions?: boolean }> = ({
+const ModernCard: React.FC<PresaveTemplateProps> = ({
   id, // Adicionado para tracking
   artistName,
   trackName,
@@ -15,6 +15,7 @@ const ModernCard: React.FC<PresaveTemplateProps & { id?: string, disableInteract
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
+  disableInteractions = false,
   onPlatformClick,
   // Compatibilidade com props legadas
   streamingLinks = [],

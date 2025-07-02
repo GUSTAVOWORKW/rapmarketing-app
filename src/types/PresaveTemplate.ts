@@ -56,6 +56,7 @@ export interface PresaveTemplateProps {
   // Configurações de display
   isMobilePreview?: boolean;
   isReleased?: boolean;
+  disableInteractions?: boolean;
   
   // Customização visual
   backgroundColor?: string;

@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import PlatformIcon from '../ui/PlatformIcon';
 import styles from './RepenteRusticoPresave.module.css';
 
-const RepenteRusticoPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
+const RepenteRusticoPresave: React.FC<PresaveTemplateProps> = ({
   artistName,
   trackName,
   releaseDate,
@@ -14,6 +14,7 @@ const RepenteRusticoPresave: React.FC<PresaveTemplateProps & { disableInteractio
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
+  disableInteractions = false,
   backgroundColor,
   customColors,
   onPlatformClick,

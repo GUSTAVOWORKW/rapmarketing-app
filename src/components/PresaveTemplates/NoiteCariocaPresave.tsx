@@ -4,7 +4,7 @@ import { PresaveTemplateProps } from '../../types/PresaveTemplate';
 import PlatformIcon from '../ui/PlatformIcon';
 import styles from './NoiteCariocaPresave.module.css';
 
-const NoiteCariocaPresave: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
+const NoiteCariocaPresave: React.FC<PresaveTemplateProps> = ({
   artistName,
   trackName,
   releaseDate,
@@ -14,6 +14,7 @@ const NoiteCariocaPresave: React.FC<PresaveTemplateProps & { disableInteractions
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
+  disableInteractions = false,
   backgroundColor,
   customColors,
   onPlatformClick,

@@ -7,7 +7,7 @@ import usePlatformClick from '../../hooks/common/usePlatformClick';
 import useCompatibleLinks from '../../hooks/common/useCompatibleLinks';
 import { formatReleaseDate } from '../../utils/common/dateUtils';
 
-const VintageVinyl: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
+const VintageVinyl: React.FC<PresaveTemplateProps> = ({
   artistName,
   trackName,
   releaseDate,
@@ -17,6 +17,7 @@ const VintageVinyl: React.FC<PresaveTemplateProps & { disableInteractions?: bool
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
+  disableInteractions = false,
   onPlatformClick,
   // Compatibilidade com props legadas
   streamingLinks = [],

@@ -8,7 +8,7 @@ import usePlatformClick from '../../hooks/common/usePlatformClick';
 import useCompatibleLinks from '../../hooks/common/useCompatibleLinks';
 import { formatReleaseDate } from '../../utils/common/dateUtils';
 
-const NeonGlow: React.FC<PresaveTemplateProps & { disableInteractions?: boolean }> = ({
+const NeonGlow: React.FC<PresaveTemplateProps> = ({
   artistName,
   trackName,
   releaseDate,
