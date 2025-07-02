@@ -189,7 +189,7 @@
   position: relative;
   /* Garantir interatividade dos elementos */
   z-index: 300;
-  pointer-events: all;
+  /* Removido pointer-events: all; para permitir controle via prop */
 }
 
 /* Garantir que o conteúdo dos templates se ajuste perfeitamente */
@@ -201,7 +201,7 @@
   /* Garantir que todos os elementos sejam clicáveis */
   position: relative;
   z-index: 400;
-  pointer-events: all;
+  /* Removido pointer-events: all; para permitir controle via prop */
 }
 
 /* Garantir que botões e links sejam sempre clicáveis no mockup */
@@ -212,17 +212,17 @@
 .phone-content textarea,
 .phone-content [onClick],
 .phone-content [href] {
-  pointer-events: all !important;
+  pointer-events: all;
   position: relative;
-  z-index: 500 !important;
-  cursor: pointer !important;
+  z-index: 500;
+  cursor: pointer;
 }
 
 /* Correção específica para iframes (Spotify embed) */
 .phone-content iframe {
-  pointer-events: all !important;
+  pointer-events: all;
   position: relative;
-  z-index: 500 !important;
+  z-index: 500;
 }
 
 /* Forçar elementos a respeitarem as bordas do mockup */
@@ -235,18 +235,18 @@
 .phone-content .holographic-link-item,
 .phone-content [class*="link"],
 .phone-content [class*="button"] {
-  pointer-events: all !important;
-  position: relative !important;
-  z-index: 600 !important;
-  cursor: pointer !important;
+  pointer-events: all; /* Removido !important */
+  position: relative; /* Removido !important */
+  z-index: 600; /* Removido !important */
+  cursor: pointer; /* Removido !important */
 }
 
 /* Correção específica para elementos com hover/focus no mockup */
 .phone-content *:hover,
 .phone-content *:focus,
 .phone-content *:active {
-  pointer-events: all !important;
-  z-index: 700 !important;
+  pointer-events: all; /* Removido !important */
+  z-index: 700; /* Removido !important */
 }
 
 /* ===============================
