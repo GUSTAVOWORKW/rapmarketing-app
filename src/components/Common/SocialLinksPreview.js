@@ -14,7 +14,28 @@ const socialIconMapping = {
 
 const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmptyMessage = true }) => {
   // Validação robusta dos dados de entrada
-  if (!socialLinks || typeof socialLinks !== 'object' || Array.isArray(socialLinks)) {
+  if (!socialLinks) {
+    return showEmptyMessage ? (
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <p className="text-gray-500 text-sm text-center">Nenhuma rede social configurada</p>
+      </div>
+    ) : null;
+  }
+
+  // Converter formato de array para objeto (compatibilidade com dados antigos)
+  let normalizedSocialLinks = {};
+  
+  if (Array.isArray(socialLinks)) {
+    // Formato antigo: [{"platform": "instagram", "url": "...", "id": "..."}]
+    socialLinks.forEach(item => {
+      if (item && typeof item === 'object' && item.platform && item.url) {
+        normalizedSocialLinks[item.platform] = item.url;
+      }
+    });
+  } else if (typeof socialLinks === 'object') {
+    // Formato atual: {"instagram": "https://..."}
+    normalizedSocialLinks = socialLinks;
+  } else {
     return showEmptyMessage ? (
       <div className="bg-gray-50 p-4 rounded-lg">
         <p className="text-gray-500 text-sm text-center">Nenhuma rede social configurada</p>
@@ -23,7 +44,7 @@ const SocialLinksPreview = ({ socialLinks, title = "Suas Redes Sociais", showEmp
   }
 
   // Filtrar apenas entradas válidas (strings não vazias)
-  const activeSocialLinks = Object.entries(socialLinks).filter(([platform, url]) => {
+  const activeSocialLinks = Object.entries(normalizedSocialLinks).filter(([platform, url]) => {
     // Verificação defensiva para garantir que url é string antes de usar trim
     if (!url || typeof url !== 'string') return false;
     if (!platform || typeof platform !== 'string') return false;

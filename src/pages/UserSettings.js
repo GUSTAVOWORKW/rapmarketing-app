@@ -45,10 +45,21 @@ const UserSettings = () => {
 
             if (profileData) {
                 setProfile(profileData);
+                
                 // Garantir que social_links seja sempre um objeto válido
-                const safeSocialLinks = profileData.social_links && typeof profileData.social_links === 'object' && !Array.isArray(profileData.social_links)
-                    ? profileData.social_links 
-                    : {};
+                let safeSocialLinks = {};
+                
+                if (Array.isArray(profileData.social_links)) {
+                    // Converter formato antigo array para objeto
+                    profileData.social_links.forEach(item => {
+                        if (item && typeof item === 'object' && item.platform && item.url) {
+                            safeSocialLinks[item.platform] = item.url;
+                        }
+                    });
+                } else if (profileData.social_links && typeof profileData.social_links === 'object') {
+                    safeSocialLinks = profileData.social_links;
+                }
+                
                 setSocialLinks(safeSocialLinks);
                 setAvatarPreview(profileData.avatar_url || null);  
             } else {

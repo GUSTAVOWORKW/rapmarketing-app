@@ -68,8 +68,18 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
           if (profile) {
             if (profile.email) setEmail(profile.email);
             if (profile.avatar_url) setAvatarPreview(profile.avatar_url);
+            
             // Garantir que social_links seja sempre um objeto válido
-            if (profile.social_links && typeof profile.social_links === 'object' && !Array.isArray(profile.social_links)) {
+            if (Array.isArray(profile.social_links)) {
+              // Converter formato antigo array para objeto
+              const convertedLinks = {};
+              profile.social_links.forEach(item => {
+                if (item && typeof item === 'object' && item.platform && item.url) {
+                  convertedLinks[item.platform] = item.url;
+                }
+              });
+              setSocialLinks(prev => ({...prev, ...convertedLinks}));
+            } else if (profile.social_links && typeof profile.social_links === 'object') {
               setSocialLinks(prev => ({...prev, ...profile.social_links}));
             }
           }
