@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronDown, FaBars } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext'; // Importar o novo useAuth
+import { useAuth } from '../../context/AuthContext'; // Importar o novo useAuth
 
 export default function HeaderBar({ onLogout, onToggleSidebar }) {
   const [open, setOpen] = React.useState(false);
