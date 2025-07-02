@@ -366,7 +366,7 @@ const CreatePresavePageContent = () => {
             className="lg:col-span-2"
             style={{
               position: 'relative',
-              zIndex: 10,
+              zIndex: 1000,
               pointerEvents: 'auto'
             }}
           >
