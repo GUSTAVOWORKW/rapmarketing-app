@@ -74,6 +74,11 @@ const UserSettings = () => {
     }, []);
 
     useEffect(() => {
+        // Expor Supabase globalmente para facilitar testes de desenvolvimento
+        if (process.env.NODE_ENV === 'development' || window.location.hostname.includes('netlify')) {
+            window.supabase = supabase;
+        }
+        
         const getSession = async () => {
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             if (sessionError) {
