@@ -294,55 +294,55 @@ const DashboardLayout = ({ children }) => {
                     </div>
 
                     {/* Card de Top Artistas do Spotify (Novo) */}
-                    <div className="bg-white p-6 rounded-xl shadow-lg">
-                      <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
-                        <FaUserAlt className="text-blue-500 text-2xl mr-2" /> Seus Top Artistas
-                      </h2>
+                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-200">
+                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
+                        <FaUserAlt className="text-white text-2xl mr-2" /> Seus Top Artistas
+                      </span>
                       {loadingTopArtists ? (
-                        <p className="text-gray-500">Carregando artistas...</p>
+                        <p className="text-white/70">Carregando artistas...</p>
                       ) : topArtists.length > 0 ? (
-                        <ul className="space-y-2">
+                        <ul className="space-y-2 text-center">
                           {topArtists.map((artist: any) => (
-                            <li key={artist.id} className="flex items-center">
+                            <li key={artist.id} className="flex items-center justify-center">
                               {artist.images && artist.images.length > 0 && (
-                                <img src={artist.images[0].url} alt={artist.name} className="w-8 h-8 rounded-full mr-3 object-cover" />
+                                <img src={artist.images[0].url} alt={artist.name} className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-white" />
                               )}
-                              <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-blue-600 font-medium">
+                              <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-white font-medium hover:underline">
                                 {artist.name}
                               </a>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
+                        <p className="text-white/70">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
                       )}
                     </div>
 
                     {/* Card de Top Músicas do Spotify (Novo) */}
-                    <div className="bg-white p-6 rounded-xl shadow-lg">
-                      <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
-                        <FaMusic className="text-purple-500 text-2xl mr-2" /> Suas Top Músicas
-                      </h2>
+                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-300">
+                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
+                        <FaMusic className="text-white text-2xl mr-2" /> Suas Top Músicas
+                      </span>
                       {loadingTopTracks ? (
-                        <p className="text-gray-500">Carregando músicas...</p>
+                        <p className="text-white/70">Carregando músicas...</p>
                       ) : topTracks.length > 0 ? (
-                        <ul className="space-y-2">
+                        <ul className="space-y-2 text-center">
                           {topTracks.map((track: any) => (
-                            <li key={track.id} className="flex items-center">
+                            <li key={track.id} className="flex items-center justify-center">
                               {track.album.images && track.album.images.length > 0 && (
-                                <img src={track.album.images[0].url} alt={track.name} className="w-8 h-8 rounded-md mr-3 object-cover" />
+                                <img src={track.album.images[0].url} alt={track.name} className="w-12 h-12 rounded-md mr-3 object-cover border-2 border-white" />
                               )}
                               <div>
-                                <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-purple-600 font-medium block">
+                                <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-white font-medium block hover:underline">
                                   {track.name}
                                 </a>
-                                <span className="text-sm text-gray-500">{track.artists.map((artist: any) => artist.name).join(', ')}</span>
+                                <span className="text-sm text-white/70">{track.artists.map((artist: any) => artist.name).join(', ')}</span>
                               </div>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
+                        <p className="text-white/70">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
                       )}
                     </div>
                   </div>
