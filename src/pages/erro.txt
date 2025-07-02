@@ -1,0 +1,24 @@
+"Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_client\",\"error_description\":\"Invalid client\"}\n"
+{
+  "event_message": "Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_client\",\"error_description\":\"Invalid client\"}\n",
+  "id": "ad07054d-9aaf-4c4f-8893-d7c3746d011f",
+  "metadata": [
+    {
+      "boot_time": null,
+      "cpu_time_used": null,
+      "deployment_id": "ntreksvrwflivedhvixs_561be191-f07e-4e98-aa20-53a72bf07cd2_9",
+      "event_type": "Log",
+      "execution_id": "e94707eb-49ce-4596-9f6b-e5bfff2e7e63",
+      "function_id": "561be191-f07e-4e98-aa20-53a72bf07cd2",
+      "level": "error",
+      "memory_used": [],
+      "project_ref": "ntreksvrwflivedhvixs",
+      "reason": null,
+      "region": "sa-east-1",
+      "served_by": "supabase-edge-runtime-1.67.4 (compatible with Deno v1.45.2)",
+      "timestamp": "2025-07-02T04:49:59.032Z",
+      "version": "9"
+    }
+  ],
+  "timestamp": 1751431803642382
+}
