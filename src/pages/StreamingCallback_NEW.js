@@ -37,37 +37,21 @@ const StreamingCallback = () => {
             try {
                 updateProgress(1, 'Trocando código por tokens...');
                 
-                // 1. Trocar código por tokens DIRETAMENTE (sem edge function)
-                const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-                
-                if (!CLIENT_ID) {
-                    throw new Error('REACT_APP_SPOTIFY_CLIENT_ID não configurado');
-                }
-
-                // Como é uma aplicação frontend, vamos usar o fluxo simplificado
-                // Em produção, você pode querer mover isso para uma edge function por segurança
-                const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        grant_type: 'authorization_code',
-                        code: code,
+                // 1. Usar a edge function para trocar código por tokens
+                const { data: tokenData, error: tokenError } = await supabase.functions.invoke('spotify-token-exchange', {
+                    body: {
+                        code,
                         redirect_uri: `${window.location.origin}/streaming-callback`,
-                        client_id: CLIENT_ID,
-                        // Note: Em produção, considere usar PKCE para melhor segurança
-                    })
+                        state: presaveId
+                    }
                 });
 
-                if (!tokenResponse.ok) {
-                    const errorText = await tokenResponse.text();
-                    console.error('❌ [StreamingCallback] Erro na API do Spotify:', errorText);
-                    throw new Error(`Erro ao obter token do Spotify: ${tokenResponse.status}`);
+                if (tokenError) {
+                    console.error('❌ [StreamingCallback] Erro na edge function:', tokenError);
+                    throw new Error(`Erro ao obter token: ${tokenError.message}`);
                 }
 
-                const tokenData = await tokenResponse.json();
-                console.log('✅ [StreamingCallback] Tokens obtidos via API direta');
+                console.log('✅ [StreamingCallback] Tokens obtidos via edge function');
                 const { access_token } = tokenData;
 
                 updateProgress(2, 'Obtendo dados do seu perfil...');
