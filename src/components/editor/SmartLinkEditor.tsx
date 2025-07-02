@@ -38,7 +38,7 @@ const SmartLinkEditor: React.FC = () => {
   const { 
     loading: loadingSmartLink, 
     error: smartLinkError, 
-    fetchSmartLinkByUserId, 
+    fetchSmartLinkByUserId: fetchSmartLinkByUserIdFromHook, 
     createSmartLink, 
     updateSmartLink 
   } = useSmartLink(null); // Passar null para indicar que não estamos carregando por ID/slug inicialmente
@@ -79,7 +79,7 @@ const SmartLinkEditor: React.FC = () => {
         if (smartLinkIdFromParams) {
           // Modo de edição: buscar SmartLink específico por ID
           // Como estamos usando user_id único, vamos buscar pelo user.id mesmo
-          const existingLink = await fetchSmartLinkByUserId(user.id);
+          const existingLink = await fetchSmartLinkByUserIdFromHook(user.id);
           if (existingLink) {
             setFormData({
               ...existingLink,
@@ -92,7 +92,7 @@ const SmartLinkEditor: React.FC = () => {
           }
         } else {
           // Modo de criação: verificar se já existe um link para o usuário
-          const existingLink = await fetchSmartLinkByUserId(user.id);
+          const existingLink = await fetchSmartLinkByUserIdFromHook(user.id);
           if (existingLink) {
             // Já existe um link, redirecionar para edição
             setFormData({
@@ -231,7 +231,7 @@ const SmartLinkEditor: React.FC = () => {
       let smartLinkId = formData.id;
       // Sempre buscar o smart link do usuário antes de criar
       if (!smartLinkId) {
-        const existingLink = await fetchSmartLinkByUserId(user?.id || '');
+        const existingLink = await fetchSmartLinkByUserIdFromHook(user?.id || '');
         if (existingLink && existingLink.id) {
           smartLinkId = existingLink.id;
         }
