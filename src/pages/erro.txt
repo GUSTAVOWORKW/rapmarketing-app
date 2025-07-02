@@ -1,59 +1,51 @@
-DEBUG: Entrou no disconnectSpotify
-useSpotifyConnection.js:106 [DEBUG identities] (2) [{…}, {…}]
-useSpotifyConnection.js:113 [DEBUG spotifyIdentity] {identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e', id: '12147407712', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', identity_data: {…}, provider: 'spotify', …}
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] identity_id: 9e55b60e-fd05-4acf-b21c-0ba274a1723e
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] id: 12147407712
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] user_id: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] identity_data: {avatar_url: 'https://scontent-cdg4-2.xx.fbcdn.net/v/t39.30808-1…5l7AsIwqu1Av7O66Jw_EABnHLlE7ywLN7mh_w&oe=686A95EA', email: 'pedrohgl18@gmail.com', email_verified: false, full_name: 'Pedro Hgl', iss: 'https://api.spotify.com/v1', …}
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] provider: spotify
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] last_sign_in_at: 2025-06-04T03:45:26.274193Z
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] created_at: 2025-06-04T03:45:26.274243Z
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] updated_at: 2025-07-02T04:59:04.042324Z
-useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] email: pedrohgl18@gmail.com
-useSpotifyConnection.js:120 [DEBUG identityId passado para unlinkIdentity] 9e55b60e-fd05-4acf-b21c-0ba274a1723e
-useSpotifyConnection.js:129 [DEBUG] Final identityId being passed to unlinkIdentity: 9e55b60e-fd05-4acf-b21c-0ba274a1723e
-useSpotifyConnection.js:130 [DEBUG] Type of identityId: string
-useSpotifyConnection.js:131 [DEBUG] spotifyIdentity object before unlinkIdentity: {identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e', id: '12147407712', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', identity_data: {…}, provider: 'spotify', …}
-useSpotifyConnection.js:132 
-            
-            
-           DELETE https://ntreksvrwflivedhvixs.supabase.co/auth/v1/user/identities/undefined 404 (Not Found)
-(anônimo) @ helpers.ts:105
-l.headers @ fetch.ts:184
-kt @ fetch.ts:157
-(anônimo) @ GoTrueClient.ts:2020
-_useSession @ GoTrueClient.ts:1276
-await in _useSession
-unlinkIdentity @ GoTrueClient.ts:2015
-(anônimo) @ useSpotifyConnection.js:132
-await in (anônimo)
-Md @ react-dom-client.production.js:11858
-(anônimo) @ react-dom-client.production.js:12410
-Mt @ react-dom-client.production.js:1470
-Vd @ react-dom-client.production.js:11996
-sm @ react-dom-client.production.js:14699
-nm @ react-dom-client.production.js:14667Entenda o erro
-useSpotifyConnection.js:134 [DEBUG unlinkIdentity] Erro ao desvincular identidade: AuthApiError: identity_id must be an UUID
-    at wt (fetch.ts:102:9)
-    at async l.headers (fetch.ts:194:15)
-    at async kt (fetch.ts:157:9)
-    at async GoTrueClient.ts:2020:9
-    at async Vt._useSession (GoTrueClient.ts:1276:7)
-    at async Vt.unlinkIdentity (GoTrueClient.ts:2015:7)
-    at async useSpotifyConnection.js:132:22
-(anônimo) @ useSpotifyConnection.js:134
-await in (anônimo)
-Md @ react-dom-client.production.js:11858
-(anônimo) @ react-dom-client.production.js:12410
-Mt @ react-dom-client.production.js:1470
-Vd @ react-dom-client.production.js:11996
-sm @ react-dom-client.production.js:14699
-nm @ react-dom-client.production.js:14667Entenda o erro
-useSpotifyConnection.js:143 [disconnectSpotify] Erro completo: AuthApiError: identity_id must be an UUID
-    at wt (fetch.ts:102:9)
-    at async l.headers (fetch.ts:194:15)
-    at async kt (fetch.ts:157:9)
-    at async GoTrueClient.ts:2020:9
-    at async Vt._useSession (GoTrueClient.ts:1276:7)
-    at async Vt.unlinkIdentity (GoTrueClient.ts:2015:7)
-    at async useSpotifyConnection.js:132:22
+Causa do Problema
+O erro ocorre porque a função supabase.auth.unlinkIdentity espera um objeto com a propriedade identity_id, mas você está passando uma string diretamente (identityId). Vamos entender isso melhor:
+
+Na implementação do Supabase (em GoTrueClient.ts), a função unlinkIdentity é definida assim:
+
+typescript
+
+Recolher
+
+Encapsular
+
+Executar
+
+Copiar
+async unlinkIdentity(identity: { identity_id: string }) {
+  return await this._useSession(async (session) => {
+    return await _request(this.fetch, 'DELETE', `${this.url}/user/identities/${identity.identity_id}`, {
+      headers: this.headers,
+      jwt: session?.access_token,
+    });
+  });
+}
+A função espera um parâmetro identity que deve ser um objeto com a propriedade identity_id.
+Internamente, ela acessa identity.identity_id para construir a URL da requisição DELETE.
+Nos seus logs:
+
+Você está passando identityId como '9e55b60e-fd05-4acf-b21c-0ba274a1723e' (uma string).
+Quando a função tenta acessar identity.identity_id, como identity é uma string e não um objeto, o resultado é undefined.
+Isso faz com que a URL seja construída como /user/identities/undefined, levando ao erro 404 (Not Found) e, consequentemente, ao AuthApiError: identity_id must be an UUID retornado pelo servidor.
+Solução
+Para corrigir o problema, você deve passar um objeto contendo a propriedade identity_id em vez de passar a string diretamente. No seu código em useSpotifyConnection.js, na linha 132, altere a chamada de unlinkIdentity para:
+
+javascript
+
+Recolher
+
+Encapsular
+
+Executar
+
+Copiar
+await supabase.auth.unlinkIdentity({ identity_id: identityId });
+Aqui:
+
+identityId é a string '9e55b60e-fd05-4acf-b21c-0ba274a1723e'.
+{ identity_id: identityId } cria um objeto com a propriedade identity_id, que é o formato esperado pela função.
+Com essa alteração:
+
+A função unlinkIdentity receberá { identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e' }.
+A URL será corretamente construída como /user/identities/9e55b60e-fd05-4acf-b21c-0ba274a1723e.
+A requisição DELETE será enviada para o endpoint correto, e o erro deve desaparecer.

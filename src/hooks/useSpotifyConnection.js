@@ -129,7 +129,7 @@ export const useSpotifyConnection = () => {
       console.log('[DEBUG] Final identityId being passed to unlinkIdentity:', identityId);
       console.log('[DEBUG] Type of identityId:', typeof identityId);
       console.log('[DEBUG] spotifyIdentity object before unlinkIdentity:', spotifyIdentity);
-      const { error: unlinkError } = await supabase.auth.unlinkIdentity(identityId);
+      const { error: unlinkError } = await supabase.auth.unlinkIdentity({ identity_id: identityId });
       if (unlinkError) {
         console.error('[DEBUG unlinkIdentity] Erro ao desvincular identidade:', unlinkError);
         throw unlinkError;
