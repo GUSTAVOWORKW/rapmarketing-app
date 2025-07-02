@@ -284,9 +284,8 @@ const DashboardLayout = ({ children }) => {
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-                    {/* Estatística 2: Novos seguidores (existente) */}
-                    <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100">
+                  {/* Estatística 2: Novos seguidores (existente) */}
+                    <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100 h-full flex-grow">
                       <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#1db954] mr-2">
                           <svg width="18" height="18" viewBox="0 0 496 512" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -300,16 +299,16 @@ const DashboardLayout = ({ children }) => {
                     </div>
 
                     {/* Card de Top Artistas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-200">
+                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-start animate-fade-in-up border border-[#e9e6ff] delay-200 h-full flex-grow">
                       <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
                         <FaUserAlt className="text-white text-2xl mr-2" /> Seus Top Artistas
                       </span>
                       {loadingTopArtists ? (
                         <p className="text-white/70">Carregando artistas...</p>
                       ) : topArtists.length > 0 ? (
-                        <ul className="space-y-2 text-center">
+                        <ul className="space-y-2 w-full">
                           {topArtists.map((artist: any) => (
-                            <li key={artist.id} className="flex items-center justify-center">
+                            <li key={artist.id} className="flex items-center">
                               {artist.images && artist.images.length > 0 && (
                                 <img src={artist.images[0].url} alt={artist.name} className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-white" />
                               )}
@@ -325,16 +324,16 @@ const DashboardLayout = ({ children }) => {
                     </div>
 
                     {/* Card de Top Músicas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-300">
+                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-start animate-fade-in-up border border-[#e9e6ff] delay-300 h-full flex-grow">
                       <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
                         <FaMusic className="text-white text-2xl mr-2" /> Suas Top Músicas
                       </span>
                       {loadingTopTracks ? (
                         <p className="text-white/70">Carregando músicas...</p>
                       ) : topTracks.length > 0 ? (
-                        <ul className="space-y-2 text-center">
+                        <ul className="space-y-2 w-full">
                           {topTracks.map((track: any) => (
-                            <li key={track.id} className="flex items-center justify-center">
+                            <li key={track.id} className="flex items-center">
                               {track.album.images && track.album.images.length > 0 && (
                                 <img src={track.album.images[0].url} alt={track.name} className="w-12 h-12 rounded-md mr-3 object-cover border-2 border-white" />
                               )}
