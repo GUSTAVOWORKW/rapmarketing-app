@@ -98,22 +98,25 @@ const DashboardLayout = ({ children }) => {
     useEffect(() => {
       const fetchTopArtists = async () => {
         if (!currentUserId) {
+          console.log('[DEBUG Dashboard] currentUserId não disponível para Top Artists.');
           setLoadingTopArtists(false);
           setTopArtists([]);
           return;
         }
         setLoadingTopArtists(true);
+        console.log('[DEBUG Dashboard] Buscando Top Artists para userId:', currentUserId);
         try {
           const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=medium_term');
           if (response.ok) {
             const data = await response.json();
+            console.log('[DEBUG Dashboard] Top Artists recebidos:', data.items);
             setTopArtists(data.items);
           } else {
-            console.error('Erro ao buscar Top Artists do Spotify:', response.status, await response.text());
+            console.error('[DEBUG Dashboard] Erro ao buscar Top Artists do Spotify:', response.status, await response.text());
             setTopArtists([]);
           }
         } catch (error) {
-          console.error('Erro ao buscar Top Artists do Spotify:', error);
+          console.error('[DEBUG Dashboard] Erro na requisição de Top Artists:', error);
           setTopArtists([]);
         } finally {
           setLoadingTopArtists(false);
@@ -126,22 +129,25 @@ const DashboardLayout = ({ children }) => {
     useEffect(() => {
       const fetchTopTracks = async () => {
         if (!currentUserId) {
+          console.log('[DEBUG Dashboard] currentUserId não disponível para Top Tracks.');
           setLoadingTopTracks(false);
           setTopTracks([]);
           return;
         }
         setLoadingTopTracks(true);
+        console.log('[DEBUG Dashboard] Buscando Top Tracks para userId:', currentUserId);
         try {
           const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=medium_term');
           if (response.ok) {
             const data = await response.json();
+            console.log('[DEBUG Dashboard] Top Tracks recebidos:', data.items);
             setTopTracks(data.items);
           } else {
-            console.error('Erro ao buscar Top Tracks do Spotify:', response.status, await response.text());
+            console.error('[DEBUG Dashboard] Erro ao buscar Top Tracks do Spotify:', response.status, await response.text());
             setTopTracks([]);
           }
         } catch (error) {
-          console.error('Erro ao buscar Top Tracks do Spotify:', error);
+          console.error('[DEBUG Dashboard] Erro na requisição de Top Tracks:', error);
           setTopTracks([]);
         } finally {
           setLoadingTopTracks(false);
