@@ -29,7 +29,7 @@ const UserSettings = () => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { isConnected: spotifyConnected, loading: spotifyLoading, connectSpotify, hasValidToken } = useSpotifyConnection();
+    const { isConnected: spotifyConnected, loading: spotifyLoading, connectSpotify, hasValidToken, disconnectSpotify } = useSpotifyConnection();
 
     const fetchProfileDataForForm = useCallback(async (sessionUser) => {
         try {
@@ -248,6 +248,12 @@ const UserSettings = () => {
                 ) : spotifyConnected && hasValidToken ? (
                     <div className="flex items-center space-x-3">
                         <span className="text-green-700 font-semibold">Conta do Spotify conectada!</span>
+                        <button
+                            onClick={disconnectSpotify}
+                            className="px-4 py-2 bg-red-500 text-white font-bold rounded-lg shadow hover:bg-red-600 transition"
+                        >
+                            Desconectar Spotify
+                        </button>
                     </div>
                 ) : (
                     <button
