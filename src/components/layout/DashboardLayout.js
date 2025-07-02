@@ -232,7 +232,7 @@ const DashboardLayout = ({ children }) => {
             <div className="mt-auto">
               <button
                 type="button"
-                onClick={onSignOut}
+                onClick={handleSignOut}
                 className="w-full flex items-center py-2 px-3 rounded-lg text-left bg-gradient-to-r from-[#e9e6ff] to-[#f8f6f2] text-[#1c1c1c] hover:bg-[#e9e6ff] hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-[#3100ff] cursor-pointer font-bold text-base"
                 style={{ pointerEvents: 'auto' }}
               >
