@@ -1,51 +1,6 @@
-Causa do Problema
-O erro ocorre porque a função supabase.auth.unlinkIdentity espera um objeto com a propriedade identity_id, mas você está passando uma string diretamente (identityId). Vamos entender isso melhor:
-
-Na implementação do Supabase (em GoTrueClient.ts), a função unlinkIdentity é definida assim:
-
-typescript
-
-Recolher
-
-Encapsular
-
-Executar
-
-Copiar
-async unlinkIdentity(identity: { identity_id: string }) {
-  return await this._useSession(async (session) => {
-    return await _request(this.fetch, 'DELETE', `${this.url}/user/identities/${identity.identity_id}`, {
-      headers: this.headers,
-      jwt: session?.access_token,
-    });
-  });
-}
-A função espera um parâmetro identity que deve ser um objeto com a propriedade identity_id.
-Internamente, ela acessa identity.identity_id para construir a URL da requisição DELETE.
-Nos seus logs:
-
-Você está passando identityId como '9e55b60e-fd05-4acf-b21c-0ba274a1723e' (uma string).
-Quando a função tenta acessar identity.identity_id, como identity é uma string e não um objeto, o resultado é undefined.
-Isso faz com que a URL seja construída como /user/identities/undefined, levando ao erro 404 (Not Found) e, consequentemente, ao AuthApiError: identity_id must be an UUID retornado pelo servidor.
-Solução
-Para corrigir o problema, você deve passar um objeto contendo a propriedade identity_id em vez de passar a string diretamente. No seu código em useSpotifyConnection.js, na linha 132, altere a chamada de unlinkIdentity para:
-
-javascript
-
-Recolher
-
-Encapsular
-
-Executar
-
-Copiar
-await supabase.auth.unlinkIdentity({ identity_id: identityId });
-Aqui:
-
-identityId é a string '9e55b60e-fd05-4acf-b21c-0ba274a1723e'.
-{ identity_id: identityId } cria um objeto com a propriedade identity_id, que é o formato esperado pela função.
-Com essa alteração:
-
-A função unlinkIdentity receberá { identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e' }.
-A URL será corretamente construída como /user/identities/9e55b60e-fd05-4acf-b21c-0ba274a1723e.
-A requisição DELETE será enviada para o endpoint correto, e o erro deve desaparecer.
+[useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+DashboardLayout.js:112 [DEBUG Dashboard] Top Artists recebidos: []
+useAuth.js:64 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
+useAuth.js:70 [useAuth] fetchProfile: Perfil atualizado encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
+useAuth.js:82 [useAuth] fetchProfile: Finalizando busca de perfil atualizado.
+DashboardLayout.js:143 [DEBUG Dashboard] Top Tracks recebidos: []

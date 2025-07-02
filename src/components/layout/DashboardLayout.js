@@ -106,7 +106,7 @@ const DashboardLayout = ({ children }) => {
         setLoadingTopArtists(true);
         console.log('[DEBUG Dashboard] Buscando Top Artists para userId:', currentUserId);
         try {
-          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=medium_term');
+          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=long_term');
           if (response.ok) {
             const data = await response.json();
             console.log('[DEBUG Dashboard] Top Artists recebidos:', data.items);
@@ -137,7 +137,7 @@ const DashboardLayout = ({ children }) => {
         setLoadingTopTracks(true);
         console.log('[DEBUG Dashboard] Buscando Top Tracks para userId:', currentUserId);
         try {
-          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=medium_term');
+          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=long_term');
           if (response.ok) {
             const data = await response.json();
             console.log('[DEBUG Dashboard] Top Tracks recebidos:', data.items);
