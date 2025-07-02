@@ -286,7 +286,7 @@ const DashboardLayout = ({ children }) => {
                 <section className="mb-10">
                   {/* Estatística 2: Novos seguidores (existente) */}
                     <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
+                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#1db954] mr-2">
                           <svg width="18" height="18" viewBox="0 0 496 512" fill="white" xmlns="http://www.w3.org/2000/svg">
                             <path d="M248 8C111 8 0 119 0 256c0 137 111 248 248 248s248-111 248-248C496 119 385 8 248 8zm121.7 365.6c-4.1 0-6.6-1.3-10.4-3.8-62.7-37.3-168.8-45.7-229.8-26.1-4.8 1.5-11.2 3.1-14.7 3.1-8.2 0-14.1-6.4-14.1-15.2 0-9.2 5.2-14.7 16.2-18.1 66.2-20.2 180.1-13.5 249.2 29.5 7.7 4.7 10.1 9.7 10.1 15.3 0 8.7-6.9 15.3-16.5 15.3zm31.5-61.6c-5.2 0-8.5-2-13.1-4.5-71.7-42.5-181.1-54.7-265.1-31.2-5.9 1.6-9.4 3.2-13.9 3.2-10.2 0-17.1-8-17.1-17.1 0-10.2 5.7-16.2 16.5-19.5 30.2-9.2 63.2-15.2 100.8-15.2 82.2 0 163.2 20.7 221.2 59.1 6.2 4.1 9.2 8.7 9.2 15.1 0 9.2-7.5 16.1-18.5 16.1zm34.3-65.8c-4.7 0-7.7-1.3-12.1-3.8-79.5-47.2-211.5-51.7-288.2-29.5-4.6 1.3-7.2 2.6-11.7 2.6-12.1 0-20.2-9.4-20.2-20.2 0-11.2 6.2-18.1 18.5-21.5 35.2-10.1 74.2-15.6 118.2-15.6 89.7 0 176.7 19.1 242.7 55.2 8.1 4.5 12.1 10.1 12.1 18.1 0 11.1-8.9 19.6-19.2 19.6z"/>
@@ -299,12 +299,12 @@ const DashboardLayout = ({ children }) => {
                     </div>
 
                     {/* Card de Top Artistas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-start animate-fade-in-up border border-[#e9e6ff] delay-200 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
+                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col animate-fade-in-up border border-[#e9e6ff] delay-200 h-full flex-grow">
+                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
                         <FaUserAlt className="text-white text-2xl mr-2" /> Seus Top Artistas
                       </span>
                       {loadingTopArtists ? (
-                        <p className="text-white/70">Carregando artistas...</p>
+                        <p className="text-white/70 text-center">Carregando artistas...</p>
                       ) : topArtists.length > 0 ? (
                         <ul className="space-y-2 w-full">
                           {topArtists.map((artist: any) => (
@@ -319,17 +319,17 @@ const DashboardLayout = ({ children }) => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-white/70">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
+                        <p className="text-white/70 text-center">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
                       )}
                     </div>
 
                     {/* Card de Top Músicas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-start animate-fade-in-up border border-[#e9e6ff] delay-300 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
+                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col animate-fade-in-up border border-[#e9e6ff] delay-300 h-full flex-grow">
+                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
                         <FaMusic className="text-white text-2xl mr-2" /> Suas Top Músicas
                       </span>
                       {loadingTopTracks ? (
-                        <p className="text-white/70">Carregando músicas...</p>
+                        <p className="text-white/70 text-center">Carregando músicas...</p>
                       ) : topTracks.length > 0 ? (
                         <ul className="space-y-2 w-full">
                           {topTracks.map((track: any) => (
@@ -347,7 +347,7 @@ const DashboardLayout = ({ children }) => {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-white/70">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
+                        <p className="text-white/70 text-center">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
                       )}
                     </div>
                   </div>
