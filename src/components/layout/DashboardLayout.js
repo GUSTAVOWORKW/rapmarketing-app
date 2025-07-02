@@ -1,11 +1,12 @@
 // src/components/layout/DashboardLayout.js
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaUserCircle, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaUserCircle, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt, FaSpotify, FaUserAlt, FaMusic } from 'react-icons/fa';
 import { supabase } from '../../services/supabase';
 import SpotifyFollowersCounter from '../dashboard/SpotifyFollowersCounter';
 import { useAuth } from '../../hooks/useAuth';
 import HeaderBar from '../Common/HeaderBar'; // Importar HeaderBar
+import { spotifyTokenService } from '../../services/spotifyTokenService'; // Adicionado
 
 const DashboardLayout = ({ children }) => {
     const navigate = useNavigate();
@@ -17,6 +18,12 @@ const DashboardLayout = ({ children }) => {
     const [isSidebarOpen, setSidebarOpen] = useState(false); // Inicia fechada em mobile
     const { user, profile } = useAuth(); // Obter profile do useAuth
     const currentUserId = user?.id; // Definir currentUserId a partir do user
+
+    // Novos estados para Top Artists e Top Tracks do Spotify
+    const [topArtists, setTopArtists] = useState([]);
+    const [loadingTopArtists, setLoadingTopArtists] = useState(true);
+    const [topTracks, setTopTracks] = useState([]);
+    const [loadingTopTracks, setLoadingTopTracks] = useState(true);
 
     const onSignOut = async () => {
         const { error } = await supabase.auth.signOut();
@@ -86,6 +93,62 @@ const DashboardLayout = ({ children }) => {
     useEffect(() => {
         fetchSidebarData();
     }, [user, fetchSidebarData]); // Dependência direta em vez de fetchSidebarData
+
+    // Buscar Top Artists do Spotify
+    useEffect(() => {
+      const fetchTopArtists = async () => {
+        if (!currentUserId) {
+          setLoadingTopArtists(false);
+          setTopArtists([]);
+          return;
+        }
+        setLoadingTopArtists(true);
+        try {
+          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=medium_term');
+          if (response.ok) {
+            const data = await response.json();
+            setTopArtists(data.items);
+          } else {
+            console.error('Erro ao buscar Top Artists do Spotify:', response.status, await response.text());
+            setTopArtists([]);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar Top Artists do Spotify:', error);
+          setTopArtists([]);
+        } finally {
+          setLoadingTopArtists(false);
+        }
+      };
+      fetchTopArtists();
+    }, [currentUserId]);
+
+    // Buscar Top Tracks do Spotify
+    useEffect(() => {
+      const fetchTopTracks = async () => {
+        if (!currentUserId) {
+          setLoadingTopTracks(false);
+          setTopTracks([]);
+          return;
+        }
+        setLoadingTopTracks(true);
+        try {
+          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=medium_term');
+          if (response.ok) {
+            const data = await response.json();
+            setTopTracks(data.items);
+          } else {
+            console.error('Erro ao buscar Top Tracks do Spotify:', response.status, await response.text());
+            setTopTracks([]);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar Top Tracks do Spotify:', error);
+          setTopTracks([]);
+        } finally {
+          setLoadingTopTracks(false);
+        }
+      };
+      fetchTopTracks();
+    }, [currentUserId]);
 
     useEffect(() => {
         if (window && window.localStorage) {
@@ -215,14 +278,8 @@ const DashboardLayout = ({ children }) => {
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                    {/* Estatística 1: Streams totais */}
-                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff]">
-                      <span className="text-white/80 text-lg font-semibold mb-2">Streams Totais</span>
-                      <span className="text-4xl md:text-5xl font-extrabold text-white animate-count-up">{(Math.random()*100000+50000).toLocaleString('pt-BR')}</span>
-                      <span className="text-[#ffb300] font-bold mt-2 text-sm">+{(Math.random()*1000+100).toFixed(0)} hoje</span>
-                    </div>
-                    {/* Estatística 2: Novos seguidores */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                    {/* Estatística 2: Novos seguidores (existente) */}
                     <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100">
                       <span className="text-white/80 text-lg font-semibold mb-2 flex items-center">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#1db954] mr-2">
@@ -235,36 +292,58 @@ const DashboardLayout = ({ children }) => {
                       {/* Spotify Followers */}
                       <SpotifyFollowersCounter currentUserId={currentUserId} />
                     </div>
-                    {/* Estatística 3: Engajamento nas redes */}
-                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-200">
-                      <span className="text-white/80 text-lg font-semibold mb-2">Engajamento nas Redes</span>
-                      <span className="text-4xl md:text-5xl font-extrabold text-white animate-count-up">{(Math.random()*20000+3000).toLocaleString('pt-BR')}</span>
-                      <span className="text-[#3100ff] font-bold mt-2 text-sm">+{(Math.random()*300+30).toFixed(0)} hoje</span>
+
+                    {/* Card de Top Artistas do Spotify (Novo) */}
+                    <div className="bg-white p-6 rounded-xl shadow-lg">
+                      <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
+                        <FaUserAlt className="text-blue-500 text-2xl mr-2" /> Seus Top Artistas
+                      </h2>
+                      {loadingTopArtists ? (
+                        <p className="text-gray-500">Carregando artistas...</p>
+                      ) : topArtists.length > 0 ? (
+                        <ul className="space-y-2">
+                          {topArtists.map((artist: any) => (
+                            <li key={artist.id} className="flex items-center">
+                              {artist.images && artist.images.length > 0 && (
+                                <img src={artist.images[0].url} alt={artist.name} className="w-8 h-8 rounded-full mr-3 object-cover" />
+                              )}
+                              <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-blue-600 font-medium">
+                                {artist.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
+                      )}
                     </div>
-                  </div>
-                  {/* Conquistas e gráfico de performance */}
-                  <div className="flex flex-col md:flex-row gap-8 items-stretch">
-                    {/* Conquistas */}
-                    <div className="flex-1 bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center border border-[#e9e6ff] animate-fade-in-up">
-                      <span className="text-xl font-bold text-[#3100ff] mb-3">Conquistas Recentes</span>
-                      <ul className="space-y-3 w-full">
-                        <li className="flex items-center gap-3 text-[#1c1c1c] font-medium"><span className="inline-block w-8 h-8 bg-gradient-to-br from-[#3100ff] to-[#a259ff] rounded-full flex items-center justify-center text-white text-lg shadow">🏆</span> 10.000+ streams em um único lançamento</li>
-                        <li className="flex items-center gap-3 text-[#1c1c1c] font-medium"><span className="inline-block w-8 h-8 bg-gradient-to-br from-[#ffb300] to-[#a259ff] rounded-full flex items-center justify-center text-white text-lg shadow">🔥</span> Top 50 Viral Brasil no Spotify</li>
-                        <li className="flex items-center gap-3 text-[#1c1c1c] font-medium"><span className="inline-block w-8 h-8 bg-gradient-to-br from-[#a259ff] to-[#3100ff] rounded-full flex items-center justify-center text-white text-lg shadow">🚀</span> Crescimento de 200% em seguidores no mês</li>
-                      </ul>
-                    </div>
-                    {/* Gráfico de performance musical fake (placeholder visual) */}
-                    <div className="flex-1 bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center border border-[#e9e6ff] animate-fade-in-up">
-                      <span className="text-xl font-bold text-[#3100ff] mb-3">Performance Musical</span>
-                      <div className="w-full h-48 flex items-end gap-2">
-                        {/* Barras animadas fake para simular gráfico */}
-                        {[...Array(12)].map((_,i)=>(
-                          <div key={i} className="flex-1 flex flex-col justify-end">
-                            <div className={`rounded-t-lg bg-gradient-to-t from-[#3100ff] via-[#a259ff] to-[#ffb300] transition-all duration-700`} style={{height:`${Math.random()*80+40}%`, minHeight:'24px'}}></div>
-                          </div>
-                        ))}
-                      </div>
-                      <span className="text-xs text-[#1c1c1c]/60 mt-4">* Dados ilustrativos para inspiração</span>
+
+                    {/* Card de Top Músicas do Spotify (Novo) */}
+                    <div className="bg-white p-6 rounded-xl shadow-lg">
+                      <h2 className="text-xl font-semibold text-gray-800 flex items-center mb-4">
+                        <FaMusic className="text-purple-500 text-2xl mr-2" /> Suas Top Músicas
+                      </h2>
+                      {loadingTopTracks ? (
+                        <p className="text-gray-500">Carregando músicas...</p>
+                      ) : topTracks.length > 0 ? (
+                        <ul className="space-y-2">
+                          {topTracks.map((track: any) => (
+                            <li key={track.id} className="flex items-center">
+                              {track.album.images && track.album.images.length > 0 && (
+                                <img src={track.album.images[0].url} alt={track.name} className="w-8 h-8 rounded-md mr-3 object-cover" />
+                              )}
+                              <div>
+                                <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 hover:text-purple-600 font-medium block">
+                                  {track.name}
+                                </a>
+                                <span className="text-sm text-gray-500">{track.artists.map((artist: any) => artist.name).join(', ')}</span>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
+                      )}
                     </div>
                   </div>
                 </section>

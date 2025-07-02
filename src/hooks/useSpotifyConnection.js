@@ -116,7 +116,7 @@ export const useSpotifyConnection = () => {
         console.log(`[DEBUG campo SpotifyIdentity] ${key}:`, spotifyIdentity[key]);
       });
       // Tentar ambos os campos: id e identity_id
-      const identityId = spotifyIdentity.id || spotifyIdentity.identity_id;
+      const identityId = spotifyIdentity.identity_id;
       console.log('[DEBUG identityId passado para unlinkIdentity]', identityId);
       if (!identityId) {
         return { success: false, error: 'ID da identidade Spotify não encontrado. Veja os logs para os campos disponíveis.' };

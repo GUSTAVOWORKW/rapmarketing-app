@@ -1,24 +1,13 @@
-"Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_client\",\"error_description\":\"Invalid client\"}\n"
-{
-  "event_message": "Erro na Edge Function refresh-spotify-token: Erro ao renovar token: {\"error\":\"invalid_client\",\"error_description\":\"Invalid client\"}\n",
-  "id": "ad07054d-9aaf-4c4f-8893-d7c3746d011f",
-  "metadata": [
-    {
-      "boot_time": null,
-      "cpu_time_used": null,
-      "deployment_id": "ntreksvrwflivedhvixs_561be191-f07e-4e98-aa20-53a72bf07cd2_9",
-      "event_type": "Log",
-      "execution_id": "e94707eb-49ce-4596-9f6b-e5bfff2e7e63",
-      "function_id": "561be191-f07e-4e98-aa20-53a72bf07cd2",
-      "level": "error",
-      "memory_used": [],
-      "project_ref": "ntreksvrwflivedhvixs",
-      "reason": null,
-      "region": "sa-east-1",
-      "served_by": "supabase-edge-runtime-1.67.4 (compatible with Deno v1.45.2)",
-      "timestamp": "2025-07-02T04:49:59.032Z",
-      "version": "9"
-    }
-  ],
-  "timestamp": 1751431803642382
-}
+DEBUG: Entrou no disconnectSpotify
+useSpotifyConnection.js:106 [DEBUG identities] (2) [{…}, {…}]
+useSpotifyConnection.js:113 [DEBUG spotifyIdentity] {identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e', id: '12147407712', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', identity_data: {…}, provider: 'spotify', …}
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] identity_id: 9e55b60e-fd05-4acf-b21c-0ba274a1723e
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] id: 12147407712
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] user_id: f856fde1-c284-4d3f-99ba-aa884f2635ee
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] identity_data: {avatar_url: 'https://scontent-cdg4-2.xx.fbcdn.net/v/t39.30808-1…5l7AsIwqu1Av7O66Jw_EABnHLlE7ywLN7mh_w&oe=686A95EA', email: 'pedrohgl18@gmail.com', email_verified: false, full_name: 'Pedro Hgl', iss: 'https://api.spotify.com/v1', …}
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] provider: spotify
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] last_sign_in_at: 2025-06-04T03:45:26.274193Z
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] created_at: 2025-06-04T03:45:26.274243Z
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] updated_at: 2025-07-02T04:59:04.042324Z
+useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] email: pedrohgl18@gmail.com
+useSpotifyConnection.js:120 [DEBUG identityId passado para unlinkIdentity] 12147407712
