@@ -256,10 +256,18 @@ const UserSettings = () => {
                                 setError('Usuário não autenticado.');
                                 return;
                             }
+                            
+                            // Detectar ambiente e usar URL correta
+                            const isDevelopment = window.location.hostname === 'localhost';
+                            const baseUrl = isDevelopment 
+                                ? 'http://localhost:3000' 
+                                : window.location.origin;
+                            
                             supabase.auth.signInWithOAuth({ 
                                 provider: 'spotify',
                                 options: {
-                                    redirectTo: window.location.origin + '/spotify-callback',
+                                    redirectTo: `${baseUrl}/spotify-callback`,
+                                    scopes: 'user-read-private user-read-email user-follow-read'
                                 },
                             });
                         }}

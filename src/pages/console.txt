@@ -1,77 +1,175 @@
-useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
-useAuth.js:90 [useAuth] Evento: SIGNED_IN
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:74 Exceção ao buscar perfil: Error: Timeout: Supabase profile fetch took too long.
-    at useAuth.js:9:14
-(anônimo) @ useAuth.js:74
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:87 [useAuth] useEffect: Iniciando listener de autenticação.
-ChooseUsername.js:37 ChooseUsername (1750994421591): useEffect - useEffect disparado. currentUserId: undefined. Definindo isUserDataLoading como true.
-ChooseUsername.js:89 ChooseUsername (1750994421591): useEffect - currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.
-(anônimo) @ ChooseUsername.js:89
-ol @ react-dom-client.production.js:8292
-Hl @ react-dom-client.production.js:9771
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9765
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9878
-Vl @ react-dom-client.production.js:9746
-Hl @ react-dom-client.production.js:9782
-ld @ react-dom-client.production.js:11313
-(anônimo) @ react-dom-client.production.js:11048
-A @ scheduler.production.js:151
-useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:90 [useAuth] Evento: INITIAL_SESSION
-useAuth.js:95 [useAuth] Evento: Usuário na sessão, buscando perfil...
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:107 [useAuth] Verificação inicial: Sessão encontrada.
-useAuth.js:37 [useAuth] fetchProfile: Buscando perfil para userId: f856fde1-c284-4d3f-99ba-aa884f2635ee
-useAuth.js:52 [useAuth] fetchProfile: Antes da chamada ao Supabase para perfil.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:101 [useAuth] Evento: Finalizando carregamento do onAuthStateChange.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
-useAuth.js:60 [useAuth] fetchProfile: Depois da chamada ao Supabase para perfil.
-useAuth.js:68 [useAuth] fetchProfile: Perfil encontrado: {id: '504f31b5-9138-42e4-ad7d-e7386ae53e6c', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', username: 'username', template_id: 'quebrada', bio: null, …}
-useAuth.js:81 [useAuth] fetchProfile: Finalizando busca de perfil.
-useAuth.js:117 [useAuth] Verificação inicial: Finalizando carregamento.
+// supabase/functions/refresh-spotify-token/index.ts
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+};
+serve(async (req)=>{
+  // Handle CORS
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
+      headers: corsHeaders
+    });
+  }
+  try {
+    const { userId, refreshToken } = await req.json();
+    if (!userId || !refreshToken) {
+      return new Response(JSON.stringify({
+        error: 'userId e refreshToken são obrigatórios'
+      }), {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        },
+        status: 400
+      });
+    }
+    // Pega as credenciais do Spotify das variáveis de ambiente
+    const SPOTIFY_CLIENT_ID = Deno.env.get('SPOTIFY_CLIENT_ID');
+    const SPOTIFY_CLIENT_SECRET = Deno.env.get('SPOTIFY_CLIENT_SECRET');
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+      throw new Error('Credenciais do Spotify não configuradas');
+    }
+    // Faz a requisição para renovar o token
+    const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken
+      })
+    });
+    if (!tokenResponse.ok) {
+      const error = await tokenResponse.text();
+      throw new Error(`Erro ao renovar token: ${error}`);
+    }
+    const tokenData = await tokenResponse.json();
+    // Opcionalmente, você pode atualizar o token na tabela identities aqui
+    // mas isso requer permissões especiais
+    return new Response(JSON.stringify({
+      access_token: tokenData.access_token,
+      expires_in: tokenData.expires_in || 3600,
+      refresh_token: tokenData.refresh_token || refreshToken
+    }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
+      status: 200
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({
+      error: error.message
+    }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
+      status: 500
+    });
+  }
+});
+
+
+
+segunda edege function do supabase para spotify:
+
+// supabase/functions/auth-webhook/index.ts
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+};
+serve(async (req)=>{
+  // Handle CORS
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
+      headers: corsHeaders
+    });
+  }
+  try {
+    // Verificar o webhook secret
+    const webhookSecret = Deno.env.get('WEBHOOK_SECRET');
+    const signature = req.headers.get('x-webhook-signature');
+    if (!webhookSecret || signature !== webhookSecret) {
+      console.error('Invalid webhook signature');
+      return new Response('Unauthorized', {
+        status: 401
+      });
+    }
+    // Parse do payload do webhook
+    const payload1 = await req.json();
+    console.log('Webhook payload:', JSON.stringify(payload1, null, 2));
+    // Verificar se é um evento de login/link de identidade
+    if (!payload1.user || !payload1.identity_data) {
+      return new Response('OK - No identity data', {
+        status: 200
+      });
+    }
+    const { user, identity_data } = payload1;
+    // Verificar se é uma identidade Spotify
+    if (identity_data.provider !== 'spotify') {
+      return new Response('OK - Not Spotify', {
+        status: 200
+      });
+    }
+    // Criar cliente Supabase com service role
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Dados do Spotify para armazenar (ajustado para sua estrutura)
+    const expiresIn = identity_data.expires_in || 3600;
+    const spotifyData = {
+      user_id: user.id,
+      access_token: identity_data.access_token,
+      refresh_token: identity_data.refresh_token,
+      expires_at: Date.now() + expiresIn * 1000,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    // Criar tabela spotify_tokens se não existir (você deve criar isso no SQL Editor primeiro)
+    // Mas vamos tentar inserir/atualizar os dados
+    const { data, error } = await supabase.from('spotify_tokens').upsert(spotifyData, {
+      onConflict: 'user_id',
+      returning: 'minimal'
+    });
+    if (error) {
+      console.error('Error saving Spotify tokens:', error);
+    // Não vamos retornar erro para não quebrar o fluxo de autenticação
+    // mas logamos para debug
+    } else {
+      console.log('Spotify tokens saved successfully for user:', user.id);
+    }
+    // Opcionalmente, você pode adicionar claims customizados ao JWT
+    const claims = {
+      ...payload1.claims,
+      has_spotify: true,
+      spotify_linked_at: new Date().toISOString()
+    };
+    return new Response(JSON.stringify({
+      claims
+    }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
+      status: 200
+    });
+  } catch (error) {
+    console.error('Webhook error:', error);
+    // Não retornar erro para não quebrar o fluxo de autenticação
+    return new Response(JSON.stringify({
+      claims: payload.claims || {}
+    }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json'
+      },
+      status: 200
+    });
+  }
+});

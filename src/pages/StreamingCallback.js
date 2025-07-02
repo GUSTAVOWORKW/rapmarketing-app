@@ -27,42 +27,67 @@ const StreamingCallback = () => {
                 const { data: tokenData, error: tokenError } = await supabase.functions.invoke('spotify-token-exchange', {
                     body: {
                         code,
-                        redirect_uri: `${window.location.origin}/streaming-callback`
+                        redirect_uri: `${window.location.origin}/streaming-callback`,
+                        state: presaveId
                     }
                 });
 
-                if (tokenError) throw new Error(`Erro ao obter token: ${tokenError.message}`);
+                if (tokenError) {
+                    console.error('❌ [StreamingCallback] Erro na edge function:', tokenError);
+                    throw new Error(`Erro ao obter token: ${tokenError.message}`);
+                }
 
-                const { access_token, refresh_token } = tokenData;
+                console.log('✅ [StreamingCallback] Tokens obtidos via edge function');
+                const { access_token } = tokenData;
+
+                setMessage('Obtendo dados do seu perfil Spotify...');
 
                 // 2. Obter dados do perfil do fã no Spotify
                 const profileResponse = await fetch('https://api.spotify.com/v1/me', {
                     headers: { 'Authorization': `Bearer ${access_token}` }
                 });
-                if (!profileResponse.ok) throw new Error('Falha ao buscar perfil do Spotify.');
+                
+                if (!profileResponse.ok) {
+                    console.error('❌ [StreamingCallback] Erro ao buscar perfil:', profileResponse.status);
+                    throw new Error('Falha ao buscar perfil do Spotify.');
+                }
+                
                 const fanProfile = await profileResponse.json();
+                console.log('✅ [StreamingCallback] Perfil obtido:', fanProfile.display_name);
 
-                // 3. Salvar a música/álbum na biblioteca do fã (simulado)
-                // Em um cenário real, você usaria o `track_uri` ou `album_uri` da campanha
-                // const presaveDetails = await supabase.from('presaves').select('spotify_uri').eq('id', presaveId).single();
-                // await fetch(`https://api.spotify.com/v1/me/tracks?ids=${presaveDetails.data.spotify_uri}`, { method: 'PUT', headers: { 'Authorization': `Bearer ${access_token}` }});
+                setMessage('Salvando seu pré-save...');
+
+                // 3. Buscar detalhes da campanha para implementar pré-save real (futuro)
+                const { data: presaveDetails } = await supabase
+                    .from('presaves')
+                    .select('spotify_uri, title')
+                    .eq('id', presaveId)
+                    .single();
 
                 // 4. Salvar os dados do fã no Supabase
-                const { error: saveError } = await supabase.from('presave_fans').insert({
+                const fanData = {
                     campaign_id: presaveId,
                     fan_email: fanProfile.email,
-                    fan_name: fanProfile.display_name,
-                    streaming_provider: 'spotify'
-                });
+                    fan_name: fanProfile.display_name || 'Usuário Spotify',
+                    spotify_user_id: fanProfile.id,
+                    streaming_provider: 'spotify',
+                    created_at: new Date().toISOString()
+                };
 
-                if (saveError) throw new Error(`Erro ao salvar dados do fã: ${saveError.message}`);
+                const { error: saveError } = await supabase.from('presave_fans').insert(fanData);
 
+                if (saveError) {
+                    console.error('❌ [StreamingCallback] Erro ao salvar fã:', saveError);
+                    throw new Error(`Erro ao salvar dados do fã: ${saveError.message}`);
+                }
+
+                console.log('✅ [StreamingCallback] Pré-save concluído para:', fanProfile.display_name);
                 setMessage('Pré-save concluído com sucesso! Redirecionando...');
 
                 // 5. Redirecionar de volta para a página de pré-save
                 setTimeout(() => {
-                    navigate(`/presave/${presaveId}?status=success`);
-                }, 3000);
+                    navigate(`/presave/${presaveId}?status=success&message=Pré-save realizado com sucesso!`);
+                }, 2000);
 
             } catch (error) {
                 console.error('Erro no processo de pré-save:', error);
