@@ -284,7 +284,8 @@ const DashboardLayout = ({ children }) => {
               {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
-                  {/* Estatística 2: Novos seguidores (existente) */}
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {/* Estatística 2: Novos seguidores (existente) */}
                     <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100 h-full flex-grow">
                       <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#1db954] mr-2">
