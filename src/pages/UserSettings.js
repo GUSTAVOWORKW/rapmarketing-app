@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaLink, FaDeezer, FaUserCircle } from 'react-icons/fa';
 import { MdSave, MdErrorOutline, MdCheckCircleOutline, MdFileUpload } from 'react-icons/md';
 import { useSpotifyConnection } from '../hooks/useSpotifyConnection';
+import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
+import SocialLinksPreview from '../components/Common/SocialLinksPreview';
 
 const socialPlatforms = [
     { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'text-pink-500' },
@@ -115,8 +117,14 @@ const UserSettings = () => {
 
     const handleSocialLinkChange = (platform, value) => {
         setSocialLinks(prev => ({ ...prev, [platform]: value }));
-        setSuccessMessage('');
-        setError('');
+        
+        // Validar URL se foi preenchida
+        if (value && !validateSocialLink(platform, value)) {
+            setError(getSocialValidationMessage(platform));
+        } else {
+            setSuccessMessage('');
+            setError('');
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -128,6 +136,13 @@ const UserSettings = () => {
         setSuccessMessage('');
 
         try {
+            // Validar URLs de redes sociais antes de salvar
+            for (const [platform, url] of Object.entries(socialLinks)) {
+                if (url && !validateSocialLink(platform, url)) {
+                    throw new Error(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${getSocialValidationMessage(platform)}`);
+                }
+            }
+
             let avatarUrlToSave = profile?.avatar_url;
 
             if (avatarFile) {
@@ -306,6 +321,14 @@ const UserSettings = () => {
                                 />
                             </div>
                         ))}
+                    </div>
+                    
+                    {/* Preview das redes sociais configuradas */}
+                    <div className="mt-8">
+                        <SocialLinksPreview 
+                            socialLinks={socialLinks}
+                            title="Preview das suas redes sociais" 
+                        />
                     </div>
                 </div>
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaDeezer } from 'react-icons/fa';
+import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
+import SocialLinksPreview from '../components/Common/SocialLinksPreview';
 
 const predefinedAvatars = [
   '/avatars/perfilhomem1.png',
@@ -152,7 +154,16 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
 
   const handleSocialLinkChange = (platform, value) => {
     setSocialLinks(prev => ({ ...prev, [platform]: value }));
-    if (message.text && message.type !== 'success') setMessage({ text: '', type: '' });
+    
+    // Validar URL se foi preenchida
+    if (value && !validateSocialLink(platform, value)) {
+      setMessage({ 
+        text: getSocialValidationMessage(platform), 
+        type: 'error' 
+      });
+    } else if (message.text && message.type !== 'success') {
+      setMessage({ text: '', type: '' });
+    }
   };
 
   const validateEmail = (emailToValidate) => {
@@ -205,6 +216,17 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
     if (!email || !validateEmail(email)) {
       setMessage({ text: 'Por favor, insira um e-mail válido.', type: 'error' });
       return;
+    }
+
+    // Validar URLs de redes sociais se foram preenchidas
+    for (const [platform, url] of Object.entries(socialLinks)) {
+      if (url && !validateSocialLink(platform, url)) {
+        setMessage({ 
+          text: `${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${getSocialValidationMessage(platform)}`, 
+          type: 'error' 
+        });
+        return;
+      }
     }
 
     if (!currentUserId) { 
@@ -429,6 +451,17 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
                   />
                 </div>
               ))}
+              
+              {/* Preview das redes sociais configuradas */}
+              {Object.values(socialLinks).some(link => link && link.trim() !== '') && (
+                <div className="mt-4">
+                  <SocialLinksPreview 
+                    socialLinks={socialLinks} 
+                    title="Preview das suas redes sociais"
+                    showEmptyMessage={false}
+                  />
+                </div>
+              )}
             </div>
             
             {message.text && 
