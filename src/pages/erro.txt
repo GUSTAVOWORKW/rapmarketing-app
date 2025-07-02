@@ -12,7 +12,9 @@ useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] updated_at: 2025-07-02
 useSpotifyConnection.js:116 [DEBUG campo SpotifyIdentity] email: pedrohgl18@gmail.com
 useSpotifyConnection.js:120 [DEBUG identityId passado para unlinkIdentity] 9e55b60e-fd05-4acf-b21c-0ba274a1723e
 useSpotifyConnection.js:129 [DEBUG] Final identityId being passed to unlinkIdentity: 9e55b60e-fd05-4acf-b21c-0ba274a1723e
-useSpotifyConnection.js:130 
+useSpotifyConnection.js:130 [DEBUG] Type of identityId: string
+useSpotifyConnection.js:131 [DEBUG] spotifyIdentity object before unlinkIdentity: {identity_id: '9e55b60e-fd05-4acf-b21c-0ba274a1723e', id: '12147407712', user_id: 'f856fde1-c284-4d3f-99ba-aa884f2635ee', identity_data: {…}, provider: 'spotify', …}
+useSpotifyConnection.js:132 
             
             
            DELETE https://ntreksvrwflivedhvixs.supabase.co/auth/v1/user/identities/undefined 404 (Not Found)
@@ -23,22 +25,6 @@ kt @ fetch.ts:157
 _useSession @ GoTrueClient.ts:1276
 await in _useSession
 unlinkIdentity @ GoTrueClient.ts:2015
-(anônimo) @ useSpotifyConnection.js:130
-await in (anônimo)
-Md @ react-dom-client.production.js:11858
-(anônimo) @ react-dom-client.production.js:12410
-Mt @ react-dom-client.production.js:1470
-Vd @ react-dom-client.production.js:11996
-sm @ react-dom-client.production.js:14699
-nm @ react-dom-client.production.js:14667Entenda o erro
-useSpotifyConnection.js:132 [DEBUG unlinkIdentity] Erro ao desvincular identidade: AuthApiError: identity_id must be an UUID
-    at wt (fetch.ts:102:9)
-    at async l.headers (fetch.ts:194:15)
-    at async kt (fetch.ts:157:9)
-    at async GoTrueClient.ts:2020:9
-    at async Vt._useSession (GoTrueClient.ts:1276:7)
-    at async Vt.unlinkIdentity (GoTrueClient.ts:2015:7)
-    at async useSpotifyConnection.js:130:22
 (anônimo) @ useSpotifyConnection.js:132
 await in (anônimo)
 Md @ react-dom-client.production.js:11858
@@ -47,11 +33,27 @@ Mt @ react-dom-client.production.js:1470
 Vd @ react-dom-client.production.js:11996
 sm @ react-dom-client.production.js:14699
 nm @ react-dom-client.production.js:14667Entenda o erro
-useSpotifyConnection.js:141 [disconnectSpotify] Erro completo: AuthApiError: identity_id must be an UUID
+useSpotifyConnection.js:134 [DEBUG unlinkIdentity] Erro ao desvincular identidade: AuthApiError: identity_id must be an UUID
     at wt (fetch.ts:102:9)
     at async l.headers (fetch.ts:194:15)
     at async kt (fetch.ts:157:9)
     at async GoTrueClient.ts:2020:9
     at async Vt._useSession (GoTrueClient.ts:1276:7)
     at async Vt.unlinkIdentity (GoTrueClient.ts:2015:7)
-    at async useSpotifyConnection.js:130:22
+    at async useSpotifyConnection.js:132:22
+(anônimo) @ useSpotifyConnection.js:134
+await in (anônimo)
+Md @ react-dom-client.production.js:11858
+(anônimo) @ react-dom-client.production.js:12410
+Mt @ react-dom-client.production.js:1470
+Vd @ react-dom-client.production.js:11996
+sm @ react-dom-client.production.js:14699
+nm @ react-dom-client.production.js:14667Entenda o erro
+useSpotifyConnection.js:143 [disconnectSpotify] Erro completo: AuthApiError: identity_id must be an UUID
+    at wt (fetch.ts:102:9)
+    at async l.headers (fetch.ts:194:15)
+    at async kt (fetch.ts:157:9)
+    at async GoTrueClient.ts:2020:9
+    at async Vt._useSession (GoTrueClient.ts:1276:7)
+    at async Vt.unlinkIdentity (GoTrueClient.ts:2015:7)
+    at async useSpotifyConnection.js:132:22
