@@ -1,110 +1,34 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-// import './App.css'; // Mantido comentado, pois estamos migrando para Tailwind
+import React, { useEffect, useRef } from 'react';
 import Auth from './components/Auth/Auth';
 import ChooseUsername from './pages/ChooseUsername';
 import PublicProfile from './pages/PublicProfile';
-import LandingPage from './pages/LandingPage'; // Adicionar importação
+import LandingPage from './pages/LandingPage';
 import { supabase } from './services/supabase';
-// Removido BrowserRouter as Router, mantidos os outros imports de react-router-dom
 import { Routes, Route, Navigate, useNavigate, useLocation, Outlet } from 'react-router-dom';
-
-// Novos imports para o editor e dashboard refatorado
 import UserDashboard from './components/dashboard/UserDashboard.tsx';
-import UserSettings from './pages/UserSettings.js'; // <--- ADICIONAR ESTA LINHA
-import DashboardLayout from './components/layout/DashboardLayout'; // Importar o DashboardLayout
-import CreatePresavePage from './pages/CreatePresavePage'; // Nova página de pré-save
-import PresavePage from './pages/PresavePage'; // Nova página pública de pré-save
-import CreateSmartLinkPage from './pages/CreateSmartLinkPage.tsx'; // Nova página de criação de Smart Link
-import SmartLinkMetrics from './components/dashboard/SmartLinkMetrics.tsx'; // Componente de métricas
-import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler'; // Handler para tokens do Spotify
-
-// Context para estado persistente do presave e smart link
+import UserSettings from './pages/UserSettings.js';
+import DashboardLayout from './components/layout/DashboardLayout';
+import CreatePresavePage from './pages/CreatePresavePage';
+import PresavePage from './pages/PresavePage';
+import CreateSmartLinkPage from './pages/CreateSmartLinkPage.tsx';
+import SmartLinkMetrics from './components/dashboard/SmartLinkMetrics.tsx';
+import SpotifyCallbackHandler from './components/Auth/SpotifyCallbackHandler';
 import { PresaveFormProvider } from './context/presave/PresaveFormContext';
-import { SmartLinkFormProvider } from './context/smartlink/SmartLinkFormContext';
+import { SmartLinkFormProvider } = from './context/smartlink/SmartLinkFormContext';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-  const [session, setSession] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, profile, loading, signOut } = useAuth();
   const isMountedRef = useRef(true);
   const navigate = useNavigate();
-  const location = useLocation(); // Existing: useLocation hook
-  const [currentUserId, setCurrentUserId] = useState(null);
-  const fetchProfile = useCallback(async (userId) => {
-    setLoading(true);
-    try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select('*') // Busca todos os campos do perfil, incluindo mainColor, bgColor, musicLinks, avatar, cover, socials, etc.
-        .eq('user_id', userId)
-        .maybeSingle();
+  const location = useLocation();
 
-      if (!isMountedRef.current) return { success: false, error: "Component unmounted" };
-
-      if (error && status !== 406) {
-        console.error("❌ Erro ao buscar perfil:", error.message, error);
-        setProfile(null); // Mantém a limpeza do perfil em caso de erro
-        return { success: false, error };
-      } else {
-        setProfile(data);
-        return { success: true, data };
-      }
-    } catch (e) {
-      console.error("❌ Exceção ao buscar perfil:", e.message, e);
-      if (isMountedRef.current) {
-        setProfile(null);
-      }
-      return { success: false, error: e };
-    } finally {
-      if (isMountedRef.current) {
-        setLoading(false);
-      }
-    }
-  }, []); // fetchProfile não deve depender de 'profile' ou 'loading' para evitar loops
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setSession(null);
-    setProfile(null);
-    navigate('/login');
-  };
   useEffect(() => {
     isMountedRef.current = true;
-    setLoading(true);
-    supabase.auth.getSession().then(({ data: { session: currentSession }, error }) => {
-      if (!isMountedRef.current) return;
-      setSession(currentSession);
-      if (currentSession?.user) {
-        setCurrentUserId(currentSession.user.id);
-        fetchProfile(currentSession.user.id);
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
-    }).catch(err => {
-      console.error('❌ Erro ao obter sessão:', err);
-      setLoading(false);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, currentAuthSession) => {
-        if (!isMountedRef.current) return;
-        setSession(currentAuthSession);
-        if (currentAuthSession?.user) {
-          setCurrentUserId(currentAuthSession.user.id);
-          fetchProfile(currentAuthSession.user.id);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
-      }
-    );
-
     return () => {
       isMountedRef.current = false;
-      subscription?.unsubscribe();
     };
-  }, [fetchProfile]);
+  }, []);
 
   // Novo useEffect para capturar tokens do Spotify
   useEffect(() => {

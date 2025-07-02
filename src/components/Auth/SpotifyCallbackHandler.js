@@ -3,12 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
+import { useAuth } from '../../context/AuthContext';
 
 export const SpotifyCallbackHandler = () => {
   const navigate = useNavigate();
   const hasProcessed = useRef(false);
   const [status, setStatus] = useState('Verificando conexão...');
   const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     const processCallback = async () => {
@@ -23,10 +25,10 @@ export const SpotifyCallbackHandler = () => {
       setStatus('Verificando usuário...');
       
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        // const { data: { user }, error: userError } = await supabase.auth.getUser(); // Removido, usando user do useAuth
 
-        if (userError || !user) {
-          console.error('❌ [SpotifyCallback] Usuário não autenticado:', userError);
+        if (!user || !user.id) {
+          console.error('❌ [SpotifyCallback] Usuário não autenticado.');
           setError('Usuário não autenticado. Faça login e tente novamente.');
           setTimeout(() => navigate('/login'), 3000);
           return;

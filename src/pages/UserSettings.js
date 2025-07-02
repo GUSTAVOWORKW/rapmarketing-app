@@ -6,6 +6,7 @@ import { MdSave, MdErrorOutline, MdCheckCircleOutline, MdFileUpload } from 'reac
 import { useSpotifyConnection } from '../hooks/useSpotifyConnection';
 import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
 import SocialLinksPreview from '../components/Common/SocialLinksPreview';
+import { useAuth } from '../context/AuthContext'; // Importar o novo useAuth
 
 const socialPlatforms = [
     { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'text-pink-500' },
@@ -20,86 +21,32 @@ const socialPlatforms = [
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(null);
-    const [profile, setProfile] = useState(null);
+    const { user, profile, loading: authLoading, refreshProfile } = useAuth(); // Usar o novo useAuth
     const [socialLinks, setSocialLinks] = useState({});
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null); 
-    const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { isConnected: spotifyConnected, loading: spotifyLoading, connectSpotify, hasValidToken, disconnectSpotify } = useSpotifyConnection();
+    const { isConnected: spotifyConnected, loading: spotifyLoading, disconnectSpotify } = useSpotifyConnection();
 
-    const fetchProfileDataForForm = useCallback(async (sessionUser) => {
-        try {
-            setLoading(true);
-            setError('');
-            const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('id, user_id, username, avatar_url, email, social_links')
-                .eq('user_id', sessionUser.id)
-                .single();
-
-            if (profileError) throw profileError;
-
-            if (profileData) {
-                setProfile(profileData);
-                
-                // Garantir que social_links seja sempre um objeto válido
-                let safeSocialLinks = {};
-                
-                if (Array.isArray(profileData.social_links)) {
-                    // Converter formato antigo array para objeto
-                    profileData.social_links.forEach(item => {
-                        if (item && typeof item === 'object' && item.platform && item.url) {
-                            safeSocialLinks[item.platform] = item.url;
-                        }
-                    });
-                } else if (profileData.social_links && typeof profileData.social_links === 'object') {
-                    safeSocialLinks = profileData.social_links;
-                }
-                
-                setSocialLinks(safeSocialLinks);
-                setAvatarPreview(profileData.avatar_url || null);  
-            } else {
-                setError('Perfil não encontrado.');
-            }
-        } catch (err) {
-            console.error("Erro ao buscar dados do perfil para o formulário:", err);
-            setError('Falha ao carregar dados do perfil. Tente novamente.');
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
+    // Carregar socialLinks e avatarPreview do profile do contexto
     useEffect(() => {
-        const getSession = async () => {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError) {
-                console.error("Erro ao obter sessão:", sessionError);
-                setLoading(false);
-                setError("Erro ao verificar autenticação.");
-                navigate('/login');
-                return;
+        if (profile) {
+            let safeSocialLinks = {};
+            if (Array.isArray(profile.social_links)) {
+                profile.social_links.forEach(item => {
+                    if (item && typeof item === 'object' && item.platform && item.url) {
+                        safeSocialLinks[item.platform] = item.url;
+                    }
+                });
+            } else if (profile.social_links && typeof profile.social_links === 'object') {
+                safeSocialLinks = profile.social_links;
             }
-            if (session?.user) {
-                setUser(session.user);
-                fetchProfileDataForForm(session.user);
-            } else {
-                setLoading(false);
-                setError("Usuário não autenticado.");
-                navigate('/login');
-            }
-        };
-        getSession();
-    }, [fetchProfileDataForForm, navigate]);
-
-    useEffect(() => {
-        if (profile?.avatar_url) {
-            setAvatarPreview(profile.avatar_url);
+            setSocialLinks(safeSocialLinks);
+            setAvatarPreview(profile.avatar_url || null);  
         }
-    }, [profile?.avatar_url]);
+    }, [profile]);
 
     const handleAvatarChange = (e) => {
         const file = e.target.files[0];
@@ -133,7 +80,6 @@ const UserSettings = () => {
     const handleSocialLinkChange = (platform, value) => {
         setSocialLinks(prev => ({ ...prev, [platform]: value }));
         
-        // Validar URL se foi preenchida
         if (value && !validateSocialLink(platform, value)) {
             setError(getSocialValidationMessage(platform));
         } else {
@@ -151,7 +97,6 @@ const UserSettings = () => {
         setSuccessMessage('');
 
         try {
-            // Validar URLs de redes sociais antes de salvar
             for (const [platform, url] of Object.entries(socialLinks)) {
                 if (url && !validateSocialLink(platform, url)) {
                     throw new Error(`${platform.charAt(0).toUpperCase() + platform.slice(1)}: ${getSocialValidationMessage(platform)}`);
@@ -202,9 +147,9 @@ const UserSettings = () => {
 
             setSuccessMessage('Configurações atualizadas com sucesso!');
             if (avatarFile) setAvatarFile(null);
-            if (updates.avatar_url) {
-                setProfile(prevProfile => ({...prevProfile, avatar_url: updates.avatar_url}));
-            }
+            
+            // Forçar a atualização do perfil no contexto após salvar
+            await refreshProfile(user.id);
 
         } catch (err) {
             console.error("Erro ao atualizar configurações:", err);
@@ -214,7 +159,7 @@ const UserSettings = () => {
         }
     };
 
-    if (loading) {
+    if (authLoading) {
         return (
             <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
                 <div className="text-2xl font-semibold text-[#3100ff]">Carregando Configurações...</div>
@@ -223,11 +168,13 @@ const UserSettings = () => {
     }
 
     if (!profile || !user) {
-        return (
-            <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
-                <div className="text-2xl font-semibold text-red-500">Erro ao carregar dados para as configurações. Redirecionando...</div>
-            </div>
-        );
+        // Se não há perfil ou usuário após o carregamento, redireciona para o login
+        useEffect(() => {
+            if (!authLoading && (!profile || !user)) {
+                navigate('/login');
+            }
+        }, [authLoading, profile, user, navigate]);
+        return null; // Não renderiza nada enquanto redireciona
     }
 
     return (
@@ -245,7 +192,7 @@ const UserSettings = () => {
                 </h2>
                 {spotifyLoading ? (
                     <span className="text-gray-500">Verificando conexão com Spotify...</span>
-                ) : spotifyConnected && hasValidToken ? (
+                ) : spotifyConnected ? (
                     <div className="flex items-center space-x-3">
                         <span className="text-green-700 font-semibold">Conta do Spotify conectada!</span>
                         <button
@@ -262,20 +209,7 @@ const UserSettings = () => {
                                 setError('Usuário não autenticado.');
                                 return;
                             }
-                            
-                            // Detectar ambiente e usar URL correta
-                            const isDevelopment = window.location.hostname === 'localhost';
-                            const baseUrl = isDevelopment 
-                                ? 'http://localhost:3000' 
-                                : window.location.origin;
-                            
-                            supabase.auth.signInWithOAuth({ 
-                                provider: 'spotify',
-                                options: {
-                                    redirectTo: `${baseUrl}/spotify-callback`,
-                                    scopes: 'user-read-private user-read-email user-follow-read user-top-read'
-                                },
-                            });
+                            signInWithSpotify();
                         }}
                         className="flex items-center px-6 py-3 bg-[#1db954] text-white font-bold rounded-lg shadow hover:bg-[#169c46] transition"
                     >

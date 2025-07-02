@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 
-// Hook de autenticação centralizado
-import { useAuth } from './hooks/useAuth';
+// Importa o NOVO hook useAuth do AuthContext
+import { useAuth, AuthProvider } from './context/AuthContext';
 
 // Seus Componentes e Páginas
 import Auth from './components/Auth/Auth';
@@ -32,8 +32,14 @@ const LoadingScreen = () => (
 );
 
 // Componente para proteger rotas que exigem autenticação
-// Recebe session e profile como props
-const ProtectedRoutes = ({ session, profile }) => {
+// AGORA USA O CONTEXTO DIRETAMENTE
+const ProtectedRoutes = () => {
+  const { session, profile, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   if (!session) {
     return <Navigate to="/login" replace />;
   }
@@ -49,66 +55,57 @@ const ProtectedRoutes = ({ session, profile }) => {
   );
 };
 
+// O componente App agora apenas define a estrutura dos provedores e rotas
 function App() {
-  const { session, loading, profile, fetchProfile } = useAuth();
+  return (
+    <AuthProvider>
+      <SmartLinkFormProvider>
+        <PresaveFormProvider>
+          <AppRoutes />
+        </PresaveFormProvider>
+      </SmartLinkFormProvider>
+    </AuthProvider>
+  );
+}
 
-  const handleProfileUpdate = () => {
-    if (session?.user?.id) {
-      fetchProfile(session.user.id);
-    }
-  };
+// Componente separado para as rotas, para que possa acessar o AuthContext
+const AppRoutes = () => {
+  const { session, loading } = useAuth();
 
-  // Mostra a tela de carregamento enquanto o hook de autenticação processa a sessão.
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <>
-      <SmartLinkFormProvider>
-        <PresaveFormProvider>
-          <Routes>
-            {/* Rotas Públicas */}
-            <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
-            <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
-            <Route path="/:slug" element={<PublicProfileSmartLink />} />
-            <Route path="/presave/:slug" element={<PresavePage />} />
-            <Route path="/streaming-callback" element={<StreamingCallback />} />
+    <Routes>
+      {/* Rotas Públicas */}
+      <Route path="/" element={session ? <Navigate to="/dashboard" /> : <LandingPage />} />
+      <Route path="/login" element={session ? <Navigate to="/dashboard" /> : <Auth />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="/spotify-callback" element={<SpotifyCallbackHandler />} />
+      <Route path="/:slug" element={<PublicProfileSmartLink />} />
+      <Route path="/presave/:slug" element={<PresavePage />} />
+      <Route path="/streaming-callback" element={<StreamingCallback />} />
 
-            {/* Rotas que exigem apenas login (sem perfil completo) */}
-            <Route
-              path="/choose-username"
-              element={
-                session ? (
-                  <ChooseUsername
-                    currentUserId={session.user.id}
-                    onProfileUpdate={handleProfileUpdate}
-                  />
-                ) : (
-                  <Navigate to="/login" />
-                )
-              }
-            />
+      {/* Rotas que exigem apenas login (sem perfil completo) */}
+      <Route
+        path="/choose-username"
+        element={session ? <ChooseUsername /> : <Navigate to="/login" />}
+      />
 
-            {/* Rotas Protegidas (exigem login e perfil completo) */}
-            {/* Passe session e profile como props para ProtectedRoutes */}
-            <Route element={<ProtectedRoutes session={session} profile={profile} />}>
-              <Route path="/dashboard" element={<UserDashboard />} />
-              <Route path="/settings" element={<UserSettings />} />
-              <Route path="/dashboard/metrics" element={<SmartLinkMetrics />} />
-              <Route path="/dashboard/metrics/:linkId" element={<SmartLinkMetrics />} />
-              <Route path="/criar-presave/:presaveId?" element={<CreatePresavePage />} />
-              <Route path="/criar-smart-link/:smartLinkId?" element={<CreateSmartLinkPage />} />
-            </Route>
+      {/* Rotas Protegidas (exigem login e perfil completo) */}
+      <Route element={<ProtectedRoutes />}>
+        <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/settings" element={<UserSettings />} />
+        <Route path="/dashboard/metrics" element={<SmartLinkMetrics />} />
+        <Route path="/dashboard/metrics/:linkId" element={<SmartLinkMetrics />} />
+        <Route path="/criar-presave/:presaveId?" element={<CreatePresavePage />} />
+        <Route path="/criar-smart-link/:smartLinkId?" element={<CreateSmartLinkPage />} />
+      </Route>
 
-            {/* Rota de fallback */}
-            <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
-          </Routes>
-        </PresaveFormProvider>
-      </SmartLinkFormProvider>
-    </>
+      {/* Rota de fallback */}
+      <Route path="*" element={<Navigate to={session ? "/dashboard" : "/"} replace />} />
+    </Routes>
   );
 }
 

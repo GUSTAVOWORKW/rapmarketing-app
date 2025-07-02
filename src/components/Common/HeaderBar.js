@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaChevronDown, FaBars } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext'; // Importar o novo useAuth
 
-export default function HeaderBar({ user, avatar, onLogout, onToggleSidebar }) {
+export default function HeaderBar({ onLogout, onToggleSidebar }) {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
+  const { user, profile } = useAuth(); // Obter user e profile do contexto
 
   return (
     <header className="w-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-b border-gray-200 shadow-sm py-1 px-3 flex items-center justify-between z-50 relative min-h-[48px] h-12">
@@ -22,7 +24,7 @@ export default function HeaderBar({ user, avatar, onLogout, onToggleSidebar }) {
         </div>
       </div>
       <div className="flex items-center gap-2 relative">
-        {avatar && <img className="w-8 h-8 rounded-full border border-red-400 shadow-sm object-cover" src={avatar} alt="avatar" />}
+        {profile?.avatar_url && <img className="w-8 h-8 rounded-full border border-red-400 shadow-sm object-cover" src={profile.avatar_url} alt="avatar" />}
         <button
           className="flex items-center px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold rounded-lg shadow-sm transition-colors focus:outline-none text-sm"
           onClick={() => setOpen((v) => !v)}

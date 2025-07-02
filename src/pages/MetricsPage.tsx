@@ -13,6 +13,7 @@ import {
   FaUsers,
   FaPlay
 } from 'react-icons/fa6';
+import { useAuth } from '../context/AuthContext';
 
 interface MetricsSummary {
   totalClicks: number;
@@ -62,10 +63,10 @@ const MetricsPage: React.FC = () => {
   const [userItems, setUserItems] = useState<UserItem[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const fetchMetricsSummary = async (period: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
       // Calcular data de início baseada no período

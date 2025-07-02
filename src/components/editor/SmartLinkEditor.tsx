@@ -9,6 +9,7 @@ import { FaSave, FaUserTag, FaExternalLinkAlt } from 'react-icons/fa';
 import MainDetailsForm from './MainDetailsForm'; 
 import PlatformLinksForm from './PlatformLinksForm'; // Importar PlatformLinksForm
 import CustomColorsForm from './CustomColorsForm'; // Importar CustomColorsForm
+import { useAuth } from '../../context/AuthContext'; // Importar useAuth
 
 // Import template components
 import NoiteCarioca from '../Templates/NoiteCarioca';
@@ -29,15 +30,10 @@ interface SmartLinkEditorFormData extends Partial<SmartLink> {
   contact_button_url?: string;
 }
 
-interface SmartLinkEditorProps {
-  currentUserId: string;
-  // smartLinkIdProp?: string | null; // If passed directly
-  // initialTemplateIdProp?: string | null; // If passed directly
-}
-
-const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
+const SmartLinkEditor: React.FC = () => {
   const { templateId: templateIdFromParams, smartLinkId: smartLinkIdFromParams } = useParams<{ templateId?: string; smartLinkId?: string }>();
   const navigate = useNavigate();
+  const { user, profile, loading: authLoading } = useAuth(); // Usar useAuth
 
   const { 
     loading: loadingSmartLink, 
@@ -49,32 +45,32 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
   const [formData, setFormData] = useState<SmartLinkEditorFormData>({
     platform_links: [],
     template_id: templateIdFromParams || '',
-    user_id: currentUserId,
+    user_id: user?.id || '',
     is_public: true, 
     cover_image_click_url: '', // Garantir que está inicializado aqui também
     player_url: '', // Inicializar campo do player
   });
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  // const [userProfile, setUserProfile] = useState<UserProfile | null>(null); // Removido, usando profile do useAuth
   const [isSaving, setIsSaving] = useState(false);
   const [editorError, setEditorError] = useState<string | null>(null);
   const [isCreatingNewBasedOnFetched, setIsCreatingNewBasedOnFetched] = useState(true);   useEffect(() => {
-    const fetchInitialData = async () => {      if (currentUserId) {
+    const fetchInitialData = async () => {      if (user && user.id && profile) {
         setEditorError(null); // Limpar erros anteriores
-          const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('id, user_id, username, updated_at')
-          .eq('user_id', currentUserId)
-          .single();
+          // const { data: profileData, error: profileError } = await supabase
+          // .from('profiles')
+          // .select('id, user_id, username, updated_at')
+          // .eq('user_id', user.id)
+          // .single();
         
-        if (profileError || !profileData) {
-          console.error('Error fetching user profile for editor:', profileError);
-          setEditorError("Não foi possível carregar os dados do perfil. Verifique se seu perfil está completo e tente recarregar a página.");
-          setUserProfile(null);
-          return; 
-        }
-        setUserProfile(profileData);
+        // if (profileError || !profileData) {
+        //   console.error('Error fetching user profile for editor:', profileError);
+        //   setEditorError("Não foi possível carregar os dados do perfil. Verifique se seu perfil está completo e tente recarregar a página.");
+        //   // setUserProfile(null);
+        //   return; 
+        // }
+        // setUserProfile(profileData); // Removido, usando profile do useAuth
 
-        if (!profileData.username) {
+        if (!profile.username) {
             setEditorError("Seu perfil não possui um nome de usuário definido, que é necessário para o link. Por favor, atualize seu perfil.");
             return;
         }
@@ -82,12 +78,12 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
         // Verificar se estamos editando um link existente (smartLinkIdFromParams) ou criando um novo (templateIdFromParams)
         if (smartLinkIdFromParams) {
           // Modo de edição: buscar SmartLink específico por ID
-          // Como estamos usando user_id único, vamos buscar pelo user_id mesmo
-          const existingLink = await fetchSmartLinkByUserId(currentUserId);
+          // Como estamos usando user_id único, vamos buscar pelo user.id mesmo
+          const existingLink = await fetchSmartLinkByUserId(user.id);
           if (existingLink) {
             setFormData({
               ...existingLink,
-              slug: profileData.username, 
+              slug: profile.username, 
             });
             setIsCreatingNewBasedOnFetched(false); 
           } else {
@@ -96,12 +92,12 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
           }
         } else {
           // Modo de criação: verificar se já existe um link para o usuário
-          const existingLink = await fetchSmartLinkByUserId(currentUserId);
+          const existingLink = await fetchSmartLinkByUserId(user.id);
           if (existingLink) {
             // Já existe um link, redirecionar para edição
             setFormData({
               ...existingLink,
-              slug: profileData.username, 
+              slug: profile.username, 
             });
             setIsCreatingNewBasedOnFetched(false); 
             // Aplicar template se especificado nos parâmetros
@@ -112,11 +108,11 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
             // Criar novo link
             setFormData(prev => ({
               ...prev,
-              user_id: currentUserId,
-              slug: profileData.username, 
+              user_id: user.id,
+              slug: profile.username, 
               template_id: templateIdFromParams || 'urban-legend', 
               platform_links: [],
-              artist_name: profileData.username || '',
+              artist_name: profile.username || '',
               release_title: '', // Deixar em branco para o usuário preencher
               title: '', // Deixar em branco
               description: '',
@@ -131,7 +127,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
       }
     };
     fetchInitialData();
-  }, [currentUserId, templateIdFromParams, smartLinkIdFromParams, fetchSmartLinkByUserId]);
+  }, [user, profile, templateIdFromParams, smartLinkIdFromParams, fetchSmartLinkByUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -199,7 +195,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
       setEditorError("ID do Template é obrigatório.");
       return;
     }
-    if (!userProfile || !userProfile.username) {
+    if (!profile || !profile.username) {
         setEditorError("Perfil do usuário não carregado ou nome de usuário ausente. Não é possível salvar.");
         return;
     }
@@ -210,7 +206,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
 
     setIsSaving(true);
     setEditorError(null);    const dataToSave: Omit<SmartLink, 'id' | 'created_at' | 'updated_at' | 'view_count'> & { id?: string } = {
-      user_id: currentUserId,
+      user_id: user?.id || '',
       template_id: formData.template_id!,
       title: formData.title || `${formData.artist_name} - ${formData.release_title}`,
       artist_name: formData.artist_name!,
@@ -219,13 +215,13 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
       cover_image_url: formData.cover_image_url || '',
       cover_image_click_url: formData.cover_image_click_url || '',
       player_url: formData.player_url || '', // Adicionar player_url ao salvamento
-      platform_links: formData.platform_links?.map(pl => ({ 
+      platform_links: formData.platform_links?.map(pl => ({
         platform_id: pl.platform_id,
         url: pl.url,
         custom_button_bg_color: pl.custom_button_bg_color, // Adicionar ao salvamento
         custom_button_text_color: pl.custom_button_text_color, // Adicionar ao salvamento
       })) || [],
-      slug: userProfile.username, 
+      slug: profile.username, 
       is_public: formData.is_public === undefined ? true : formData.is_public,
       custom_colors: formData.custom_colors || {},
     };
@@ -235,7 +231,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
       let smartLinkId = formData.id;
       // Sempre buscar o smart link do usuário antes de criar
       if (!smartLinkId) {
-        const existingLink = await fetchSmartLinkByUserId(currentUserId);
+        const existingLink = await fetchSmartLinkByUserId(user?.id || '');
         if (existingLink && existingLink.id) {
           smartLinkId = existingLink.id;
         }
@@ -270,23 +266,23 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
   const SelectedTemplateComponent = formData.template_id ? templateComponentMap[formData.template_id] : null;
 
   // Ajuste na condição de loading para cobrir o carregamento inicial do perfil também
-  if (loadingSmartLink || (!userProfile && currentUserId)) return <p className="text-center py-10">Carregando dados...</p>; 
+  if (loadingSmartLink || (!profile && user)) return <p className="text-center py-10">Carregando dados...</p>; 
 
   const previewSmartLink: SmartLink = {
     id: formData.id || 'preview-id',
-    user_id: currentUserId,
+    user_id: user?.id || '',
     created_at: formData.created_at || new Date().toISOString(),
     updated_at: formData.updated_at || new Date().toISOString(),
     template_id: formData.template_id || 'urban-legend',
-    title: formData.title || `${formData.artist_name || (userProfile?.username || "Artista")} - ${formData.release_title || "Lançamento"}`,
-    artist_name: formData.artist_name || userProfile?.username || '',
+    title: formData.title || `${formData.artist_name || (profile?.username || "Artista")} - ${formData.release_title || "Lançamento"}`,
+    artist_name: formData.artist_name || profile?.username || '',
     release_title: formData.release_title || '',
     description: formData.description || '',
     cover_image_url: formData.cover_image_url || '',
     cover_image_click_url: formData.cover_image_click_url || '', // Adiciona à preview
     platform_links: formData.platform_links || [],
     custom_colors: formData.custom_colors || {},
-    slug: userProfile?.username || formData.slug || '', 
+    slug: profile?.username || formData.slug || '', 
     is_public: formData.is_public === undefined ? true : formData.is_public,
     view_count: formData.view_count || 0,
   };
@@ -336,17 +332,17 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
           {editorError && <p className="text-red-400 bg-red-900/50 p-3 rounded-md border border-red-700">{editorError}</p>}
           {smartLinkError && !editorError && <p className="text-red-400 bg-red-900/50 p-3 rounded-md border border-red-700">Erro: {smartLinkError.message}</p>}
           
-          {userProfile && userProfile.username && (
+          {profile && profile.username && (
             <div className="p-4 bg-gray-700/50 border border-gray-600 rounded-lg">
                 <div className="flex items-center mb-2">
                     <FaUserTag className="text-red-400 mr-3 text-xl" />
                     <p className="text-sm text-gray-300">
-                        Seu link público será: <strong className="font-semibold text-red-400">{`${window.location.origin}/${userProfile.username}`}</strong>
+                        Seu link público será: <strong className="font-semibold text-red-400">{`${window.location.origin}/${profile.username}`}</strong>
                     </p>
                 </div>
                 {formData.id && formData.is_public && (
                     <a 
-                        href={`${window.location.origin}/${userProfile.username}`} 
+                        href={`${window.location.origin}/${profile.username}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="mt-2 inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-700 focus:ring-red-400 transition-colors"
@@ -357,7 +353,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
                 )}
             </div>
           )}
-          {!userProfile && currentUserId && !loadingSmartLink && (
+          {!profile && user && !loadingSmartLink && (
              <div className="p-4 bg-yellow-700/30 border border-yellow-600 rounded-lg">
                 <p className="text-sm text-yellow-300">
                     Carregando informações do perfil para definir seu link público...
@@ -440,7 +436,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
           <div className="pt-6 border-t border-gray-200 mt-8">
             <button
               type="submit"
-              disabled={isSaving || loadingSmartLink || !userProfile || !userProfile.username}
+              disabled={isSaving || loadingSmartLink || !profile || !profile.username}
               className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-red-500 disabled:bg-gray-500 disabled:opacity-70 transition-colors"
             >
               <FaSave className="mr-2" /> {isSaving ? 'Salvando...' : (isCreatingNewBasedOnFetched ? 'Criar Smart Link' : 'Salvar Alterações')}
@@ -470,12 +466,12 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
                     className="rounded-[2.2rem] overflow-hidden w-full h-full bg-black pt-7 z-0"
                     style={{ zIndex: 0, position: 'relative', pointerEvents: 'auto' }}
                 >
-                    {SelectedTemplateComponent && userProfile && previewSmartLink ? (
+                    {SelectedTemplateComponent && profile && previewSmartLink ? (
                        renderTemplate() // A função renderTemplate já aplica a escala e overflow
                     ) : (
                         <div className="flex items-center justify-center h-full bg-black">
                             <p className="text-gray-500 text-center p-4">
-                                {loadingSmartLink || (!userProfile && currentUserId) ? 
+                                {loadingSmartLink || (!profile && user) ? 
                                     'Carregando preview...' : 
                                     'Preencha os dados e selecione um template para ver o preview.'
                                 }
@@ -486,16 +482,16 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
             </div>
             {/* Fim do Mockup de Celular */}
 
-            {userProfile?.username && (
+            {profile?.username && (
               <div className="mt-6 text-center px-2">
                 <p className="text-sm text-gray-500">Seu link público:</p>
                 <a 
-                  href={`${window.location.origin}/${userProfile.username}`} 
+                  href={`${window.location.origin}/${profile.username}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-red-400 hover:text-red-300 break-all underline"
                 >
-                  {`${window.location.origin}/${userProfile.username}`}
+                  {`${window.location.origin}/${profile.username}`}
                 </a>
               </div>
             )}
@@ -505,5 +501,7 @@ const SmartLinkEditor: React.FC<SmartLinkEditorProps> = ({ currentUserId }) => {
     </div>
   );
 };
+
+
 
 export default SmartLinkEditor;

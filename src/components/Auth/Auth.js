@@ -1,19 +1,12 @@
-import { supabase } from '../../services/supabase';
 import { FaGoogle } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
 const Auth = () => {
+  const { signInWithGoogle } = useAuth();
+
   const handleGoogleLogin = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        console.error('Erro ao fazer login com Google:', error.message);
-      }
+      await signInWithGoogle();
     } catch (error) {
       console.error('Erro inesperado durante o login com Google:', error);
     }

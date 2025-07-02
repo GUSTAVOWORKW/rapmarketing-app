@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { spotifyTokenService } from '../../services/spotifyTokenService';
 import { FaSpotify, FaExclamationTriangle } from 'react-icons/fa';
 import { useSpotifyConnection } from '../../hooks/useSpotifyConnection';
+import { useAuth } from '../../context/AuthContext';
 
 // Componente para exibir seguidores do Spotify
-const SpotifyFollowersCounter = ({ currentUserId }) => {
+const SpotifyFollowersCounter = () => {
+  const { user } = useAuth();
   const [followers, setFollowers] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +32,7 @@ const SpotifyFollowersCounter = ({ currentUserId }) => {
       setFollowers(null);
       
       try {        // Obtém token válido
-        const accessToken = await spotifyTokenService.getAccessToken(currentUserId);
+        const accessToken = await spotifyTokenService.getAccessToken(user.id);
         
         if (!accessToken) {
           console.warn('Não foi possível obter token válido do Spotify');
@@ -77,7 +79,7 @@ const SpotifyFollowersCounter = ({ currentUserId }) => {
     if (!connectionLoading) {
       fetchSpotifyFollowers();
     }
-  }, [isConnected, hasValidToken, connectionLoading, currentUserId, refresh]);
+  }, [isConnected, hasValidToken, connectionLoading, refresh, user]);
 
   // Estados de loading
   if (loading || connectionLoading) {

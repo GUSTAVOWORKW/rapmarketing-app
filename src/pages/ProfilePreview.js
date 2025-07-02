@@ -4,6 +4,8 @@ import { FaSpotify, FaApple, FaYoutube, FaSoundcloud, FaDeezer, FaAmazon, FaMusi
 import { supabase } from '../services/supabase';
 import { getDemoAlbumAndTrack } from '../utils';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../hooks/useProfile';
 
 const phoneFrameStyle = {
   width: 370,
@@ -65,8 +67,12 @@ const sidebarStyle = {
   alignSelf: 'center',
 };
 
-const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit, currentUserId }) => {
+const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit }) => {
   const PreviewComponent = allTemplatesPreviewMap[profile?.template_id] || null;
+  const { user } = useAuth();
+  const { updateProfile, uploadAvatar } = useProfile();
+  const { user } = useAuth();
+  const { updateProfile, uploadAvatar } = useProfile();
 
   // Edição de campos
   const [editMode, setEditMode] = React.useState(true);
@@ -129,36 +135,36 @@ const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit, currentUserId }
   };
 
   const handleConfirmAndSave = async () => {
-    if (!currentUserId) {
+    if (!user?.id) {
       alert('Usuário não autenticado. Faça login novamente.');
       return;
     }
     setSaving(true);
-    const error = await saveFullProfile(currentUserId, {
-      socials: links,
-      musicLinks,
-      username,
-      bio,
-      avatar,
-      mainColor,
-      bgColor,
-      cover
-    });
-    setSaving(false);
-    if (error) {
+    try {
+      await updateProfile({
+        username,
+        email: profile?.email, // Assuming email is part of profile and not editable here
+        avatarFile: null, // This component doesn't handle file upload directly for avatar
+        selectedPredefinedAvatar: avatar, // If avatar is a predefined URL
+        social_links: links,
+        // musicLinks is not directly part of the profile table, handle separately if needed
+        // mainColor, bgColor, cover are also not directly in profile table, handle separately if needed
+      });
+      if (onConfirm) onConfirm({
+        socials: links,
+        musicLinks,
+        username,
+        bio,
+        avatar,
+        mainColor,
+        bgColor,
+        cover
+      });
+    } catch (error) {
       alert('Erro ao salvar perfil: ' + error.message);
-      return;
+    } finally {
+      setSaving(false);
     }
-    if (onConfirm) onConfirm({
-      socials: links,
-      musicLinks,
-      username,
-      bio,
-      avatar,
-      mainColor,
-      bgColor,
-      cover
-    });
   };
 
   // Corrige avatar/capa
@@ -214,7 +220,7 @@ const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit, currentUserId }
               const file = e.target.files[0];
               if (!file) return;
               const fileExt = file.name.split('.').pop();
-              const fileName = `${currentUserId}_${Date.now()}.${fileExt}`;
+              const fileName = `${user.id}_${Date.now()}.${fileExt}`;
               const { data, error } = await supabase.storage.from('avatars').upload(fileName, file, { upsert: true });
               if (!error && data) {
                 const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
@@ -332,22 +338,6 @@ const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit, currentUserId }
 };
 
 // Função utilitária para salvar perfil completo no Supabase
-export async function saveFullProfile(userId, profileData) {
-  const { error } = await supabase
-    .from('profiles')
-    .update({
-      username: profileData.username,
-      bio: profileData.bio,
-      avatar: profileData.avatar,
-      mainColor: profileData.mainColor,
-      bgColor: profileData.bgColor,
-      cover: profileData.cover,
-      socials: profileData.socials,
-      musicLinks: profileData.musicLinks,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('user_id', userId);
-  return error;
-}
+
 
 export default ProfilePreview;

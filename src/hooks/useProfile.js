@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import { validateSocialLink } from '../utils/socialValidation';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Hook customizado para gerenciar operações do perfil do usuário
@@ -10,6 +11,7 @@ export const useProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const { user } = useAuth();
 
   const validateProfileData = useCallback((profileData) => {
     const { username, email, social_links } = profileData;
@@ -40,7 +42,7 @@ export const useProfile = () => {
     return true;
   }, []);
 
-  const checkUsernameAvailability = useCallback(async (username, currentUserId = null) => {
+  const checkUsernameAvailability = useCallback(async (username, userIdToExclude = null) => {
     setError('');
     
     try {
@@ -49,9 +51,9 @@ export const useProfile = () => {
         .select('username, user_id')
         .eq('username', username);
       
-      // Se temos um currentUserId, excluir esse usuário da verificação
-      if (currentUserId) {
-        query = query.neq('user_id', currentUserId);
+      // Se temos um userIdToExclude, excluir esse usuário da verificação
+      if (userIdToExclude) {
+        query = query.neq('user_id', userIdToExclude);
       }
       
       const { data, error } = await query.single();
@@ -69,8 +71,8 @@ export const useProfile = () => {
     }
   }, []);
 
-  const uploadAvatar = useCallback(async (file, userId) => {
-    if (!file || !userId) return null;
+  const uploadAvatar = useCallback(async (file) => {
+    if (!file || !user?.id) return null;
 
     setError('');
     
@@ -84,7 +86,7 @@ export const useProfile = () => {
         throw new Error('Formato de arquivo inválido. Use JPG, PNG ou WEBP.');
       }
 
-      const fileName = `${userId}_${Date.now()}.${file.name.split('.').pop()}`;
+      const fileName = `${user.id}_${Date.now()}.${file.name.split('.').pop()}`;
       const filePath = fileName;
       
       const { error: uploadError } = await supabase.storage
@@ -110,13 +112,19 @@ export const useProfile = () => {
       setError(err.message);
       throw err;
     }
-  }, []);
+  }, [user]);
 
-  const createProfile = useCallback(async (userId, profileData) => {
+  const createProfile = useCallback(async (profileData) => {
     setLoading(true);
     setError('');
     setSuccessMessage('');
     
+    if (!user?.id) {
+      setError('Usuário não autenticado.');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Validar dados do perfil
       validateProfileData(profileData);
@@ -130,11 +138,11 @@ export const useProfile = () => {
       // Upload do avatar se fornecido
       let avatarUrl = profileData.selectedPredefinedAvatar || null;
       if (profileData.avatarFile) {
-        avatarUrl = await uploadAvatar(profileData.avatarFile, userId);
+        avatarUrl = await uploadAvatar(profileData.avatarFile, user.id);
       }
 
       const dataToInsert = {
-        user_id: userId,
+        user_id: user.id,
         username: profileData.username,
         email: profileData.email,
         avatar_url: avatarUrl,
@@ -162,12 +170,18 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [validateProfileData, checkUsernameAvailability, uploadAvatar]);
+  }, [validateProfileData, checkUsernameAvailability, uploadAvatar, user]);
 
-  const updateProfile = useCallback(async (userId, profileData) => {
+  const updateProfile = useCallback(async (profileData) => {
     setLoading(true);
     setError('');
     setSuccessMessage('');
+
+    if (!user?.id) {
+      setError('Usuário não autenticado.');
+      setLoading(false);
+      return;
+    }
     
     try {
       // Validar dados do perfil (exceto username se não fornecido)
@@ -175,7 +189,7 @@ export const useProfile = () => {
         validateProfileData(profileData);
         
         // Verificar disponibilidade do username se mudou
-        const isUsernameAvailable = await checkUsernameAvailability(profileData.username, userId);
+        const isUsernameAvailable = await checkUsernameAvailability(profileData.username, user.id);
         if (!isUsernameAvailable) {
           throw new Error(`Username "${profileData.username}" não está disponível.`);
         }
@@ -196,7 +210,7 @@ export const useProfile = () => {
       // Upload do avatar se fornecido
       let avatarUrl = profileData.currentAvatarUrl;
       if (profileData.avatarFile) {
-        avatarUrl = await uploadAvatar(profileData.avatarFile, userId);
+        avatarUrl = await uploadAvatar(profileData.avatarFile);
       } else if (profileData.selectedPredefinedAvatar) {
         avatarUrl = profileData.selectedPredefinedAvatar;
       }
@@ -214,7 +228,7 @@ export const useProfile = () => {
       const { data, error } = await supabase
         .from('profiles')
         .update(dataToUpdate)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .select()
         .single();
 
@@ -231,7 +245,7 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [validateProfileData, checkUsernameAvailability, uploadAvatar]);
+  }, [validateProfileData, checkUsernameAvailability, uploadAvatar, user]);
 
   const clearMessages = useCallback(() => {
     setError('');

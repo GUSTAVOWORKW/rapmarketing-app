@@ -1,40 +1,32 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../services/supabase';
+import { useAuth } from '../context/AuthContext';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const hasRedirected = useRef(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const handleAuth = async () => {
-      if (hasRedirected.current) return;
+    if (loading) {
+      // Still loading auth state, do nothing yet
+      return;
+    }
 
-      const { data: { session } } = await supabase.auth.getSession();
+    if (hasRedirected.current) {
+      return;
+    }
 
-      if (session) {
-        console.log('[AuthCallback] Sessão encontrada, redirecionando para /dashboard...');
-        hasRedirected.current = true;
-        navigate('/dashboard', { replace: true }); // Use replace para evitar histórico
-      } else {
-        // Se não houver sessão imediatamente, configure o listener
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          console.log(`[AuthCallback] Evento onAuthStateChange: ${event}`);
-          if (event === 'SIGNED_IN' && session && !hasRedirected.current) {
-            console.log('[AuthCallback] Evento SIGNED_IN recebido, redirecionando para /dashboard...');
-            hasRedirected.current = true;
-            navigate('/dashboard', { replace: true });
-          }
-        });
-
-        return () => {
-          subscription?.unsubscribe();
-        };
-      }
-    };
-
-    handleAuth();
-  }, [navigate]);
+    if (user) {
+      console.log('[AuthCallback] Usuário autenticado, redirecionando para /dashboard...');
+      hasRedirected.current = true;
+      navigate('/dashboard', { replace: true });
+    } else {
+      console.log('[AuthCallback] Nenhum usuário autenticado, redirecionando para /login...');
+      hasRedirected.current = true;
+      navigate('/login', { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

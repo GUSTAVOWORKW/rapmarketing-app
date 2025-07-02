@@ -1,53 +1,37 @@
-// src/hooks/useSpotifyConnection.js
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import { spotifyTokenService } from '../services/spotifyTokenService';
+import { useAuth } from '../context/AuthContext'; // Importar o hook de contexto
 
-/**
- * Hook para gerenciar o estado da conexão Spotify
- * Compartilha o estado entre UserSettings e SpotifyFollowersCounter
- */
 export const useSpotifyConnection = () => {
+  const { user, refreshProfile } = useAuth(); // Usar o contexto
   const [isConnected, setIsConnected] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
+
   const checkSpotifyConnection = useCallback(async () => {
+    if (!user) {
+      setIsConnected(false);
+      setHasValidToken(false);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
     try {
-      setLoading(true);
-      
-      // Obter usuário atual
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !currentUser) {
-        setIsConnected(false);
-        setHasValidToken(false);
-        setUser(null);
-        return;
-      }
-
-      setUser(currentUser);
-
-      // Buscar identidades usando a API correta
       const { data: identities, error: identitiesError } = await supabase.auth.getUserIdentities();
-      
-      if (identitiesError) {
-        console.error('[useSpotifyConnection] Erro ao buscar identidades:', identitiesError);
-        setIsConnected(false);
-        setHasValidToken(false);
-        return;      }      // Verificar se existe identidade Spotify
+      if (identitiesError) throw identitiesError;
+
       const spotifyIdentity = identities?.identities?.find(id => id.provider === 'spotify');
       const connected = !!spotifyIdentity;
       setIsConnected(connected);
 
-      // Se conectado, verificar se o token é válido
       if (connected) {
-        const validToken = await spotifyTokenService.hasValidSpotifyConnection(currentUser.id);
+        const validToken = await spotifyTokenService.hasValidSpotifyConnection(user.id);
         setHasValidToken(validToken);
       } else {
         setHasValidToken(false);
       }
-
     } catch (error) {
       console.error('[useSpotifyConnection] Erro ao verificar conexão:', error);
       setIsConnected(false);
@@ -55,108 +39,51 @@ export const useSpotifyConnection = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
-  // Verificar conexão na inicialização
   useEffect(() => {
     checkSpotifyConnection();
   }, [checkSpotifyConnection]);
 
-  // Escutar mudanças na autenticação
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkSpotifyConnection();
-    });
-
-    return () => subscription.unsubscribe();
-  }, [checkSpotifyConnection]);
-
-  /**
-   * Conectar com Spotify
-   */
-  const connectSpotify = useCallback(async () => {
-    try {
-      const { error } = await supabase.auth.linkIdentity({ provider: 'spotify' });
-      if (error) throw error;
-      
-      // Atualizar estado após conexão
-      setTimeout(checkSpotifyConnection, 1000);
-      
-      return { success: true };
-    } catch (error) {
-      console.error('[useSpotifyConnection] Erro ao conectar Spotify:', error);
-      return { success: false, error: error.message };
-    }
-  }, [checkSpotifyConnection]);  /**
-   * Desconectar do Spotify
-   */
   const disconnectSpotify = useCallback(async () => {
-    console.log('DEBUG: Entrou no disconnectSpotify');
+    if (!user) return { success: false, error: 'Usuário não encontrado' };
+
     try {
-      // Buscar identidades do usuário
       const { data: identities, error: identitiesError } = await supabase.auth.getUserIdentities();
-      if (identitiesError) {
-        throw new Error(`Erro ao buscar identidades: ${identitiesError.message}`);
-      }
-      if (!identities?.identities || identities.identities.length === 0) {
-        console.error('[DEBUG identities] Nenhuma identidade encontrada:', identities);
-        return { success: false, error: 'Nenhuma identidade encontrada para desconectar.' };
-      }
-      // Logar todas as identidades para debug
-      console.log('[DEBUG identities]', identities.identities);
-      // Buscar a identidade do Spotify
-      const spotifyIdentity = identities.identities.find(id => id.provider === 'spotify');
+      if (identitiesError) throw identitiesError;
+
+      const spotifyIdentity = identities?.identities?.find(id => id.provider === 'spotify');
       if (!spotifyIdentity) {
-        console.error('[DEBUG] Identidade do Spotify não encontrada no array de identidades.');
         return { success: false, error: 'Nenhuma conta Spotify conectada para desconectar.' };
       }
-      console.log('[DEBUG spotifyIdentity]', spotifyIdentity);
-      // Logar todos os campos disponíveis
-      Object.keys(spotifyIdentity).forEach(key => {
-        console.log(`[DEBUG campo SpotifyIdentity] ${key}:`, spotifyIdentity[key]);
-      });
-      // Tentar ambos os campos: id e identity_id
-      const identityId = spotifyIdentity.identity_id;
-      console.log('[DEBUG identityId passado para unlinkIdentity]', identityId);
-      if (!identityId) {
-        return { success: false, error: 'ID da identidade Spotify não encontrado. Veja os logs para os campos disponíveis.' };
-      }
-      // Validação extra: checar se é um UUID válido (regex simples)
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(identityId)) {
-        return { success: false, error: 'O ID da identidade não é um UUID válido: ' + identityId };
-      }
-      console.log('[DEBUG] Final identityId being passed to unlinkIdentity:', identityId);
-      console.log('[DEBUG] Type of identityId:', typeof identityId);
-      console.log('[DEBUG] spotifyIdentity object before unlinkIdentity:', spotifyIdentity);
-      const { error: unlinkError } = await supabase.auth.unlinkIdentity({ identity_id: identityId });
-      if (unlinkError) {
-        console.error('[DEBUG unlinkIdentity] Erro ao desvincular identidade:', unlinkError);
-        throw unlinkError;
-      }
-      console.log('[DEBUG unlinkIdentity] Identidade desvinculada com sucesso.');
+
+      const { error: unlinkError } = await supabase.auth.unlinkIdentity(spotifyIdentity);
+      if (unlinkError) throw unlinkError;
+
+      // Limpar o token do nosso banco de dados também
+      await spotifyTokenService._clearSpotifyConnection(user.id);
+
+      // Forçar a atualização do perfil para refletir a mudança em toda a UI
+      await refreshProfile(user.id);
+
       setIsConnected(false);
       setHasValidToken(false);
-      setTimeout(checkSpotifyConnection, 500);
+
       return { success: true };
     } catch (error) {
       console.error('[disconnectSpotify] Erro completo:', error);
       return { success: false, error: error.message };
     }
-  }, [checkSpotifyConnection]);
+  }, [user, refreshProfile]);
 
-  /**
-   * Forçar atualização da verificação
-   */
   const refresh = useCallback(() => {
     checkSpotifyConnection();
   }, [checkSpotifyConnection]);
+
   return {
-    isConnected,        // Se existe identidade Spotify
-    hasValidToken,      // Se o token é válido/não expirado
+    isConnected,
+    hasValidToken,
     loading,
-    user,
-    connectSpotify,
     disconnectSpotify,
     refresh
   };

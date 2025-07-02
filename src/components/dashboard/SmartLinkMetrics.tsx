@@ -35,6 +35,7 @@ import {
   FaCircleUser
 } from 'react-icons/fa6';
 import { SiTidal } from 'react-icons/si';
+import { useAuth } from '../../context/AuthContext';
 
 // ============================================================================
 // MAPEAMENTO DE PLATAFORMAS E EVENTOS
@@ -489,13 +490,14 @@ const SmartLinkMetrics: React.FC = () => {
   // ============================================================================
   // FUNÇÕES OTIMIZADAS USANDO SQL FUNCTIONS
   // ============================================================================  // Função para buscar métricas gerais do usuário (otimizada)
+  const { user } = useAuth();
+
   const fetchUserMetrics = useCallback(async () => {
     try {
       setLoadingMetrics(true);
       
       // Obter usuário autenticado
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user?.id) {
+      if (!user?.id) {
         throw new Error('Usuário não autenticado');
       }
       
@@ -612,8 +614,7 @@ const SmartLinkMetrics: React.FC = () => {
   }, [selectedPeriod]);  // Função para buscar lista de itens do usuário (Smart Links e Presaves)
   const fetchUserItems = useCallback(async () => {
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user?.id) {
+      if (!user?.id) {
         throw new Error('Usuário não autenticado');
       }
       

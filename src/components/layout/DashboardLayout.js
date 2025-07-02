@@ -4,109 +4,75 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FaUserCircle, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt, FaSpotify, FaUserAlt, FaMusic } from 'react-icons/fa';
 import { supabase } from '../../services/supabase';
 import SpotifyFollowersCounter from '../dashboard/SpotifyFollowersCounter';
-import { useAuth } from '../../hooks/useAuth';
-import HeaderBar from '../Common/HeaderBar'; // Importar HeaderBar
-import { spotifyTokenService } from '../../services/spotifyTokenService'; // Adicionado
+import { useAuth } from '../../context/AuthContext'; // Importar o NOVO hook de contexto
+import HeaderBar from '../Common/HeaderBar';
+import { spotifyTokenService } from '../../services/spotifyTokenService';
 
 const DashboardLayout = ({ children }) => {
     const navigate = useNavigate();
-    const location = useLocation(); // Para destacar o link ativo
-    const [userProfile, setUserProfile] = useState(null);
+    const location = useLocation();
     const [activeSmartLink, setActiveSmartLink] = useState(null);
-    const [loadingSidebarData, setLoadingSidebarData] = useState(true);
     const [showOnboardingCards, setShowOnboardingCards] = useState(false);
-    const [isSidebarOpen, setSidebarOpen] = useState(false); // Inicia fechada em mobile
-    const { user, profile } = useAuth(); // Obter profile do useAuth
-    const currentUserId = user?.id; // Definir currentUserId a partir do user
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const { user, profile, loading: authLoading, signOut } = useAuth(); // Obter user, profile e loading do useAuth
 
-    // Novos estados para Top Artists e Top Tracks do Spotify
     const [topArtists, setTopArtists] = useState([]);
     const [loadingTopArtists, setLoadingTopArtists] = useState(true);
     const [topTracks, setTopTracks] = useState([]);
     const [loadingTopTracks, setLoadingTopTracks] = useState(true);
 
-    const onSignOut = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error('Error signing out:', error);
-        } else {
-            navigate('/login'); // Redireciona para a página de login após o logout
-        }
+    const handleSignOut = async () => {
+        await signOut();
+        navigate('/login');
     };
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    const fetchSidebarData = useCallback(async () => {
-        if (!user) {
-            setLoadingSidebarData(false);
+    // A lógica de fetchSidebarData foi simplificada, pois o profile já vem do contexto
+    const fetchSmartLinkData = useCallback(async () => {
+        if (!user?.id) {
+            setActiveSmartLink(null);
             return;
         }
-        setLoadingSidebarData(true);
         try {
-            // Buscar perfil do usuário (avatar, username)
-            const { data: profileData, error: profileError } = await supabase
-                .from('profiles')
-                .select('id, username, avatar_url') // 'id' aqui é o profile_id
-                .eq('user_id', user.id) // user_id é o auth.uid
-                .single();
+            const { data: smartLinkData, error: smartLinkError } = await supabase
+                .from('smart_links')
+                .select('id, title')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-            if (profileError) {
-                console.error('[DashboardLayout] Profile fetch error:', profileError);
-                throw profileError;
-            }
-            
-            setUserProfile(profileData);
-
-            // Mesmo que profileData seja necessário para o avatar/username,
-            // buscamos o smartlink usando user.id (auth.uid) diretamente,
-            // para alinhar com a forma como useUserSmartLink funciona.
-            if (user.id) { 
-                const { data: smartLinkData, error: smartLinkError } = await supabase
-                    .from('smart_links')
-                    .select('id, title') // Apenas campos necessários
-                    .eq('user_id', user.id)
-                    .order('created_at', { ascending: false }) // Pega o mais recente
-                    .limit(1) // Garante que teremos apenas um ou nenhum
-                    .maybeSingle(); // .maybeSingle() é seguro com .limit(1)
-
-                if (smartLinkError) {
-                    // O erro PGRST116 não deve mais acontecer, mas mantemos o log para outros erros.
-                    console.error("[DashboardLayout] Error fetching smart link for sidebar:", smartLinkError);
-                    setActiveSmartLink(null);
-                } else {
-                    setActiveSmartLink(smartLinkData);
-                }
+            if (smartLinkError) {
+                console.error("[DashboardLayout] Error fetching smart link for sidebar:", smartLinkError);
+                setActiveSmartLink(null);
             } else {
-                 setActiveSmartLink(null);
+                setActiveSmartLink(smartLinkData);
             }
         } catch (error) {
-            console.error('[DashboardLayout] Error fetching data for sidebar:', error);
-            setUserProfile(null);
+            console.error('[DashboardLayout] Error fetching smart link data:', error);
             setActiveSmartLink(null);
-        } finally {
-            setLoadingSidebarData(false);
-        }    }, [user]);
+        }
+    }, [user]);
 
-    // Chama fetchSidebarData quando user mudar
     useEffect(() => {
-        fetchSidebarData();
-    }, [user, fetchSidebarData]); // Dependência direta em vez de fetchSidebarData
+        fetchSmartLinkData();
+    }, [fetchSmartLinkData]);
 
-    // Buscar Top Artists do Spotify
     useEffect(() => {
       const fetchTopArtists = async () => {
-        if (!currentUserId) {
-          console.log('[DEBUG Dashboard] currentUserId não disponível para Top Artists.');
+        if (!user?.id) {
+          console.log('[DEBUG Dashboard] user.id não disponível para Top Artists.');
           setLoadingTopArtists(false);
           setTopArtists([]);
           return;
         }
         setLoadingTopArtists(true);
-        console.log('[DEBUG Dashboard] Buscando Top Artists para userId:', currentUserId);
+        console.log('[DEBUG Dashboard] Buscando Top Artists para userId:', user.id);
         try {
-          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/artists?limit=5&time_range=long_term');
+          const response = await spotifyTokenService.makeSpotifyRequest(user.id, '/me/top/artists?limit=5&time_range=long_term');
           if (response.ok) {
             const data = await response.json();
             console.log('[DEBUG Dashboard] Top Artists recebidos:', data.items);
@@ -123,21 +89,20 @@ const DashboardLayout = ({ children }) => {
         }
       };
       fetchTopArtists();
-    }, [currentUserId]);
+    }, [user]);
 
-    // Buscar Top Tracks do Spotify
     useEffect(() => {
       const fetchTopTracks = async () => {
-        if (!currentUserId) {
-          console.log('[DEBUG Dashboard] currentUserId não disponível para Top Tracks.');
+        if (!user?.id) {
+          console.log('[DEBUG Dashboard] user.id não disponível para Top Tracks.');
           setLoadingTopTracks(false);
           setTopTracks([]);
           return;
         }
         setLoadingTopTracks(true);
-        console.log('[DEBUG Dashboard] Buscando Top Tracks para userId:', currentUserId);
+        console.log('[DEBUG Dashboard] Buscando Top Tracks para userId:', user.id);
         try {
-          const response = await spotifyTokenService.makeSpotifyRequest(currentUserId, '/me/top/tracks?limit=5&time_range=long_term');
+          const response = await spotifyTokenService.makeSpotifyRequest(user.id, '/me/top/tracks?limit=5&time_range=long_term');
           if (response.ok) {
             const data = await response.json();
             console.log('[DEBUG Dashboard] Top Tracks recebidos:', data.items);
@@ -154,7 +119,7 @@ const DashboardLayout = ({ children }) => {
         }
       };
       fetchTopTracks();
-    }, [currentUserId]);
+    }, [user]);
 
     useEffect(() => {
         if (window && window.localStorage) {
@@ -170,25 +135,27 @@ const DashboardLayout = ({ children }) => {
         if (window && window.localStorage) {
             localStorage.setItem('dashboardOnboardedV2', 'true');
         }
-    };    const handleNavigateToMetrics = () => {
-        console.log('Navegando para /dashboard/metrics'); // Debug
+    };
+    const handleNavigateToMetrics = () => {
+        console.log('Navegando para /dashboard/metrics');
         navigate('/dashboard/metrics');
     };
     
-    // Função para navegação rápida ao dashboard principal
     const handleNavigateToDashboardHome = () => {
         navigate('/dashboard');
     };
     
-    if (loadingSidebarData && !userProfile) { // Mostrar carregando apenas se não houver dados antigos
+    if (authLoading) { // Usar o loading do AuthContext
         return (
             <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
                 <div className="text-2xl font-semibold text-[#3100ff]">Carregando Painel...</div>
             </div>
         );
-    }    return (
+    }
+
+    return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden h-screen">
-        <HeaderBar user={user} avatar={userProfile?.avatar_url} onLogout={onSignOut} onToggleSidebar={toggleSidebar} />
+        <HeaderBar user={user} avatar={profile?.avatar_url} onLogout={handleSignOut} onToggleSidebar={toggleSidebar} />
         
         {/* Overlay para mobile */}
         {isSidebarOpen && (
@@ -203,15 +170,15 @@ const DashboardLayout = ({ children }) => {
           <aside className={`fixed top-0 left-0 w-64 h-full bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] border-r-2 border-[#e9e6ff] text-[#1c1c1c] p-4 space-y-4 shadow-2xl flex flex-col z-40 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="flex flex-col items-center mb-4 group">
               <div className="relative mb-1">
-                {userProfile?.avatar_url ? (
-                  <img src={userProfile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover border-2 border-[#3100ff] shadow-xl neon-avatar" />
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt="Avatar" className="w-16 h-16 rounded-full object-cover border-2 border-[#3100ff] shadow-xl neon-avatar" />
                 ) : (
                   <FaUserCircle className="w-16 h-16 rounded-full text-gray-300 border-2 border-[#3100ff] shadow-xl neon-avatar" />
                 )}
                 <span className="absolute inset-0 rounded-full border-2 border-[#a259ff] animate-pulse pointer-events-none" style={{boxShadow:'0 0 12px 2px #a259ff55'}}></span>
               </div>
-              <h2 className="text-lg font-extrabold bg-gradient-to-r from-[#3100ff] via-[#a259ff] to-[#ffb300] bg-clip-text text-transparent animate-gradient-x tracking-tight mt-1 mb-0 transition-colors" title={userProfile?.username || 'Usuário'}>
-                {userProfile?.username || 'Usuário'}
+              <h2 className="text-lg font-extrabold bg-gradient-to-r from-[#3100ff] via-[#a259ff] to-[#ffb300] bg-clip-text text-transparent animate-gradient-x tracking-tight mt-1 mb-0 transition-colors" title={profile?.username || 'Usuário'}>
+                {profile?.username || 'Usuário'}
               </h2>
               <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md mt-1 animate-bounce">Artista PRO</span>
             </div>
@@ -296,7 +263,7 @@ const DashboardLayout = ({ children }) => {
                         Novos Seguidores
                       </span>
                       {/* Spotify Followers */}
-                      <SpotifyFollowersCounter currentUserId={currentUserId} />
+                      <SpotifyFollowersCounter />
                     </div>
 
                     {/* Card de Top Artistas do Spotify (Novo) */}

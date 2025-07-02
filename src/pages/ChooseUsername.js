@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaDeezer } from 'react-icons/fa';
 import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
 import SocialLinksPreview from '../components/Common/SocialLinksPreview';
+import { useAuth } from '../hooks/useAuth'; // Importar o hook useAuth
 
 const predefinedAvatars = [
   '/avatars/perfilhomem1.png',
@@ -12,7 +13,8 @@ const predefinedAvatars = [
   '/avatars/perfilmulher2.png',
 ];
 
-const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
+const ChooseUsername = () => {
+  const { user, updateUserProfile } = useAuth(); // Usar o hook useAuth para obter o usuário e a função de atualização
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState(''); // Novo estado para email
   const [avatarFile, setAvatarFile] = useState(null); // Novo estado para arquivo do avatar
@@ -36,20 +38,20 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
     const instanceId = Date.now(); 
     const logPrefix = `ChooseUsername (${instanceId}): useEffect -`;
 
-    console.log(`${logPrefix} useEffect disparado. currentUserId: ${currentUserId}. Definindo isUserDataLoading como true.`);
+    console.log(`${logPrefix} useEffect disparado. user: ${user ? user.id : 'null'}. Definindo isUserDataLoading como true.`);
     setIsUserDataLoading(true); 
 
     const getUserAndProfile = async () => {
       console.log(`${logPrefix} getUserAndProfile iniciado.`);
 
       try {
-        if (currentUserId) {
-          console.log(`${logPrefix} User ID (currentUserId) fornecido: ${currentUserId}.`);
+        if (user && user.id) {
+          console.log(`${logPrefix} User ID (user.id) fornecido: ${user.id}.`);
           // Buscar também email, avatar_url e social_links se já existirem
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, email, avatar_url, social_links')
-            .eq('user_id', currentUserId)
+            .eq('user_id', user.id)
             .maybeSingle();
           console.log(`${logPrefix} Depois de buscar perfil. Erro: ${profileError ? JSON.stringify(profileError) : 'null'}, Perfil: ${JSON.stringify(profile)}`);
 
@@ -85,7 +87,7 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
           }
           console.log(`${logPrefix} Usuário não tem username no perfil ou perfil não encontrado. Permanece na página.`);
         } else {
-          console.warn(`${logPrefix} Nenhum currentUserId fornecido. Isso não deveria acontecer. Redirecionando para /login.`);
+          console.warn(`${logPrefix} Nenhum user.id fornecido. Isso não deveria acontecer. Redirecionando para /login.`);
           navigate('/login');
           return; 
         }
@@ -98,17 +100,17 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       }
     };
 
-    if (currentUserId) { // Só executa se currentUserId estiver presente
+    if (user && user.id) { // Só executa se user.id estiver presente
         getUserAndProfile();
     } else {
-        console.warn(`${logPrefix} currentUserId não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.`);
+        console.warn(`${logPrefix} user.id não está disponível no momento da chamada do useEffect. Não chamando getUserAndProfile.`);
         // Poderia redirecionar para /login aqui também ou mostrar uma mensagem, 
         // mas App.js já deve cuidar do redirecionamento se não houver usuário.
-        // Definir isUserDataLoading como false para não ficar em loop de carregamento se currentUserId nunca chegar.
+        // Definir isUserDataLoading como false para não ficar em loop de carregamento se user.id nunca chegar.
         setIsUserDataLoading(false); 
     }
 
-  }, [navigate, currentUserId]); // Adicionado currentUserId às dependências do useEffect
+  }, [navigate, user]); // Adicionado user às dependências do useEffect
 
   const handleUsernameChange = (e) => {
     const value = e.target.value.toLowerCase();
@@ -242,15 +244,15 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       }
     }
 
-    if (!currentUserId) { 
-      console.error(`${logPrefix} Tentativa de submissão sem currentUserId. isUserDataLoading: ${isUserDataLoading}`);
+    if (!user || !user.id) { 
+      console.error(`${logPrefix} Tentativa de submissão sem user.id. isUserDataLoading: ${isUserDataLoading}`);
       setMessage({ text: 'ID do usuário ainda não carregado. Aguarde ou recarregue a página.', type: 'error' });
       return;
     }
 
     setLoading(true);
     setMessage({ text: '', type: '' });
-    console.log(`${logPrefix} Iniciando. User ID: ${currentUserId}, Username: ${username}, Email: ${email}`);
+    console.log(`${logPrefix} Iniciando. User ID: ${user.id}, Username: ${username}, Email: ${email}`);
 
     try {
       const isAvailable = await checkUsernameAvailability(username);
@@ -262,7 +264,7 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       
       let avatarUrlToSave = null;
       if (avatarFile) {
-        const fileName = `${currentUserId}_${Date.now()}.${avatarFile.name.split('.').pop()}`;
+        const fileName = `${user.id}_${Date.now()}.${avatarFile.name.split('.').pop()}`;
         // Corrigido: O bucket 'avatars' já é especificado em .from('avatars')
         // Então, o filePath deve ser apenas o nome do arquivo.
         const filePath = fileName;
@@ -310,12 +312,12 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
         profileDataToUpdate.avatar_url = avatarUrlToSave;
       }
       
-      console.log(`${logPrefix} Tentando atualizar perfil para User ID: ${currentUserId} com dados:`, profileDataToUpdate);
+      console.log(`${logPrefix} Tentando atualizar perfil para User ID: ${user.id} com dados:`, profileDataToUpdate);
       
       const { data: updatedProfile, error: updateError } = await supabase
         .from('profiles')
         .update(profileDataToUpdate)
-        .eq('user_id', currentUserId)
+        .eq('user_id', user.id)
         .select('user_id, username, email, avatar_url, social_links') // Selecionar os novos campos
         .single();
 
@@ -334,8 +336,8 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
       console.log(`${logPrefix} Username e perfil atualizados com sucesso. Perfil atualizado:`, updatedProfile);
       setMessage({ text: 'Perfil salvo com sucesso!', type: 'success' });
       
-      if (typeof onProfileUpdate === 'function') {
-        await onProfileUpdate(); // Chama a função para atualizar o perfil no App.js
+      if (typeof updateUserProfile === 'function') {
+        await updateUserProfile(); // Chama a função para atualizar o perfil no App.js
       }
       
       setTimeout(() => navigate('/dashboard'), 1500);
@@ -362,7 +364,7 @@ const ChooseUsername = ({ currentUserId, onProfileUpdate }) => {
         
         {isUserDataLoading ? (
           <p className="text-center text-[#1c1c1c]/70">Carregando dados do usuário...</p> // Preto com opacidade
-        ) : !currentUserId ? (
+        ) : !user || !user.id ? (
           <p className="text-center text-red-500 p-3"> {/* Manter vermelho para erro crítico */}
             Não foi possível carregar os dados do usuário. Por favor, tente <button type="button" onClick={() => window.location.reload()} className="underline hover:text-red-700 bg-transparent border-none p-0 m-0 cursor-pointer inline">recarregar a página</button> ou contate o suporte se o problema persistir.
           </p>

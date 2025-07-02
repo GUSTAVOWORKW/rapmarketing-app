@@ -4,15 +4,11 @@ import { supabase } from '../../services/supabase';
 import { useUserSmartLink } from '../../hooks/useUserSmartLinks'; 
 import { useSmartLink } from '../../hooks/useSmartLink';
 import { UserProfile, PlatformLink } from '../../types';
-import { FaTrash, FaLink, FaMusic, FaThList, FaUserCircle } from 'react-icons/fa'; // Adicionado FaMusic, FaThList, FaUserCircle
+import { FaTrash, FaLink, FaMusic, FaThList, FaUserCircle } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext'; // Importar o novo useAuth
 
-interface UserDashboardProps {
-  currentUserId: string;
-}
-
-const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
-  const [userProfileForContent, setUserProfileForContent] = useState<UserProfile | null>(null);
-  const [loadingProfileForContent, setLoadingProfileForContent] = useState(true);
+const UserDashboard: React.FC = () => {
+  const { user, profile, loading: authLoading } = useAuth(); // Obter user, profile e loading do contexto
 
   const [activePresavesCount, setActivePresavesCount] = useState<number | null>(null);
   const [loadingPresavesCount, setLoadingPresavesCount] = useState(true);
@@ -22,45 +18,21 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
   const [smartBiosCount, setSmartBiosCount] = useState<number>(0);
   const [loadingSmartLinksCount, setLoadingSmartLinksCount] = useState(true); // Novo estado de loading
 
-
   const { 
     smartLink, 
     loading: loadingLink, 
     error: linkError, 
     clearUserSmartLinkState
-  } = useUserSmartLink(currentUserId); 
+  } = useUserSmartLink(user?.id); 
   
   const { deleteSmartLink } = useSmartLink(null); 
 
-  useEffect(() => {
-    const fetchUserProfileForContent = async () => {
-      if (!currentUserId) {
-        setLoadingProfileForContent(false);
-        return;
-      }
-      setLoadingProfileForContent(true);      
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('user_id, username')
-          .eq('user_id', currentUserId)
-          .single();
-        if (error) throw error;
-        setUserProfileForContent(data as UserProfile);
-      } catch (error) {
-        console.error('Error fetching user profile for dashboard content:', error);
-      } finally {
-        setLoadingProfileForContent(false);
-      }
-    };
-
-    fetchUserProfileForContent();
-  }, [currentUserId]);
+  
 
   // Novo useEffect para buscar contagem de pré-saves ativos
   useEffect(() => {
     const fetchActivePresaves = async () => {
-      if (!currentUserId) {
+      if (!user?.id) {
         setLoadingPresavesCount(false);
         setActivePresavesCount(0);
         return;
@@ -71,7 +43,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
         const { count, error } = await supabase
           .from('presaves') 
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', currentUserId) 
+          .eq('user_id', user.id) 
           .gt('release_date', currentDate); 
 
         if (error) throw error;
@@ -85,12 +57,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
     };
 
     fetchActivePresaves();
-  }, [currentUserId]);
+  }, [user]);
 
   // useEffect para buscar contagem de todos os smart links do usuário
   useEffect(() => {
     const fetchSmartLinksCount = async () => {
-      if (!currentUserId) {
+      if (!user?.id) {
         setLoadingSmartLinksCount(false);
         setSmartLinksCount(0);
         return;
@@ -100,7 +72,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
         const { count, error } = await supabase
           .from('smart_links')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', currentUserId);
+          .eq('user_id', user.id);
 
         if (error) throw error;
         setSmartLinksCount(count ?? 0);
@@ -115,7 +87,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
     fetchSmartLinksCount();
     // Para Smart Bios, manteremos 0 por enquanto e seu loading como false
     setSmartBiosCount(0); 
-  }, [currentUserId]);
+  }, [user]);
 
 
   const handleDeleteLink = async () => {
@@ -130,11 +102,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({ currentUserId }) => {
     }
   };
 
-  const publicLinkUrl = userProfileForContent?.username && smartLink?.slug 
+  const publicLinkUrl = profile?.username && smartLink?.slug 
     ? `${window.location.origin}/${smartLink.slug}` 
     : null;
 
-  if (loadingProfileForContent || loadingLink || loadingPresavesCount || loadingSmartLinksCount) { // Adicionado loadingSmartLinksCount
+  if (authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) { // Adicionado loadingSmartLinksCount
     return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
   }
 

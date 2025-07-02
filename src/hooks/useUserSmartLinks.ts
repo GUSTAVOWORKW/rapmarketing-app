@@ -2,15 +2,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import { SmartLink } from '../types';
 import { useSmartLink } from './useSmartLink';
+import { useAuth } from '../context/AuthContext';
 
-export function useUserSmartLink(userId: string | null | undefined) {
+export function useUserSmartLink() {
+  const { user } = useAuth();
   const [smartLink, setSmartLink] = useState<SmartLink | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<any>(null);
   const { fetchSmartLinkByUserId } = useSmartLink(null);
 
-  const fetchUserSmartLink = useCallback(async (currentUserId: string) => {
-    if (!currentUserId) {
+  const fetchUserSmartLink = useCallback(async () => {
+    if (!user?.id) {
       setSmartLink(null);
       return;
     }
@@ -20,7 +22,7 @@ export function useUserSmartLink(userId: string | null | undefined) {
     
     try {
       // Use the existing fetchSmartLinkByUserId from useSmartLink.ts
-      const data = await fetchSmartLinkByUserId(currentUserId);
+      const data = await fetchSmartLinkByUserId(user.id);
       setSmartLink(data); // data can be SmartLink or null
     } catch (e: any) {
       // Não mostrar erro se for apenas "not found"
@@ -28,15 +30,15 @@ export function useUserSmartLink(userId: string | null | undefined) {
     } finally {
       setLoading(false);
     }
-  }, [fetchSmartLinkByUserId]);
+  }, [fetchSmartLinkByUserId, user]);
 
   useEffect(() => {
-    if (userId) {
-      fetchUserSmartLink(userId);
+    if (user?.id) {
+      fetchUserSmartLink();
     } else {
       setSmartLink(null); // Clear if no user ID is provided
     }
-  }, [userId, fetchUserSmartLink]);
+  }, [user, fetchUserSmartLink]);
 
   // Function to update the local state if needed after creation/update
   const updateUserSmartLinkState = (updatedLink: SmartLink | null) => {
