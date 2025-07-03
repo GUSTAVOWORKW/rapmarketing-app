@@ -29,37 +29,35 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  // This is the robust, correct implementation of the auth effect.
   useEffect(() => {
-    const setupAuth = async () => {
-      // 1. Get the current session on initial load
-      const { data: { session: initialSession } } = await supabase.auth.getSession();
-      setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-      if (initialSession?.user) {
-        await fetchProfile(initialSession.user.id);
+    // This function runs once to get the initial session.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        fetchProfile(session.user.id);
       }
-      // Crucially, set initializing to false after the initial check is done.
+      // Initial check is done, stop initializing.
       setInitializing(false);
+    });
 
-      // 2. Listen for future auth state changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // This listener handles all future auth events.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
         setSession(session);
-        const currentUser = session?.user;
-        setUser(currentUser ?? null);
-        if (currentUser) {
-          await fetchProfile(currentUser.id);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
         }
-      });
+      }
+    );
 
-      return () => {
-        subscription?.unsubscribe();
-      };
-    };
-
-    const unsubscribePromise = setupAuth();
-
+    // Cleanup the subscription on component unmount.
     return () => {
-      unsubscribePromise.then(unsubscribe => unsubscribe && unsubscribe());
+      subscription?.unsubscribe();
     };
   }, [fetchProfile]);
 
@@ -69,7 +67,6 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setProfile(null); // Clear profile immediately on sign out
   };
 
   const value = {
@@ -80,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     signInWithGoogle,
     signOut,
-    refreshProfile: fetchProfile,
+    refreshProfile: fetchProfile, // Provide the fetchProfile function
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

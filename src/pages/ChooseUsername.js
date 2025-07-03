@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaDeezer } from 'react-icons/fa';
 import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
 import SocialLinksPreview from '../components/Common/SocialLinksPreview';
