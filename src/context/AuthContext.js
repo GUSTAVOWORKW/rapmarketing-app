@@ -1,5 +1,4 @@
-
-    import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
     import { supabase } from '../services/supabase';
 
     const AuthContext = createContext();
@@ -10,7 +9,25 @@
       const [profile, setProfile] = useState(null);
       const [loading, setLoading] = useState(true);
 
-      const fetchProfile = useCallback(async (userId, noCache = false) => {
+      const signInWithSpotify = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'spotify',
+                options: {
+                    scopes: 'user-read-email user-read-private user-top-read playlist-read-private playlist-read-collaborative',
+                    redirectTo: window.location.origin + '/settings' // Redireciona de volta para as configurações
+                },
+            });
+            if (error) {
+                console.error('Erro no login com Spotify:', error);
+                // Opcional: você pode querer mostrar um erro para o usuário aqui
+            }
+        } catch (error) {
+            console.error('Erro inesperado no login com Spotify:', error);
+        }
+    };
+
+    const fetchProfile = useCallback(async (userId, noCache = false) => {
         if (!userId) {
           setProfile(null);
           localStorage.removeItem('profile');
@@ -79,12 +96,29 @@
         };
       }, [fetchProfile]);
 
+      const signInWithGoogle = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + '/choose-username'
+                },
+            });
+            if (error) {
+                console.error('Erro no login com Google:', error);
+            }
+        } catch (error) {
+            console.error('Erro inesperado no login com Google:', error);
+        }
+    };
+
       const value = {
-        session,
         user,
         profile,
         loading,
-        refreshProfile: (userId) => fetchProfile(userId, true)
+        signInWithGoogle,
+        refreshProfile: (userId) => fetchProfile(userId, true),
+        signInWithSpotify // Exportar a função
       };
 
       return (
@@ -101,4 +135,3 @@
       }
       return context;
     };
-    
