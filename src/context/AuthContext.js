@@ -1,4 +1,4 @@
-'''import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 
 const AuthContext = createContext();
@@ -7,15 +7,15 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [initializing, setInitializing] = useState(true);
+  const [loading, setLoading] = useState(false); // For discrete loading states (e.g., profile fetch)
+  const [initializing, setInitializing] = useState(true); // For the initial auth check
 
   const signInWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/choose-username'
+          redirectTo: window.location.origin + '/choose-username',
         },
       });
       if (error) console.error('Erro no login com Google:', error);
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
         provider: 'spotify',
         options: {
           scopes: 'user-read-email user-read-private user-top-read playlist-read-private playlist-read-collaborative',
-          redirectTo: window.location.origin + '/settings'
+          redirectTo: window.location.origin + '/settings',
         },
       });
       if (error) console.error('Erro no login com Spotify:', error);
@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    // Reset all states on sign out
     setUser(null);
     setSession(null);
     setProfile(null);
@@ -50,7 +49,6 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) return;
-    
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -58,18 +56,8 @@ export const AuthProvider = ({ children }) => {
         .select('*')
         .eq('user_id', userId)
         .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-        throw error;
-      }
-      
-      setProfile(data || null); // Set profile to data or null if not found
-      if (data) {
-        localStorage.setItem(`profile_${userId}`, JSON.stringify(data));
-      } else {
-        localStorage.removeItem(`profile_${userId}`);
-      }
-
+      if (error && error.code !== 'PGRST116') throw error;
+      setProfile(data || null);
     } catch (error) {
       console.error("Erro ao buscar perfil no AuthProvider:", error);
       setProfile(null);
@@ -78,39 +66,17 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // This useEffect is the single source of truth for auth state.
   useEffect(() => {
     setInitializing(true);
-    
-    // Immediately get the current session and set it.
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       const currentUser = session?.user;
       setUser(currentUser ?? null);
       if (currentUser) {
-        fetchProfile(currentUser.id);
+        await fetchProfile(currentUser.id);
       }
+      setInitializing(false);
     });
-
-    // Listen for future auth state changes.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        const currentUser = session?.user;
-        setUser(currentUser ?? null);
-        
-        if (currentUser) {
-          // On sign-in or token refresh, force a fresh profile fetch.
-          await fetchProfile(currentUser.id);
-        } else {
-          // On sign-out, clear the profile.
-          setProfile(null);
-        }
-        
-        // The first time this runs, the app is no longer initializing.
-        setInitializing(false);
-      }
-    );
 
     return () => {
       subscription?.unsubscribe();
@@ -126,7 +92,7 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     signInWithSpotify,
     signOut,
-    refreshProfile: (userId) => fetchProfile(userId),
+    refreshProfile: fetchProfile,
   };
 
   return (
@@ -143,4 +109,3 @@ export const useAuth = () => {
   }
   return context;
 };
-''
