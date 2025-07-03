@@ -344,7 +344,7 @@ const ChooseUsername = () => {
       
       const { data: updatedProfile, error: updateError } = await supabase
         .from('profiles')
-        .update(profileDataToUpdate)
+        .upsert(profileDataToUpdate, { onConflict: 'user_id' })
         .eq('user_id', user.id)
         .select('user_id, username, email, avatar_url, social_links') // Selecionar os novos campos
         .single();
