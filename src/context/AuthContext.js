@@ -7,45 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(false); // For discrete loading states (e.g., profile fetch)
-  const [initializing, setInitializing] = useState(true); // For the initial auth check
-
-  const signInWithGoogle = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/choose-username',
-        },
-      });
-      if (error) console.error('Erro no login com Google:', error);
-    } catch (error) {
-      console.error('Erro inesperado no login com Google:', error);
-    }
-  };
-
-  const signInWithSpotify = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'spotify',
-        options: {
-          scopes: 'user-read-email user-read-private user-top-read playlist-read-private playlist-read-collaborative',
-          redirectTo: window.location.origin + '/settings',
-        },
-      });
-      if (error) console.error('Erro no login com Spotify:', error);
-    } catch (error) {
-      console.error('Erro inesperado no login com Spotify:', error);
-    }
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    setProfile(null);
-    localStorage.clear();
-  };
+  const [initializing, setInitializing] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchProfile = useCallback(async (userId) => {
     if (!userId) return;
@@ -59,7 +22,7 @@ export const AuthProvider = ({ children }) => {
       if (error && error.code !== 'PGRST116') throw error;
       setProfile(data || null);
     } catch (error) {
-      console.error("Erro ao buscar perfil no AuthProvider:", error);
+      console.error("Error fetching profile:", error);
       setProfile(null);
     } finally {
       setLoading(false);
@@ -67,45 +30,66 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    setInitializing(true);
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      const currentUser = session?.user;
-      setUser(currentUser ?? null);
-      if (currentUser) {
-        await fetchProfile(currentUser.id);
+    const setupAuth = async () => {
+      // 1. Get the current session on initial load
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
+      setSession(initialSession);
+      setUser(initialSession?.user ?? null);
+      if (initialSession?.user) {
+        await fetchProfile(initialSession.user.id);
       }
+      // Crucially, set initializing to false after the initial check is done.
       setInitializing(false);
-    });
+
+      // 2. Listen for future auth state changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        setSession(session);
+        const currentUser = session?.user;
+        setUser(currentUser ?? null);
+        if (currentUser) {
+          await fetchProfile(currentUser.id);
+        }
+      });
+
+      return () => {
+        subscription?.unsubscribe();
+      };
+    };
+
+    const unsubscribePromise = setupAuth();
 
     return () => {
-      subscription?.unsubscribe();
+      unsubscribePromise.then(unsubscribe => unsubscribe && unsubscribe());
     };
   }, [fetchProfile]);
+
+  const signInWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/choose-username' } });
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setProfile(null); // Clear profile immediately on sign out
+  };
 
   const value = {
     session,
     user,
     profile,
-    loading,
     initializing,
+    loading,
     signInWithGoogle,
-    signInWithSpotify,
     signOut,
     refreshProfile: fetchProfile,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
