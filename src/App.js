@@ -34,9 +34,9 @@ const LoadingScreen = () => (
 // Componente para proteger rotas que exigem autenticação
 // AGORA USA O CONTEXTO DIRETAMENTE
 const ProtectedRoutes = () => {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, initializing } = useAuth();
 
-  if (loading) {
+  if (initializing) {
     return <LoadingScreen />;
   }
 
@@ -70,9 +70,9 @@ function App() {
 
 // Componente separado para as rotas, para que possa acessar o AuthContext
 const AppRoutes = () => {
-  const { session, loading } = useAuth();
+  const { session, initializing } = useAuth();
 
-  if (loading) {
+  if (initializing) {
     return <LoadingScreen />;
   }
 
