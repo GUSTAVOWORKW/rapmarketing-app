@@ -1,7 +1,7 @@
 // src/pages/CreateSmartLinkPage.tsx - REFATORADO com arquitetura multi-step
 import React, { useState, useEffect, useMemo } from 'react'; // Adicionado useMemo
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
 import { PlatformLink, SocialLink } from '../types'; // Importar tipos

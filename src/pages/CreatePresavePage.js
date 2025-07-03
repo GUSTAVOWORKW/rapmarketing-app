@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { usePresaveFormContext } from '../context/presave/PresaveFormContext';
 
 // Custom hooks e services
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 import { savePresave } from '../services/presaveService';
 
 // Componentes refatorados
