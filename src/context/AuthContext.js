@@ -31,34 +31,43 @@ export const AuthProvider = ({ children }) => {
 
   // This is the robust, correct implementation of the auth effect.
   useEffect(() => {
-    // This function runs once to get the initial session.
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
-      // Initial check is done, stop initializing.
-      setInitializing(false);
-    });
-
-    // This listener handles all future auth events.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await fetchProfile(session.user.id);
-        } else {
-          setProfile(null);
+    const setupAuth = async () => {
+      try {
+        // 1. Get the current session on initial load
+        const { data: { session: initialSession } } = await supabase.auth.getSession();
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+        if (initialSession?.user) {
+          await fetchProfile(initialSession.user.id);
         }
+      } catch (error) {
+        console.error("Error during initial session setup:", error);
+        // Handle error, but still stop initializing
+      } finally {
+        // Crucially, set initializing to false after the initial check is done, regardless of success or failure.
+        setInitializing(false);
       }
-    );
 
-    // Cleanup the subscription on component unmount.
-    return () => {
-      subscription?.unsubscribe();
+      // 2. Listen for future auth state changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (_event, session) => {
+          setSession(session);
+          const currentUser = session?.user;
+          setUser(currentUser ?? null);
+          if (currentUser) {
+            await fetchProfile(currentUser.id);
+          } else {
+            setProfile(null);
+          }
+        }
+      );
+
+      return () => {
+        subscription?.unsubscribe();
+      };
     };
+
+    setupAuth();
   }, [fetchProfile]);
 
   const signInWithGoogle = async () => {

@@ -5,7 +5,6 @@ import { supabase } from '../services/supabase';
 import { getDemoAlbumAndTrack } from '../utils';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useAuth } from '../context/AuthContext';
-import { useProfile } from '../hooks/useProfile';
 
 const phoneFrameStyle = {
   width: 370,
@@ -69,8 +68,6 @@ const sidebarStyle = {
 
 const ProfilePreview = ({ profile, onConfirm, allowEdit, onEdit }) => {
   const PreviewComponent = allTemplatesPreviewMap[profile?.template_id] || null;
-  const { user } = useAuth();
-  const { updateProfile, uploadAvatar } = useProfile();
   const { user } = useAuth();
   const { updateProfile, uploadAvatar } = useProfile();
 
