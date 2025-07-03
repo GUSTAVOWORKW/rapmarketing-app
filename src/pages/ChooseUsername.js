@@ -35,6 +35,34 @@ const ChooseUsername = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const handleAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error getting session:", error);
+        return;
+      }
+
+      if (!session) {
+        // This part is crucial. It handles the redirect from Google.
+        // The session is not immediately available, so we need to wait for the auth state to change.
+        const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+          if (session?.user) {
+            // Now we have a session, you can proceed with your logic.
+          } else {
+            // Handle case where authentication fails
+            navigate('/login');
+          }
+          authListener.subscription.unsubscribe(); // Unsubscribe after first event
+        });
+      } else {
+        // Session already exists
+      }
+    };
+
+    handleAuth();
+  }, [navigate]);
+
+  useEffect(() => {
     const instanceId = Date.now(); 
     const logPrefix = `ChooseUsername (${instanceId}): useEffect -`;
 
