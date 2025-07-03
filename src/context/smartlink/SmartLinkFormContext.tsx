@@ -1,7 +1,7 @@
 // src/context/smartlink/SmartLinkFormContext.tsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../../services/supabase';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 import { PlatformLink, SocialLink } from '../../types';
 import { PLATFORMS } from '../../data/platforms';
 
