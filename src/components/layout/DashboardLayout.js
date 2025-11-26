@@ -296,75 +296,135 @@ const DashboardLayout = ({ children }) => {
               <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#3100ff]/20 rounded-full blur-3xl animate-pulse-slow"></div>
             </div>
             <div className="relative z-20 pointer-events-auto">{/* Aumentar z-index para garantir que esteja acima de outros elementos */}
-              {/* Painel de impacto visual: estatísticas, conquistas, gráfico */}
+              {/* Painel de impacto visual: estatísticas Spotify */}
               {location.pathname === '/dashboard' && (
                 <section className="mb-10">
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {/* Estatística 2: Novos seguidores (existente) */}
-                    <div className="bg-gradient-to-br from-[#a259ff]/90 to-[#3100ff]/80 rounded-2xl shadow-xl p-8 flex flex-col items-center animate-fade-in-up border border-[#e9e6ff] delay-100 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#1db954] mr-2">
-                          <svg width="18" height="18" viewBox="0 0 496 512" fill="white" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M248 8C111 8 0 119 0 256c0 137 111 248 248 248s248-111 248-248C496 119 385 8 248 8zm121.7 365.6c-4.1 0-6.6-1.3-10.4-3.8-62.7-37.3-168.8-45.7-229.8-26.1-4.8 1.5-11.2 3.1-14.7 3.1-8.2 0-14.1-6.4-14.1-15.2 0-9.2 5.2-14.7 16.2-18.1 66.2-20.2 180.1-13.5 249.2 29.5 7.7 4.7 10.1 9.7 10.1 15.3 0 8.7-6.9 15.3-16.5 15.3zm31.5-61.6c-5.2 0-8.5-2-13.1-4.5-71.7-42.5-181.1-54.7-265.1-31.2-5.9 1.6-9.4 3.2-13.9 3.2-10.2 0-17.1-8-17.1-17.1 0-10.2 5.7-16.2 16.5-19.5 30.2-9.2 63.2-15.2 100.8-15.2 82.2 0 163.2 20.7 221.2 59.1 6.2 4.1 9.2 8.7 9.2 15.1 0 9.2-7.5 16.1-18.5 16.1zm34.3-65.8c-4.7 0-7.7-1.3-12.1-3.8-79.5-47.2-211.5-51.7-288.2-29.5-4.6 1.3-7.2 2.6-11.7 2.6-12.1 0-20.2-9.4-20.2-20.2 0-11.2 6.2-18.1 18.5-21.5 35.2-10.1 74.2-15.6 118.2-15.6 89.7 0 176.7 19.1 242.7 55.2 8.1 4.5 12.1 10.1 12.1 18.1 0 11.1-8.9 19.6-19.2 19.6z"/>
-                          </svg>
-                        </span>
-                        Novos Seguidores
-                      </span>
-                      {/* Spotify Followers */}
-                      <SpotifyFollowersCounter />
+                  <h2 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
+                    <FaSpotify className="text-[#1db954]" /> Dados do Spotify
+                  </h2>
+                  <div className="grid md:grid-cols-3 gap-5">
+                    {/* Card: Novos Seguidores */}
+                    <div className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-100 group">
+                      {/* Header com gradiente */}
+                      <div className="bg-gradient-to-r from-[#1db954] to-[#1ed760] p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              <FaSpotify className="text-white text-xl" />
+                            </div>
+                            <span className="text-white font-bold">Novos Seguidores</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Conteúdo */}
+                      <div className="p-5 flex flex-col items-center justify-center min-h-[120px]">
+                        <SpotifyFollowersCounter />
+                      </div>
+                      {/* Decorativo */}
+                      <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-[#1db954]/10 group-hover:scale-150 transition-transform duration-500" />
                     </div>
 
-                    {/* Card de Top Artistas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#ffb300]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col animate-fade-in-up border border-[#e9e6ff] delay-200 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
-                        <FaUserAlt className="text-white text-2xl mr-2" /> Seus Top Artistas
-                      </span>
-                      {loadingTopArtists ? (
-                        <p className="text-white/70 text-center">Carregando artistas...</p>
-                      ) : topArtists.length > 0 ? (
-                        <ul className="space-y-2 w-full">
-                          {topArtists.map((artist) => (
-                            <li key={artist.id} className="flex items-center">
-                              {artist.images && artist.images.length > 0 && (
-                                <img src={artist.images[0].url} alt={artist.name} className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-white" />
-                              )}
-                              <a href={artist.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-white font-medium hover:underline">
-                                {artist.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-white/70 text-center">Nenhum artista encontrado. Conecte seu Spotify e ouça mais músicas!</p>
-                      )}
-                    </div>
-
-                    {/* Card de Top Músicas do Spotify (Novo) */}
-                    <div className="bg-gradient-to-br from-[#3100ff]/90 to-[#a259ff]/80 rounded-2xl shadow-xl p-8 flex flex-col animate-fade-in-up border border-[#e9e6ff] delay-300 h-full flex-grow">
-                      <span className="text-white/80 text-lg font-semibold mb-2 flex items-center justify-center w-full text-center">
-                        <FaMusic className="text-white text-2xl mr-2" /> Suas Top Músicas
-                      </span>
-                      {loadingTopTracks ? (
-                        <p className="text-white/70 text-center">Carregando músicas...</p>
-                      ) : topTracks.length > 0 ? (
-                        <ul className="space-y-2 w-full">
-                          {topTracks.map((track) => (
-                            <li key={track.id} className="flex items-center">
-                              {track.album.images && track.album.images.length > 0 && (
-                                <img src={track.album.images[0].url} alt={track.name} className="w-12 h-12 rounded-md mr-3 object-cover border-2 border-white" />
-                              )}
-                              <div>
-                                <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-white font-medium block hover:underline">
-                                  {track.name}
+                    {/* Card: Top Artistas */}
+                    <div className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-100 group">
+                      {/* Header com gradiente */}
+                      <div className="bg-gradient-to-r from-[#ffb300] to-[#ff8c00] p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              <FaUserAlt className="text-white text-lg" />
+                            </div>
+                            <span className="text-white font-bold">Seus Top Artistas</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Conteúdo */}
+                      <div className="p-4">
+                        {loadingTopArtists ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="w-8 h-8 border-3 border-[#ffb300]/20 border-t-[#ffb300] rounded-full animate-spin" />
+                          </div>
+                        ) : topArtists.length > 0 ? (
+                          <ul className="space-y-3">
+                            {topArtists.slice(0, 5).map((artist, index) => (
+                              <li key={artist.id} className="flex items-center gap-3 group/item hover:bg-gray-50 rounded-lg p-1.5 -m-1.5 transition-colors">
+                                <span className="text-xs font-bold text-gray-400 w-4">{index + 1}</span>
+                                {artist.images && artist.images.length > 0 ? (
+                                  <img src={artist.images[artist.images.length > 1 ? 1 : 0].url} alt={artist.name} className="w-10 h-10 rounded-full object-cover border-2 border-[#ffb300]/30 group-hover/item:border-[#ffb300] transition-colors" />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ffb300] to-[#ff8c00] flex items-center justify-center">
+                                    <FaUserAlt className="text-white text-sm" />
+                                  </div>
+                                )}
+                                <a href={artist.external_urls?.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-800 font-medium text-sm hover:text-[#ffb300] transition-colors truncate flex-1">
+                                  {artist.name}
                                 </a>
-                                <span className="text-sm text-white/70">{track.artists.map((artist) => artist.name).join(', ')}</span>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p className="text-white/70 text-center">Nenhuma música encontrada. Conecte seu Spotify e ouça mais músicas!</p>
-                      )}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-center py-6">
+                            <div className="w-12 h-12 rounded-full bg-[#ffb300]/10 flex items-center justify-center mx-auto mb-3">
+                              <FaSpotify className="text-[#ffb300] text-xl" />
+                            </div>
+                            <p className="text-gray-500 text-sm">Conecte seu Spotify para ver seus artistas favoritos</p>
+                          </div>
+                        )}
+                      </div>
+                      {/* Decorativo */}
+                      <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-[#ffb300]/10 group-hover:scale-150 transition-transform duration-500" />
+                    </div>
+
+                    {/* Card: Top Músicas */}
+                    <div className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-100 group">
+                      {/* Header com gradiente */}
+                      <div className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              <FaMusic className="text-white text-lg" />
+                            </div>
+                            <span className="text-white font-bold">Suas Top Músicas</span>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Conteúdo */}
+                      <div className="p-4">
+                        {loadingTopTracks ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="w-8 h-8 border-3 border-[#3100ff]/20 border-t-[#3100ff] rounded-full animate-spin" />
+                          </div>
+                        ) : topTracks.length > 0 ? (
+                          <ul className="space-y-3">
+                            {topTracks.slice(0, 5).map((track, index) => (
+                              <li key={track.id} className="flex items-center gap-3 group/item hover:bg-gray-50 rounded-lg p-1.5 -m-1.5 transition-colors">
+                                <span className="text-xs font-bold text-gray-400 w-4">{index + 1}</span>
+                                {track.album?.images && track.album.images.length > 0 ? (
+                                  <img src={track.album.images[track.album.images.length > 1 ? 1 : 0].url} alt={track.name} className="w-10 h-10 rounded-lg object-cover border-2 border-[#3100ff]/30 group-hover/item:border-[#3100ff] transition-colors" />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#3100ff] to-[#a259ff] flex items-center justify-center">
+                                    <FaMusic className="text-white text-sm" />
+                                  </div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <a href={track.external_urls?.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-800 font-medium text-sm hover:text-[#3100ff] transition-colors truncate block">
+                                    {track.name}
+                                  </a>
+                                  <span className="text-xs text-gray-400 truncate block">{track.artists?.map((a) => a.name).join(', ')}</span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-center py-6">
+                            <div className="w-12 h-12 rounded-full bg-[#3100ff]/10 flex items-center justify-center mx-auto mb-3">
+                              <FaSpotify className="text-[#3100ff] text-xl" />
+                            </div>
+                            <p className="text-gray-500 text-sm">Conecte seu Spotify para ver suas músicas favoritas</p>
+                          </div>
+                        )}
+                      </div>
+                      {/* Decorativo */}
+                      <div className="absolute -right-4 -bottom-4 w-20 h-20 rounded-full bg-[#3100ff]/10 group-hover:scale-150 transition-transform duration-500" />
                     </div>
                   </div>
                 </section>
