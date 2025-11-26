@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import Papa from 'papaparse';
@@ -474,7 +474,12 @@ const SmartLinkMetrics: React.FC = () => {
   
   // Estado principal
   const smartLinkId = routeSmartLinkId === 'default' ? null : routeSmartLinkId || null;
-    // Estados otimizados com loading granular
+  
+  // Refs para controlar carregamento único
+  const loadedUserIdRef = useRef<string | null>(null);
+  const isMountedRef = useRef<boolean>(true);
+  
+  // Estados otimizados com loading granular
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMetrics, setLoadingMetrics] = useState<boolean>(false);
   const [loadingItemDetails, setLoadingItemDetails] = useState<boolean>(false);
@@ -690,15 +695,24 @@ const SmartLinkMetrics: React.FC = () => {
   // EFFECTS OTIMIZADOS
   // ============================================================================
   
-  // Effect principal para carregar dados - executa apenas uma vez no mount
+  // Effect principal para carregar dados - executa apenas uma vez por userId
   useEffect(() => {
-    let mounted = true;
-    let hasLoaded = false;
+    isMountedRef.current = true;
 
     const loadData = async () => {
-      // Se já carregou ou não tem usuário, não faz nada
-      if (hasLoaded || !user?.id) return;
-      hasLoaded = true;
+      const userId = user?.id;
+      
+      // Se não tem usuário, não faz nada
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+      
+      // Se já carregamos para este userId, apenas mostra os dados existentes
+      if (loadedUserIdRef.current === userId) {
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
@@ -709,7 +723,7 @@ const SmartLinkMetrics: React.FC = () => {
         
         // Buscar métricas do usuário diretamente
         const { data: metricsData, error: metricsError } = await supabase.rpc('get_user_metrics_summary', {
-          p_user_id: user.id,
+          p_user_id: userId,
           p_start_date: startDate.toISOString(),
           p_end_date: endDate.toISOString()
         });
@@ -720,17 +734,17 @@ const SmartLinkMetrics: React.FC = () => {
         const { data: smartLinks } = await supabase
           .from('smart_links')
           .select('id, artist_name, release_title, slug, created_at, is_public')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
         
         // Buscar Presaves
         const { data: presaves } = await supabase
           .from('presaves')
           .select('id, artist_name, track_name, shareable_slug, created_at')
-          .eq('user_id', user.id)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
         
-        if (mounted) {
+        if (isMountedRef.current) {
           // Processar métricas
           if (metricsData && typeof metricsData === 'object') {
             const sanitizedData = {
@@ -785,15 +799,18 @@ const SmartLinkMetrics: React.FC = () => {
             }))
           ];
           setUserItems(allItems);
+          
+          // Marca que carregou para este userId
+          loadedUserIdRef.current = userId;
         }
         
       } catch (err: any) {
-        if (mounted) {
+        if (isMountedRef.current) {
           console.error('❌ Erro no carregamento de dados:', err);
           setError(err.message || 'Erro ao carregar dados');
         }
       } finally {
-        if (mounted) {
+        if (isMountedRef.current) {
           setLoading(false);
         }
       }
@@ -807,7 +824,7 @@ const SmartLinkMetrics: React.FC = () => {
     }
 
     return () => {
-      mounted = false;
+      isMountedRef.current = false;
     };
   }, [initializing, user?.id, navigate]); // Removeu selectedPeriod - carrega apenas no mount
 
