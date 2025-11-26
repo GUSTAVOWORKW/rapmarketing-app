@@ -66,11 +66,30 @@ const DashboardLayout = ({ children }) => {
     useEffect(() => {
       const fetchTopArtists = async () => {
         if (!user?.id || spotifyPermanentlyUnavailable) {
-          console.log('[DEBUG Dashboard] user.id não disponível para Top Artists.');
+          console.log('[DEBUG Dashboard] user.id não disponível para Top Artists ou Spotify marcado como indisponível.');
           setLoadingTopArtists(false);
           setTopArtists([]);
           return;
         }
+
+        // Checa antes se existe conexão Spotify válida; se não houver, evita chamada na API
+        try {
+          const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(user.id);
+          if (!hasSpotify) {
+            console.log('[DEBUG Dashboard] Nenhum token Spotify válido encontrado, desativando widgets Spotify.');
+            setSpotifyPermanentlyUnavailable(true);
+            setLoadingTopArtists(false);
+            setTopArtists([]);
+            return;
+          }
+        } catch (checkError) {
+          console.warn('[DEBUG Dashboard] Erro ao verificar conexão Spotify (Top Artists):', checkError?.message || checkError);
+          setSpotifyPermanentlyUnavailable(true);
+          setLoadingTopArtists(false);
+          setTopArtists([]);
+          return;
+        }
+
         setLoadingTopArtists(true);
         console.log('[DEBUG Dashboard] Buscando Top Artists para userId:', user.id);
         try {
@@ -84,8 +103,6 @@ const DashboardLayout = ({ children }) => {
             setTopArtists([]);
           }
         } catch (error) {
-          // Erros de token ausente/406 são esperados para usuários sem Spotify conectado.
-          // Apenas logamos de forma enxuta, marcamos indisponibilidade permanente nesta sessão e seguimos com lista vazia.
           console.warn('[DEBUG Dashboard] Falha ao carregar Top Artists (provavelmente sem Spotify conectado):', error?.message || error);
           setSpotifyPermanentlyUnavailable(true);
           setTopArtists([]);
@@ -99,11 +116,30 @@ const DashboardLayout = ({ children }) => {
     useEffect(() => {
       const fetchTopTracks = async () => {
         if (!user?.id || spotifyPermanentlyUnavailable) {
-          console.log('[DEBUG Dashboard] user.id não disponível para Top Tracks.');
+          console.log('[DEBUG Dashboard] user.id não disponível para Top Tracks ou Spotify marcado como indisponível.');
           setLoadingTopTracks(false);
           setTopTracks([]);
           return;
         }
+
+        // Checa antes se existe conexão Spotify válida; se não houver, evita chamada na API
+        try {
+          const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(user.id);
+          if (!hasSpotify) {
+            console.log('[DEBUG Dashboard] Nenhum token Spotify válido encontrado (Top Tracks), desativando widgets Spotify.');
+            setSpotifyPermanentlyUnavailable(true);
+            setLoadingTopTracks(false);
+            setTopTracks([]);
+            return;
+          }
+        } catch (checkError) {
+          console.warn('[DEBUG Dashboard] Erro ao verificar conexão Spotify (Top Tracks):', checkError?.message || checkError);
+          setSpotifyPermanentlyUnavailable(true);
+          setLoadingTopTracks(false);
+          setTopTracks([]);
+          return;
+        }
+
         setLoadingTopTracks(true);
         console.log('[DEBUG Dashboard] Buscando Top Tracks para userId:', user.id);
         try {
@@ -117,8 +153,6 @@ const DashboardLayout = ({ children }) => {
             setTopTracks([]);
           }
         } catch (error) {
-          // Mesmo comportamento dos artistas: tratar ausência de token como cenário normal
-          // e marcar a indisponibilidade para evitar novas chamadas nesta sessão.
           console.warn('[DEBUG Dashboard] Falha ao carregar Top Tracks (provavelmente sem Spotify conectado):', error?.message || error);
           setSpotifyPermanentlyUnavailable(true);
           setTopTracks([]);
