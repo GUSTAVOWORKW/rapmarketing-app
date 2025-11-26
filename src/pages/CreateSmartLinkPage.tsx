@@ -146,7 +146,8 @@ const CreateSmartLinkPage: React.FC = () => {
   console.log('DEBUG: CreateSmartLinkPage renderizou');
 
   const navigate = useNavigate();
-  const { id: smartLinkId } = useParams();  const { user, loading: authLoading } = useAuth() as { user: User | null, loading: boolean };
+  const { id: smartLinkId } = useParams();
+  const { user, initializing } = useAuth() as { user: User | null; initializing: boolean };
   
   const { 
     state, 
@@ -199,10 +200,19 @@ const CreateSmartLinkPage: React.FC = () => {
 
   // Efeito para redirecionar se o usuário não estiver autenticado
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!initializing && !user) {
       navigate('/login');
     }
-  }, [user, authLoading, navigate]);
+  }, [user, initializing, navigate]);
+
+  // Enquanto o contexto de autenticação ainda está inicializando, exibe um loading específico da página
+  if (initializing || !user) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
+        <div className="text-2xl font-semibold text-[#3100ff]">Carregando criação de Smart Link...</div>
+      </div>
+    );
+  }
   // Memoizar dependências complexas para o useEffect de validação
   const platformUrls = useMemo(() => JSON.stringify(platforms.map(p => p.url)), [platforms]);
 
@@ -339,7 +349,7 @@ const CreateSmartLinkPage: React.FC = () => {
     }
   };
 
-  if (authLoading || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <FaSpinner className="animate-spin text-4xl text-purple-500" />

@@ -470,6 +470,7 @@ interface UserItem {
 const SmartLinkMetrics: React.FC = () => {
   const { linkId: routeSmartLinkId } = useParams<{ linkId: string }>();
   const navigate = useNavigate();
+  const { user, initializing } = useAuth();
   
   // Estado principal
   const smartLinkId = routeSmartLinkId === 'default' ? null : routeSmartLinkId || null;
@@ -490,7 +491,7 @@ const SmartLinkMetrics: React.FC = () => {
   // ============================================================================
   // FUNÇÕES OTIMIZADAS USANDO SQL FUNCTIONS
   // ============================================================================  // Função para buscar métricas gerais do usuário (otimizada)
-  const { user } = useAuth();
+  // Já obtemos user acima com initializing
 
   const fetchUserMetrics = useCallback(async () => {
     try {
@@ -562,7 +563,7 @@ const SmartLinkMetrics: React.FC = () => {
     } finally {
       setLoadingMetrics(false);
     }
-  }, [selectedPeriod]);// Função para buscar métricas detalhadas de um item específico (otimizada)
+  }, [selectedPeriod, user?.id]);// Função para buscar métricas detalhadas de um item específico (otimizada)
   const fetchItemMetrics = useCallback(async (itemId: string) => {
     try {
       setLoadingItemDetails(true);
@@ -704,9 +705,18 @@ const SmartLinkMetrics: React.FC = () => {
         setLoading(false);
       }
     };
-    
-    loadData();
-  }, [fetchUserMetrics, fetchUserItems]);  // Effect para recarregar métricas quando o período é alterado
+
+    // Não tenta carregar nada até que a autenticação termine
+    if (!initializing) {
+      // Se depois da inicialização não houver usuário, redireciona para login
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      loadData();
+    }
+  }, [fetchUserMetrics, fetchUserItems, initializing, user, navigate]);  // Effect para recarregar métricas quando o período é alterado
   useEffect(() => {
     if (!loading) {
       fetchUserMetrics().catch(err => {
@@ -824,6 +834,17 @@ const SmartLinkMetrics: React.FC = () => {
   // RENDER CONDICIONAL
   // ============================================================================
   
+  if (initializing || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p className="text-gray-300 text-lg">Carregando métricas...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4">

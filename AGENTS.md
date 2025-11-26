@@ -74,10 +74,14 @@
 
 - **Comandos principais (rodar na raiz do projeto):**
   - `npm start` → entra em `rapmarketing-app/` e executa o CRA.
-  - Dentro de `rapmarketing-app/`: `npm test`, `npm run build`, `npm run eject` (padrão Create React App).
+  - **Não executar `npm test` localmente:** a suíte de testes automatizados não faz parte do fluxo local de desenvolvimento.
 
-- **Testes & Debug:**
-  - Existem testes básicos em `src/App.test.js` e no setup padrão do CRA; priorizar testes de integração leves quando modificar lógica crítica de formulário, tracking ou Auth.
+- **Política de testes (IMPORTANTE):**
+  - Toda validação automatizada de código é feita no **Netlify/CI**, durante o processo de build/deploy.
+  - Não é esperado que agentes ou desenvolvedores rodem `npm test` localmente; erros de Jest ou testes quebrados serão vistos no pipeline do Netlify.
+  - Ao fazer mudanças grandes (Auth, Smart Links, Pré-save, Métricas), priorizar validação manual no navegador (fluxos reais) e acompanhar os logs/erros reportados pelo Netlify na hora do deploy.
+
+- **Debug:**
   - Para investigar problemas de métricas/SQL/edge functions, usar os arquivos de diagnóstico: `DEBUG_SPOTIFY_TOKENS.sql`, `DIAGNOSTICO_TAXA_CONVERSAO.sql`, `LIMPEZA_DADOS_DUPLICADOS.sql`.
 
 ## 7. Versionamento, Deploy e Como o agente deve propor mudanças
