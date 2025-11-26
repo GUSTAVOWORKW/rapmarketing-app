@@ -29,31 +29,39 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // This is the robust, correct implementation of the auth effect.
   useEffect(() => {
+    let mounted = true;
+
     const setupAuth = async () => {
       try {
-        // 1. Get the current session on initial load
+        // 1. Obter sessão atual apenas uma vez na inicialização
         const { data: { session: initialSession } } = await supabase.auth.getSession();
+        if (!mounted) return;
+
         setSession(initialSession);
         setUser(initialSession?.user ?? null);
+
         if (initialSession?.user) {
           await fetchProfile(initialSession.user.id);
         }
       } catch (error) {
         console.error("Error during initial session setup:", error);
-        // Handle error, but still stop initializing
       } finally {
-        // Crucially, set initializing to false after the initial check is done, regardless of success or failure.
-        setInitializing(false);
+        // Garantir que initializing fique false uma única vez, mesmo em caso de erro
+        if (mounted) {
+          setInitializing(false);
+        }
       }
 
-      // 2. Listen for future auth state changes
+      // 2. Ouvir mudanças futuras de autenticação sem reativar o estado de initializing
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (_event, session) => {
+          if (!mounted) return;
+
           setSession(session);
           const currentUser = session?.user;
           setUser(currentUser ?? null);
+
           if (currentUser) {
             await fetchProfile(currentUser.id);
           } else {
@@ -68,6 +76,10 @@ export const AuthProvider = ({ children }) => {
     };
 
     setupAuth();
+
+    return () => {
+      mounted = false;
+    };
   }, [fetchProfile]);
 
   const signInWithGoogle = async () => {

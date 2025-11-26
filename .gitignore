@@ -24,6 +24,6 @@ yarn-error.log*
 /supabase
 /ssl
 
-# Exceção para o README principal (opcional, mas recomendado)
-# Esta linha deve vir DEPOIS de *.md
+# Exceções importantes que DEVEM ser versionadas (depois de *.md)
 !README.md
+!AGENTS.md

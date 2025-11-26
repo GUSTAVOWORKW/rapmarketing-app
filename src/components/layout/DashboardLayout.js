@@ -14,7 +14,7 @@ const DashboardLayout = ({ children }) => {
     const [activeSmartLink, setActiveSmartLink] = useState(null);
     const [showOnboardingCards, setShowOnboardingCards] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const { user, profile, loading: authLoading, signOut } = useAuth(); // Obter user, profile e loading do useAuth
+  const { user, profile, loading: authLoading, initializing, signOut } = useAuth(); // Obter user, profile, estados de loading e signOut do useAuth
 
     const [topArtists, setTopArtists] = useState([]);
     const [loadingTopArtists, setLoadingTopArtists] = useState(true);
@@ -141,17 +141,19 @@ const DashboardLayout = ({ children }) => {
         navigate('/dashboard/metrics');
     };
     
-    const handleNavigateToDashboardHome = () => {
-        navigate('/dashboard');
-    };
-    
-    if (authLoading) { // Usar o loading do AuthContext
-        return (
-            <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
-                <div className="text-2xl font-semibold text-[#3100ff]">Carregando Painel...</div>
-            </div>
-        );
-    }
+  const handleNavigateToDashboardHome = () => {
+    navigate('/dashboard');
+  };
+
+  // Enquanto o contexto de autenticação ainda está inicializando, mostrar apenas uma vez a tela de carregamento global.
+  // Depois que `initializing` virar false, o painel não deve mais travar em estado de loading ao trocar de aba.
+  if (initializing) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
+        <div className="text-2xl font-semibold text-[#3100ff]">Carregando Painel...</div>
+      </div>
+    );
+  }
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] via-[#e9e6ff] to-[#f8f6f2] flex flex-col font-sans relative overflow-x-hidden h-screen">
@@ -275,7 +277,7 @@ const DashboardLayout = ({ children }) => {
                         <p className="text-white/70 text-center">Carregando artistas...</p>
                       ) : topArtists.length > 0 ? (
                         <ul className="space-y-2 w-full">
-                          {topArtists.map((artist: any) => (
+                          {topArtists.map((artist) => (
                             <li key={artist.id} className="flex items-center">
                               {artist.images && artist.images.length > 0 && (
                                 <img src={artist.images[0].url} alt={artist.name} className="w-12 h-12 rounded-full mr-3 object-cover border-2 border-white" />
@@ -300,7 +302,7 @@ const DashboardLayout = ({ children }) => {
                         <p className="text-white/70 text-center">Carregando músicas...</p>
                       ) : topTracks.length > 0 ? (
                         <ul className="space-y-2 w-full">
-                          {topTracks.map((track: any) => (
+                          {topTracks.map((track) => (
                             <li key={track.id} className="flex items-center">
                               {track.album.images && track.album.images.length > 0 && (
                                 <img src={track.album.images[0].url} alt={track.name} className="w-12 h-12 rounded-md mr-3 object-cover border-2 border-white" />
@@ -309,7 +311,7 @@ const DashboardLayout = ({ children }) => {
                                 <a href={track.external_urls.spotify} target="_blank" rel="noopener noreferrer" className="text-white font-medium block hover:underline">
                                   {track.name}
                                 </a>
-                                <span className="text-sm text-white/70">{track.artists.map((artist: any) => artist.name).join(', ')}</span>
+                                <span className="text-sm text-white/70">{track.artists.map((artist) => artist.name).join(', ')}</span>
                               </div>
                             </li>
                           ))}
