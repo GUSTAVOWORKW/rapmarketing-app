@@ -622,6 +622,11 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         description: state.seoDescription || state.bio,
       };
 
+      // DEBUG: Log dos dados antes de salvar
+      console.log('🔍 DEBUG - Dados a serem salvos:', JSON.stringify(smartLinkData, null, 2));
+      console.log('🔍 DEBUG - Platforms:', smartLinkData.platforms);
+      console.log('🔍 DEBUG - Social Links:', smartLinkData.social_links);
+
       // 5. Inserir na tabela smart_links
       const { error: insertError } = await supabase
         .from('smart_links')

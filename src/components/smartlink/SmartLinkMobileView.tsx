@@ -37,7 +37,8 @@ const SmartLinkMobileView: React.FC = () => {
   const { state } = useSmartLinkForm();
 
   // DEBUG: Log para verificar o estado recebido pelo preview
-  // console.log('DEBUG [SmartLinkMobileView]: Template state received:', state.template);
+  console.log('DEBUG [SmartLinkMobileView]: State platforms:', state.platforms);
+  console.log('DEBUG [SmartLinkMobileView]: State socialLinks:', state.socialLinks);
 
   // Preparar dados do SmartLink para o template, usando Partial<SmartLink> para flexibilidade
   const smartLinkData: Partial<SmartLink> = {

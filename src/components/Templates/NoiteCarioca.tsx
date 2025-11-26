@@ -115,11 +115,16 @@ const NoiteCarioca: React.FC<Partial<SmartLink>> = ({
     return () => { if (style.parentNode) style.parentNode.removeChild(style); };
   }, []);
 
+  // DEBUG: Log das props recebidas
+  console.log('🎨 DEBUG [NoiteCarioca] - platforms recebidas:', platforms);
+  console.log('🎨 DEBUG [NoiteCarioca] - social_links recebidos:', social_links);
+
   // Preparar dados das plataformas, agora lendo da prop `platforms`
   const finalPlatforms = (platforms || [])
     .filter(link => link.url && link.platform_id)
     .map(link => {
       const platformData = PLATFORMS.find(p => p.id === link.platform_id);
+      console.log('🔗 DEBUG - Processando plataforma:', link.platform_id, 'URL:', link.url);
       return {
         id: link.platform_id,
         name: platformData?.name || link.platform_id,
