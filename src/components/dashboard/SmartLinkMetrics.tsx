@@ -1018,10 +1018,10 @@ const SmartLinkMetrics: React.FC = () => {
   
   if (initializing || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-4 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p className="text-gray-300 text-lg">Carregando métricas...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-[#3100ff] text-lg font-medium">Carregando métricas...</p>
         </div>
       </div>
     );
@@ -1029,12 +1029,12 @@ const SmartLinkMetrics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
-              <p className="text-gray-300 text-lg">Carregando métricas otimizadas...</p>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+              <p className="text-[#3100ff] text-lg font-medium">Carregando métricas...</p>
             </div>
           </div>
         </div>
@@ -1044,16 +1044,16 @@ const SmartLinkMetrics: React.FC = () => {
   
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="text-center">
+            <div className="text-center bg-white rounded-2xl p-8 shadow-lg">
               <div className="text-red-400 text-6xl mb-4">⚠️</div>
-              <h2 className="text-2xl font-bold text-white mb-2">Erro ao carregar dados</h2>
-              <p className="text-gray-300 mb-4">{error}</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Erro ao carregar dados</h2>
+              <p className="text-gray-600 mb-4">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
+                className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] hover:shadow-lg text-white px-6 py-2 rounded-xl transition-all font-medium"
               >
                 Tentar Novamente
               </button>
@@ -1069,40 +1069,42 @@ const SmartLinkMetrics: React.FC = () => {
   // ============================================================================
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-black p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <div className="flex items-center space-x-4">
             <Link 
               to="/dashboard" 
-              className="text-gray-300 hover:text-white transition-colors"
+              className="text-gray-500 hover:text-[#3100ff] transition-colors p-2 hover:bg-white rounded-lg"
             >
               <FaArrowLeft className="text-xl" />
             </Link>            <div>
-              <h1 className="text-3xl font-bold text-white flex items-center">
-                <FaChartBar className="mr-3 text-purple-400" />
-                Métricas Otimizadas
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#3100ff] to-[#a259ff] flex items-center justify-center mr-4">
+                  <FaChartBar className="text-white text-xl" />
+                </div>
+                Métricas e Analytics
               </h1>
-              <p className="text-gray-300">
-                Dashboard de performance com consultas SQL otimizadas
+              <p className="text-gray-600 ml-16">
+                Acompanhe o desempenho dos seus Smart Links e Pré-saves
                 {userMetrics && (
-                  <span className="ml-2 text-sm bg-purple-600 px-2 py-1 rounded">
-                    {userMetrics.summary.total_items} itens • {userMetrics.summary.total_clicks} clicks totais
+                  <span className="ml-2 text-sm bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white px-3 py-1 rounded-full">
+                    {userMetrics.summary.total_items} itens • {userMetrics.summary.total_clicks} clicks
                   </span>
                 )}
               </p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Filtro de período */}            <select
               value={selectedPeriod}
               onChange={(e) => {
                 setSelectedPeriod(e.target.value);
                 setPeriodChanged(true);
               }}
-              className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3100ff] shadow-sm"
             >
               <option value={PeriodType.WEEK}>Últimos 7 dias</option>
               <option value={PeriodType.MONTH}>Últimos 30 dias</option>
@@ -1114,22 +1116,22 @@ const SmartLinkMetrics: React.FC = () => {
             <button
               onClick={exportToCSV}
               disabled={!userMetrics}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center"
+              className="bg-gradient-to-r from-[#00c9a7] to-[#3100ff] hover:shadow-lg disabled:opacity-50 text-white px-4 py-2.5 rounded-xl transition-all flex items-center font-medium"
             >
               <FaDownload className="mr-2" />
               Exportar CSV
             </button>
           </div>        </div>
           {/* Tabs de navegação */}
-        <div className="flex space-x-1 mb-6">
+        <div className="flex space-x-2 mb-6 bg-white p-1.5 rounded-xl shadow-sm w-fit">
           {/* Aba Visão Geral - só mostra se não há item específico selecionado */}
           {!smartLinkId && (
             <button
               onClick={() => setActiveTab(TabType.OVERVIEW)}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              className={`px-6 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === TabType.OVERVIEW
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
               <FaChartBar className="inline mr-2" />
@@ -1141,10 +1143,10 @@ const SmartLinkMetrics: React.FC = () => {
           {smartLinkId && (
             <button
               onClick={() => setActiveTab(TabType.DETAILED)}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+              className={`px-6 py-2.5 rounded-lg font-medium transition-all ${
                 activeTab === TabType.DETAILED
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
+                  : 'text-gray-600 hover:bg-gray-50'
               }`}
             >
               <FaArrowTrendUp className="inline mr-2" />
@@ -1155,10 +1157,10 @@ const SmartLinkMetrics: React.FC = () => {
           {/* Aba Meus Itens - sempre disponível */}
           <button
             onClick={() => setActiveTab(TabType.ITEMS)}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            className={`px-6 py-2.5 rounded-lg font-medium transition-all ${
               activeTab === TabType.ITEMS
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
+                : 'text-gray-600 hover:bg-gray-50'
             }`}
           >
             <FaLink className="inline mr-2" />
@@ -1182,8 +1184,8 @@ const SmartLinkMetrics: React.FC = () => {
     if (loadingMetrics) {
       return (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p className="text-gray-300">Atualizando métricas...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-600">Atualizando métricas...</p>
         </div>
       );
     }
@@ -1191,8 +1193,8 @@ const SmartLinkMetrics: React.FC = () => {
     if (!userMetrics) {
       return (
         <div className="text-center py-12">
-          <div className="text-gray-400 text-xl mb-4">📊</div>
-          <p className="text-gray-300">Carregando métricas gerais...</p>        </div>
+          <div className="text-[#a259ff] text-xl mb-4">📊</div>
+          <p className="text-gray-600">Carregando métricas gerais...</p>        </div>
       );
     }
     
@@ -1205,67 +1207,100 @@ const SmartLinkMetrics: React.FC = () => {
       <div className="space-y-6">
         {/* Cards de métricas principais */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-purple-400 mb-2">
-              <FaHandPointer className="inline mr-2" />
-              {formatNumber(totalClicks)}
-            </div>
-            <div className="text-sm text-gray-300">Total de Clicks</div>
-          </div>
-          
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-blue-400 mb-2">
-              <FaEye className="inline mr-2" />
-              {formatNumber(totalViews)}
-            </div>
-            <div className="text-sm text-gray-300">Visualizações</div>
-          </div>          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">
-              {clickRate}%
-            </div>
-            <div className="text-sm text-gray-300">Taxa de Conversão</div>
-            <div className="text-xs text-gray-400 mt-1">
-              {totalClicks} clicks / {totalViews} views
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#3100ff] to-[#a259ff] rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative z-10">
+              <div className="text-3xl font-bold text-white mb-2 flex items-center">
+                <FaHandPointer className="mr-2" />
+                {formatNumber(totalClicks)}
+              </div>
+              <div className="text-sm text-white/80">Total de Clicks</div>
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-yellow-400 mb-2">
-              <FaLink className="inline mr-2" />
-              {userMetrics.summary.total_smartlinks}
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#a259ff] to-[#ffb300] rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative z-10">
+              <div className="text-3xl font-bold text-white mb-2 flex items-center">
+                <FaEye className="mr-2" />
+                {formatNumber(totalViews)}
+              </div>
+              <div className="text-sm text-white/80">Visualizações</div>
             </div>
-            <div className="text-sm text-gray-300">Smart Links</div>
+          </div>
+
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#ffb300] to-[#ff7c00] rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative z-10">
+              <div className="text-3xl font-bold text-white mb-2">
+                {clickRate}%
+              </div>
+              <div className="text-sm text-white/80">Taxa de Conversão</div>
+              <div className="text-xs text-white/60 mt-1">
+                {totalClicks} / {totalViews}
+              </div>
+            </div>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 text-center">
-            <div className="text-3xl font-bold text-pink-400 mb-2">
-              <FaMusic className="inline mr-2" />
-              {userMetrics.summary.total_presaves}
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#00c9a7] to-[#3100ff] rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative z-10">
+              <div className="text-3xl font-bold text-white mb-2 flex items-center">
+                <FaLink className="mr-2" />
+                {userMetrics.summary.total_smartlinks}
+              </div>
+              <div className="text-sm text-white/80">Smart Links</div>
             </div>
-            <div className="text-sm text-gray-300">Presaves</div>
+          </div>
+          
+          <div className="relative overflow-hidden bg-gradient-to-r from-[#ff6b9d] to-[#a259ff] rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+            <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="relative z-10">
+              <div className="text-3xl font-bold text-white mb-2 flex items-center">
+                <FaMusic className="mr-2" />
+                {userMetrics.summary.total_presaves}
+              </div>
+              <div className="text-sm text-white/80">Pré-saves</div>
+            </div>
           </div>
         </div>        {/* Top Items */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-            <FaArrowTrendUp className="mr-2 text-green-400" />
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#ffb300] to-[#ff7c00] flex items-center justify-center mr-3">
+              <FaArrowTrendUp className="text-white" />
+            </div>
             Top Performers
           </h3>
           <div className="space-y-3">            {(userMetrics.top_items || []).slice(0, 5).map((item, index) => (
-              <div key={item.link_id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="text-lg font-bold text-purple-400">#{index + 1}</div>
+              <div key={item.link_id} className="flex items-center justify-between p-4 bg-gradient-to-r from-[#e9e6ff]/50 to-transparent rounded-xl hover:from-[#e9e6ff] transition-all duration-200">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${
+                    index === 0 
+                      ? 'bg-gradient-to-r from-[#ffb300] to-[#ff7c00]' 
+                      : index === 1 
+                        ? 'bg-gradient-to-r from-gray-400 to-gray-500' 
+                        : index === 2 
+                          ? 'bg-gradient-to-r from-[#cd7f32] to-[#a0522d]' 
+                          : 'bg-gradient-to-r from-gray-300 to-gray-400'
+                  }`}>#{index + 1}</div>
                   <div>
-                    <div className="font-medium text-white">
+                    <div className="font-medium text-gray-900">
                       {item.artist_name || 'Artista'} - {item.title || 'Título'}
                     </div>
-                    <div className="text-sm text-gray-300">
-                      {item.type === 'smartlink' ? 'Smart Link' : 'Presave'}
+                    <div className="text-sm text-gray-500">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        item.type === 'smartlink' 
+                          ? 'bg-[#3100ff]/10 text-[#3100ff]' 
+                          : 'bg-[#a259ff]/10 text-[#a259ff]'
+                      }`}>
+                        {item.type === 'smartlink' ? 'Smart Link' : 'Pré-save'}
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-green-400">{item.clicks || 0} clicks</div>
-                  <div className="text-sm text-gray-300">{item.views || 0} views</div>                  <div className="text-xs text-yellow-400 font-medium">
+                  <div className="text-xl font-bold text-[#3100ff]">{item.clicks || 0} clicks</div>
+                  <div className="text-sm text-gray-500">{item.views || 0} views</div>                  <div className="text-xs text-[#ffb300] font-medium">
                     {item.click_rate || 0}% conversão
                   </div>
                 </div>
@@ -1274,15 +1309,17 @@ const SmartLinkMetrics: React.FC = () => {
             {(!userMetrics.top_items || userMetrics.top_items.length === 0) && (
               <div className="text-center py-8 text-gray-400">
                 <div className="text-4xl mb-2">📊</div>
-                <p>Nenhum dado de performance disponível ainda</p>
-                <p className="text-sm mt-1">Os dados aparecerão assim que houver interações</p>
+                <p className="text-gray-600">Nenhum dado de performance disponível ainda</p>
+                <p className="text-sm mt-1 text-gray-500">Os dados aparecerão assim que houver interações</p>
               </div>
             )}
           </div>
         </div>        {/* Estatísticas de plataforma */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-            <FaUsers className="mr-2 text-blue-400" />
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#3100ff] to-[#a259ff] flex items-center justify-center mr-3">
+              <FaUsers className="text-white" />
+            </div>
             Plataformas Mais Clicadas
           </h3>
           <div className="space-y-3">
@@ -1294,16 +1331,16 @@ const SmartLinkMetrics: React.FC = () => {
                 <div key={platform.platform_id} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-white"
                       style={{ backgroundColor: platformData.color }}
                     >
                       <IconComponent className="w-4 h-4" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-white font-medium">
+                      <span className="text-gray-900 font-medium">
                         {platformData.name}
                       </span>
-                      <span className="text-xs text-gray-400 capitalize">
+                      <span className="text-xs text-gray-500 capitalize">
                         {platformData.category === 'streaming' && 'Streaming'}
                         {platformData.category === 'social' && 'Rede Social'}
                         {platformData.category === 'contact' && 'Contato'}
@@ -1312,62 +1349,64 @@ const SmartLinkMetrics: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <div className="w-32 bg-gray-700 rounded-full h-2">
+                    <div className="w-32 bg-[#e9e6ff] rounded-full h-2.5">
                       <div 
-                        className="h-2 rounded-full transition-all duration-300" 
+                        className="h-2.5 rounded-full transition-all duration-500" 
                         style={{ 
                           width: `${Math.min(platform.percentage || 0, 100)}%`,
                           backgroundColor: platformData.color
                         }}
                       ></div>
                     </div>
-                    <div className="text-sm text-gray-300 w-16 text-right">
-                      {platform.clicks || 0} ({platform.percentage || 0}%)
+                    <div className="text-sm font-bold text-[#3100ff] w-16 text-right">
+                      {platform.clicks || 0}
                     </div>
                   </div>
                 </div>
               );
             })}
             {(!userMetrics.platform_stats || userMetrics.platform_stats.length === 0) && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8">
                 <div className="text-4xl mb-2">📱</div>
-                <p>Nenhum dado de plataforma disponível ainda</p>
-                <p className="text-sm mt-1">Os dados aparecerão conforme os usuários clicarem nos links</p>
+                <p className="text-gray-600">Nenhum dado de plataforma disponível ainda</p>
+                <p className="text-sm mt-1 text-gray-500">Os dados aparecerão conforme os usuários clicarem nos links</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Atividade recente */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-            <FaCalendar className="mr-2 text-yellow-400" />
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#ffb300] to-[#ff7c00] flex items-center justify-center mr-3">
+              <FaCalendar className="text-white" />
+            </div>
             Atividade Recente
           </h3>
           <div className="space-y-3">            {(userMetrics.recent_activity || []).slice(0, 10).map((activity, index) => (
-              <div key={`${activity.link_id}-${index}`} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+              <div key={`${activity.link_id}-${index}`} className="flex items-center justify-between p-4 bg-gradient-to-r from-[#e9e6ff]/30 to-transparent rounded-xl hover:from-[#e9e6ff]/60 transition-all">
                 <div className="flex items-center space-x-3">
                   <div className={`w-3 h-3 rounded-full ${
-                    activity.type === 'smartlink' ? 'bg-blue-400' : 'bg-pink-400'
+                    activity.type === 'smartlink' ? 'bg-[#3100ff]' : 'bg-[#a259ff]'
                   }`}></div>
                   <div>
-                    <div className="font-medium text-white">
+                    <div className="font-medium text-gray-900">
                       {activity.artist_name || 'Artista'} - {activity.title || 'Título'}
-                    </div>                    <div className="text-sm text-gray-300">
+                    </div>                    <div className="text-sm text-gray-500">
                       {activity.platform_id ? getPlatformData(activity.platform_id).name : 'Plataforma desconhecida'}
                     </div>
                   </div>
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-500">
                   {formatDateTime(activity.clicked_at)}
                 </div>
               </div>
             ))}
             {(!userMetrics.recent_activity || userMetrics.recent_activity.length === 0) && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8">
                 <div className="text-4xl mb-2">⏰</div>
-                <p>Nenhuma atividade recente disponível</p>
-                <p className="text-sm mt-1">As atividades mais recentes aparecerão aqui</p>
+                <p className="text-gray-600">Nenhuma atividade recente disponível</p>
+                <p className="text-sm mt-1 text-gray-500">As atividades mais recentes aparecerão aqui</p>
               </div>
             )}
           </div>
@@ -1378,11 +1417,11 @@ const SmartLinkMetrics: React.FC = () => {
   function renderDetailedTab() {
     if (!smartLinkId) {
       return (
-        <div className="text-center py-12">
-          <div className="text-gray-400 text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-bold text-white mb-2">Selecione um Item</h3>
-          <p className="text-gray-300 mb-6">
-            Escolha um Smart Link ou Presave na aba "Meus Itens" para ver análises detalhadas
+        <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+          <div className="text-[#a259ff] text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Selecione um Item</h3>
+          <p className="text-gray-600 mb-6">
+            Escolha um Smart Link ou Pré-save na aba "Meus Itens" para ver análises detalhadas
           </p>
         </div>
       );
@@ -1390,8 +1429,8 @@ const SmartLinkMetrics: React.FC = () => {
     if (loadingItemDetails) {
       return (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-gray-300">Carregando detalhes do item...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando detalhes do item...</p>
         </div>
       );
     }
@@ -1399,8 +1438,8 @@ const SmartLinkMetrics: React.FC = () => {
     if (!itemMetrics) {
       return (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p className="text-gray-300">Carregando análise detalhada...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-600">Carregando análise detalhada...</p>
         </div>
       );
     }    return (
@@ -1410,13 +1449,13 @@ const SmartLinkMetrics: React.FC = () => {
           <div className="flex items-center space-x-2 text-sm">
             <button
               onClick={() => navigate('/dashboard/metrics')}
-              className="text-purple-400 hover:text-purple-300 flex items-center space-x-1"
+              className="text-[#3100ff] hover:text-[#a259ff] flex items-center space-x-1 font-medium"
             >
               <FaArrowLeft className="w-3 h-3" />
               <span>Voltar para Visão Geral</span>
             </button>
             <span className="text-gray-400">•</span>
-            <span className="text-gray-300">Análise Detalhada</span>
+            <span className="text-gray-600">Análise Detalhada</span>
           </div>
         </div>
 
@@ -1425,17 +1464,17 @@ const SmartLinkMetrics: React.FC = () => {
           const itemDetails = getItemDetails(smartLinkId);
           if (itemDetails) {
             return (
-              <div className="bg-gray-700 rounded-lg p-4 mb-4">
+              <div className="bg-white rounded-2xl p-4 mb-4 shadow-md">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    itemDetails.type === 'smartlink' ? 'bg-purple-600' : 'bg-pink-600'
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    itemDetails.type === 'smartlink' ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff]' : 'bg-gradient-to-r from-[#a259ff] to-[#ff6b9d]'
                   }`}>
                     {itemDetails.type === 'smartlink' ? <FaLink className="text-white" /> : <FaMusic className="text-white" />}
                   </div>
                   <div>
-                    <h4 className="font-bold text-white">{itemDetails.title}</h4>
-                    <p className="text-sm text-gray-300">
-                      {itemDetails.type === 'smartlink' ? 'Smart Link' : 'Presave'} • 
+                    <h4 className="font-bold text-gray-900">{itemDetails.title}</h4>
+                    <p className="text-sm text-gray-600">
+                      {itemDetails.type === 'smartlink' ? 'Smart Link' : 'Pré-save'} • 
                       Criado em {formatDate(itemDetails.created_at)}
                     </p>
                   </div>
@@ -1447,39 +1486,39 @@ const SmartLinkMetrics: React.FC = () => {
         })()}
         
         {/* Resumo do item */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Resumo Detalhado</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400">{itemMetrics.summary.total_clicks}</div>
-              <div className="text-sm text-gray-300">Total de Clicks</div>
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Resumo Detalhado</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">            <div className="text-center p-4 bg-gradient-to-r from-[#e9e6ff]/50 to-transparent rounded-xl">
+              <div className="text-3xl font-bold text-[#3100ff]">{itemMetrics.summary.total_clicks}</div>
+              <div className="text-sm text-gray-600">Total de Clicks</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-400">{itemMetrics.summary.total_views}</div>
-              <div className="text-sm text-gray-300">Total de Visualizações</div>
+            <div className="text-center p-4 bg-gradient-to-r from-[#e9e6ff]/50 to-transparent rounded-xl">
+              <div className="text-3xl font-bold text-[#a259ff]">{itemMetrics.summary.total_views}</div>
+              <div className="text-sm text-gray-600">Total de Visualizações</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-400">
+            <div className="text-center p-4 bg-gradient-to-r from-[#e9e6ff]/50 to-transparent rounded-xl">
+              <div className="text-3xl font-bold text-[#ffb300]">
                 {calculateClickRate(itemMetrics.summary.total_clicks, itemMetrics.summary.total_views)}%
               </div>
-              <div className="text-sm text-gray-300">Taxa de Conversão</div>
+              <div className="text-sm text-gray-600">Taxa de Conversão</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-400">
+              <div className="text-3xl font-bold text-[#ffb300]">
                 {(itemMetrics.platforms || []).length}
               </div>
-              <div className="text-sm text-gray-300">Plataformas Ativas</div>
+              <div className="text-sm text-gray-600">Plataformas Ativas</div>
             </div>
           </div>
         </div>        {/* Plataformas detalhadas */}
-        <div className="bg-gray-800 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-white mb-4">Performance por Plataforma</h3>
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Performance por Plataforma</h3>
           <div className="space-y-3">
             {(itemMetrics.platforms || []).map((platform) => {
               const platformData = getPlatformData(platform.platform_id);
               const IconComponent = platformData.icon;
               
               return (
-                <div key={platform.platform_id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                <div key={platform.platform_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
                   <div className="flex items-center space-x-3">
                     <div 
                       className="w-8 h-8 rounded-full flex items-center justify-center text-white"
@@ -1488,8 +1527,8 @@ const SmartLinkMetrics: React.FC = () => {
                       <IconComponent className="w-4 h-4" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-white font-medium">{platformData.name}</span>
-                      <span className="text-xs text-gray-400 capitalize">
+                      <span className="text-gray-900 font-medium">{platformData.name}</span>
+                      <span className="text-xs text-gray-500 capitalize">
                         {platformData.category === 'streaming' && 'Streaming'}
                         {platformData.category === 'social' && 'Rede Social'}
                         {platformData.category === 'contact' && 'Contato'}
@@ -1501,7 +1540,7 @@ const SmartLinkMetrics: React.FC = () => {
                     <span className="font-bold" style={{ color: platformData.color }}>
                       {platform.clicks} clicks
                     </span>
-                    <div className="w-20 bg-gray-600 rounded-full h-2">
+                    <div className="w-20 bg-gray-200 rounded-full h-2">
                       <div 
                         className="h-2 rounded-full" 
                         style={{ 
@@ -1515,7 +1554,7 @@ const SmartLinkMetrics: React.FC = () => {
               );
             })}
             {(!itemMetrics.platforms || itemMetrics.platforms.length === 0) && (
-              <div className="text-center py-4 text-gray-400">
+              <div className="text-center py-4 text-gray-500">
                 <p>Nenhum dado de plataforma disponível</p>
               </div>
             )}
@@ -1524,34 +1563,34 @@ const SmartLinkMetrics: React.FC = () => {
 
         {/* Países e cidades */}
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Top Países</h3>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Top Países</h3>
             <div className="space-y-3">
               {(itemMetrics.countries || []).slice(0, 5).map((country) => (
-                <div key={country.country} className="flex items-center justify-between">
-                  <span className="text-white">{country.country}</span>
-                  <span className="text-green-400 font-bold">{country.count}</span>
+                <div key={country.country} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-900">{country.country}</span>
+                  <span className="text-[#3100ff] font-bold">{country.count}</span>
                 </div>
               ))}
               {(!itemMetrics.countries || itemMetrics.countries.length === 0) && (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-500">
                   <p>Nenhum dado disponível</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Top Cidades</h3>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Top Cidades</h3>
             <div className="space-y-3">
               {(itemMetrics.cities || []).slice(0, 5).map((city) => (
-                <div key={`${city.city}-${city.country}`} className="flex items-center justify-between">
-                  <span className="text-white">{city.city}, {city.country}</span>
-                  <span className="text-blue-400 font-bold">{city.count}</span>
+                <div key={`${city.city}-${city.country}`} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-900">{city.city}, {city.country}</span>
+                  <span className="text-[#a259ff] font-bold">{city.count}</span>
                 </div>
               ))}
               {(!itemMetrics.cities || itemMetrics.cities.length === 0) && (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-500">
                   <p>Nenhum dado disponível</p>
                 </div>
               )}
@@ -1561,51 +1600,51 @@ const SmartLinkMetrics: React.FC = () => {
 
         {/* Dispositivos, Browsers e OS */}
         <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Dispositivos</h3>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Dispositivos</h3>
             <div className="space-y-3">
               {(itemMetrics.devices || []).map((device) => (
-                <div key={device.device_type} className="flex items-center justify-between">
-                  <span className="text-white">{device.device_type || 'Desconhecido'}</span>
-                  <span className="text-purple-400 font-bold">{device.count}</span>
+                <div key={device.device_type} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-900">{device.device_type || 'Desconhecido'}</span>
+                  <span className="text-[#a259ff] font-bold">{device.count}</span>
                 </div>
               ))}
               {(!itemMetrics.devices || itemMetrics.devices.length === 0) && (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-500">
                   <p>Nenhum dado disponível</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Navegadores</h3>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Navegadores</h3>
             <div className="space-y-3">
               {(itemMetrics.browsers || []).map((browser) => (
-                <div key={browser.browser} className="flex items-center justify-between">
-                  <span className="text-white">{browser.browser || 'Desconhecido'}</span>
-                  <span className="text-green-400 font-bold">{browser.count}</span>
+                <div key={browser.browser} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-900">{browser.browser || 'Desconhecido'}</span>
+                  <span className="text-[#3100ff] font-bold">{browser.count}</span>
                 </div>
               ))}
               {(!itemMetrics.browsers || itemMetrics.browsers.length === 0) && (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-500">
                   <p>Nenhum dado disponível</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Sistemas</h3>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Sistemas</h3>
             <div className="space-y-3">
               {(itemMetrics.os_types || []).map((os) => (
-                <div key={os.os} className="flex items-center justify-between">
-                  <span className="text-white">{os.os || 'Desconhecido'}</span>
-                  <span className="text-yellow-400 font-bold">{os.count}</span>
+                <div key={os.os} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  <span className="text-gray-900">{os.os || 'Desconhecido'}</span>
+                  <span className="text-[#ffb300] font-bold">{os.count}</span>
                 </div>
               ))}
               {(!itemMetrics.os_types || itemMetrics.os_types.length === 0) && (
-                <div className="text-center py-4 text-gray-400">
+                <div className="text-center py-4 text-gray-500">
                   <p>Nenhum dado disponível</p>
                 </div>
               )}
@@ -1620,10 +1659,10 @@ const SmartLinkMetrics: React.FC = () => {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white">Meus Itens ({userItems.length})</h3>
+          <h3 className="text-xl font-bold text-gray-900">Meus Itens ({userItems.length})</h3>
           <div className="flex items-center space-x-2">
-            <FaFilter className="text-gray-400" />
-            <select className="bg-gray-800 border border-gray-700 text-white px-3 py-2 rounded-lg text-sm">
+            <FaFilter className="text-gray-500" />
+            <select className="bg-white border border-gray-200 text-gray-900 px-3 py-2 rounded-xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[#3100ff]/20 focus:border-[#3100ff]">
               <option value="all">Todos os tipos</option>
               <option value="smartlink">Smart Links</option>
               <option value="presave">Presaves</option>
@@ -1634,42 +1673,42 @@ const SmartLinkMetrics: React.FC = () => {
             // Usar busca otimizada ao invés de find() linear
             const itemData = getItemPerformance(item.id);
             return (
-              <div key={item.id} className="bg-gray-800 rounded-lg p-6">
+              <div key={item.id} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      item.type === 'smartlink' ? 'bg-purple-600' : 'bg-pink-600'
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                      item.type === 'smartlink' ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff]' : 'bg-gradient-to-r from-[#a259ff] to-pink-500'
                     }`}>
                       {item.type === 'smartlink' ? <FaLink className="text-white" /> : <FaMusic className="text-white" />}
                     </div>
                     <div>
-                      <h4 className="font-bold text-white">{item.title}</h4>                      <p className="text-sm text-gray-300">
+                      <h4 className="font-bold text-gray-900">{item.title}</h4>                      <p className="text-sm text-gray-600">
                         {item.type === 'smartlink' ? 'Smart Link' : 'Presave'} • 
                         Criado em {formatDate(item.created_at)}
                       </p>
                     </div>
                   </div>                  <div className="flex items-center space-x-6">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-purple-400">
+                      <div className="text-lg font-bold text-[#a259ff]">
                         {itemData?.clicks || 0}
-                      </div>                      <div className="text-xs text-gray-300">Clicks</div>
+                      </div>                      <div className="text-xs text-gray-600">Clicks</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-blue-400">
+                      <div className="text-lg font-bold text-[#3100ff]">
                         {itemData?.views || 0}
                       </div>
-                      <div className="text-xs text-gray-300">Visualizações</div>
+                      <div className="text-xs text-gray-600">Visualizações</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-green-400">
+                      <div className="text-lg font-bold text-[#ffb300]">
                         {itemData?.click_rate || 0}%
                       </div>
-                      <div className="text-xs text-gray-300">Taxa</div>
+                      <div className="text-xs text-gray-600">Taxa</div>
                     </div>                    <button
                       onClick={() => {
                         navigate(`/dashboard/metrics/${item.id}`);
                       }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                      className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] hover:from-[#2800d9] hover:to-[#8a4ae0] text-white px-4 py-2 rounded-xl text-sm transition-all shadow-md hover:shadow-lg"
                     >
                       Ver Detalhes
                     </button>
@@ -1678,10 +1717,10 @@ const SmartLinkMetrics: React.FC = () => {
               </div>
             );
           }) : (
-            <div className="text-center py-12">
+            <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
               <div className="text-gray-400 text-6xl mb-4">📄</div>
-              <h3 className="text-xl font-bold text-white mb-2">Nenhum item encontrado</h3>
-              <p className="text-gray-300">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Nenhum item encontrado</h3>
+              <p className="text-gray-600">
                 Você ainda não criou nenhum Smart Link ou Presave.
               </p>
             </div>
