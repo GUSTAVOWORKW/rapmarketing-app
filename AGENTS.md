@@ -95,6 +95,16 @@
   - Enviar: `git push origin main` (ou o branch em uso).
 - Evitar deixar alterações locais não versionadas, para que o histórico de deploy e debug fique sempre rastreável.
 
+## 8. Como o agente deve responder no chat (uso de tokens)
+
+- As respostas para o usuário devem ser **resumos objetivos do que foi feito**, evitando colar trechos grandes de código.
+- Só mostrar código quando o usuário pedir explicitamente, ou quando for estritamente necessário para entender uma correção.
+- Priorizar sempre:
+  - Descrever os arquivos alterados.
+  - Explicar, em alto nível, quais comportamentos mudaram.
+  - Indicar se houve commit/push e o nome da branch.
+- O objetivo é **economizar tokens** e manter o histórico de chat leve, sem repetir código que já está no repositório.
+
 ---
 
 Se algo ainda parecer confuso, descreva no PR/comentário qual fluxo está alterando (Auth, Smart Link, Pré-save, Métricas, Spotify) e referencie os arquivos/documentos acima para manter o histórico de decisão claro.
