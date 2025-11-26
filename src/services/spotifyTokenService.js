@@ -18,7 +18,9 @@ class SpotifyTokenService {
       const cached = this.tokenCache.get(userId);
       if (cached && cached.expiresAt > Date.now()) {
         return cached.token;
-      }      // Busca direto da tabela spotify_tokens
+      }
+
+      // Busca direto da tabela spotify_tokens
       const { data: tokenData, error } = await supabase
         .from('spotify_tokens')
         .select('access_token, refresh_token, expires_at')
@@ -26,14 +28,23 @@ class SpotifyTokenService {
         .single();
 
       if (error || !tokenData) {
-        console.error('Erro ao buscar token Spotify:', error);
+        // Erro 406 / PGRST116 significa "nenhuma linha" → usuário ainda não conectou Spotify.
+        if (error?.code === 'PGRST116' || error?.details?.includes('Results contain 0 rows')) {
+          return null;
+        }
+
+        console.warn('Erro ao buscar token Spotify:', {
+          message: error?.message,
+          code: error?.code,
+          userId: userId?.substring(0, 8) + '...'
+        });
         return null;
       }
 
       const { access_token, refresh_token, expires_at } = tokenData;
       
       if (!access_token) {
-        console.error('Token de acesso não encontrado');
+        console.warn('Token de acesso Spotify não encontrado para usuário', userId?.substring(0, 8) + '...');
         return null;
       }
 
@@ -45,7 +56,7 @@ class SpotifyTokenService {
         expiresAtTime = parseInt(expires_at);
       }
       
-      const needsRefresh = expiresAtTime <= Date.now() + (5 * 60 * 1000); // 5 min buffer
+  const needsRefresh = expiresAtTime <= Date.now() + (5 * 60 * 1000); // 5 min buffer
 
       // Se o token precisa ser renovado
       if (needsRefresh && refresh_token) {
@@ -56,16 +67,18 @@ class SpotifyTokenService {
       this.tokenCache.set(userId, {
         token: access_token,
         expiresAt: expiresAtTime
-      });      return access_token;
+      });
+
+      return access_token;
     } catch (error) {
-      // Log menos verboso se for um erro comum (usuário sem conexão Spotify)
+      // Usuário sem conexão Spotify ou erro conhecido → apenas retornar null silenciosamente
       if (error?.code === 'PGRST116') {
-        // Código para "no rows returned" - usuário não tem conexão Spotify
         return null;
       }
-      
+
       console.warn('Erro ao obter token de acesso Spotify:', {
-        error: error.message,
+        error: error?.message,
+        code: error?.code,
         userId: userId?.substring(0, 8) + '...'
       });
       return null;

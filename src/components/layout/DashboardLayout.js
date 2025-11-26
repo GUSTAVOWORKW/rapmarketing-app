@@ -16,10 +16,12 @@ const DashboardLayout = ({ children }) => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
   const { user, profile, loading: authLoading, initializing, signOut } = useAuth(); // Obter user, profile, estados de loading e signOut do useAuth
 
-    const [topArtists, setTopArtists] = useState([]);
-    const [loadingTopArtists, setLoadingTopArtists] = useState(true);
-    const [topTracks, setTopTracks] = useState([]);
-    const [loadingTopTracks, setLoadingTopTracks] = useState(true);
+  const [topArtists, setTopArtists] = useState([]);
+  const [loadingTopArtists, setLoadingTopArtists] = useState(true);
+  const [topTracks, setTopTracks] = useState([]);
+  const [loadingTopTracks, setLoadingTopTracks] = useState(true);
+  // Flag simples para evitar chamadas repetidas ao Spotify quando sabemos que o usuário não tem conexão válida
+  const [spotifyPermanentlyUnavailable, setSpotifyPermanentlyUnavailable] = useState(false);
 
     const handleSignOut = async () => {
         await signOut();
@@ -63,7 +65,7 @@ const DashboardLayout = ({ children }) => {
 
     useEffect(() => {
       const fetchTopArtists = async () => {
-        if (!user?.id) {
+        if (!user?.id || spotifyPermanentlyUnavailable) {
           console.log('[DEBUG Dashboard] user.id não disponível para Top Artists.');
           setLoadingTopArtists(false);
           setTopArtists([]);
@@ -83,19 +85,20 @@ const DashboardLayout = ({ children }) => {
           }
         } catch (error) {
           // Erros de token ausente/406 são esperados para usuários sem Spotify conectado.
-          // Apenas logamos de forma enxuta e seguimos com lista vazia, sem impactar outras métricas.
+          // Apenas logamos de forma enxuta, marcamos indisponibilidade permanente nesta sessão e seguimos com lista vazia.
           console.warn('[DEBUG Dashboard] Falha ao carregar Top Artists (provavelmente sem Spotify conectado):', error?.message || error);
+          setSpotifyPermanentlyUnavailable(true);
           setTopArtists([]);
         } finally {
           setLoadingTopArtists(false);
         }
       };
       fetchTopArtists();
-    }, [user]);
+    }, [user, spotifyPermanentlyUnavailable]);
 
     useEffect(() => {
       const fetchTopTracks = async () => {
-        if (!user?.id) {
+        if (!user?.id || spotifyPermanentlyUnavailable) {
           console.log('[DEBUG Dashboard] user.id não disponível para Top Tracks.');
           setLoadingTopTracks(false);
           setTopTracks([]);
@@ -114,15 +117,17 @@ const DashboardLayout = ({ children }) => {
             setTopTracks([]);
           }
         } catch (error) {
-          // Mesmo comportamento dos artistas: tratar ausência de token como cenário normal.
+          // Mesmo comportamento dos artistas: tratar ausência de token como cenário normal
+          // e marcar a indisponibilidade para evitar novas chamadas nesta sessão.
           console.warn('[DEBUG Dashboard] Falha ao carregar Top Tracks (provavelmente sem Spotify conectado):', error?.message || error);
+          setSpotifyPermanentlyUnavailable(true);
           setTopTracks([]);
         } finally {
           setLoadingTopTracks(false);
         }
       };
       fetchTopTracks();
-    }, [user]);
+    }, [user, spotifyPermanentlyUnavailable]);
 
     useEffect(() => {
         if (window && window.localStorage) {
