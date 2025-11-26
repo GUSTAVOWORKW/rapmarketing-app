@@ -19,6 +19,7 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
 
   // Estado para verificação de slug
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [lastCheckedSlug, setLastCheckedSlug] = useState<string>('');
 
   // Gera o slug a partir do nome do artista quando o componente é montado
   // ou quando o nome do artista muda, mas apenas se o slug ainda não foi definido pelo usuário
@@ -36,7 +37,14 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
       return;
     }
 
+    // Evitar verificar o mesmo slug repetidamente
+    if (slug === lastCheckedSlug) {
+      return;
+    }
+
     setSlugStatus('checking');
+    setLastCheckedSlug(slug);
+    
     try {
       const { data, error } = await supabase
         .from('smart_links')
@@ -47,27 +55,25 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
       if (error && error.code === 'PGRST116') {
         // Nenhum registro encontrado - slug disponível
         setSlugStatus('available');
-        setErrors({ ...state.errors, slug: '' });
       } else if (data) {
         // Slug já existe
         setSlugStatus('taken');
-        setErrors({ ...state.errors, slug: 'Esta URL já está em uso. Escolha outra.' });
       }
     } catch (error) {
       console.error('Erro ao verificar slug:', error);
       setSlugStatus('idle');
     }
-  }, [setErrors, state.errors]);
+  }, [lastCheckedSlug]);
 
   // Debounce da verificação de slug
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (state.slug) {
+      if (state.slug && state.slug !== lastCheckedSlug) {
         checkSlugAvailability(state.slug);
       }
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, [state.slug, checkSlugAvailability]);
+  }, [state.slug, checkSlugAvailability, lastCheckedSlug]);
 
 
   // Monta o link final do Smart Link

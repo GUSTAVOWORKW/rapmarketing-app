@@ -7,6 +7,7 @@ import { SOCIAL_PLATFORMS } from '../../data/socials';
 const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
   artist_name,
   artist_title,
+  release_title, // Título da música
   bio,
   feat, // Featuring/participação especial
   avatar_url,
@@ -104,6 +105,11 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
           {feat && (
             <p className="text-amber-100 text-sm font-medium mt-1">
               feat. {feat}
+            </p>
+          )}
+          {release_title && (
+            <p className="text-xl text-amber-200 font-semibold mt-2">
+              {release_title}
             </p>
           )}
           {artist_title && (

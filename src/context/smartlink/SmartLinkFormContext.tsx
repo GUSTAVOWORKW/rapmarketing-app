@@ -313,8 +313,8 @@ const loadUserAvatar = async (user: any) => {
   }
 };
 
-// Chave do localStorage - v2 para forçar limpeza de estados bugados
-const STORAGE_KEY = 'smartlink_form_draft_v2';
+// Chave do localStorage - v3 para forçar limpeza de estados bugados
+const STORAGE_KEY = 'smartlink_form_draft_v3';
 
 // Provider do contexto
 export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -326,8 +326,9 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Limpar localStorage antigo na primeira execução
   useEffect(() => {
-    // Remover versão antiga do localStorage
+    // Remover versões antigas do localStorage
     localStorage.removeItem('smartlink_form_draft_v1');
+    localStorage.removeItem('smartlink_form_draft_v2');
   }, []);
 
   // Carregar draft do localStorage na inicialização
