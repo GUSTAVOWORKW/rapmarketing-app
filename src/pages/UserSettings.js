@@ -161,18 +161,21 @@ const UserSettings = () => {
 
     // Se não há perfil ou usuário após o fim da inicialização, redireciona para o login
     useEffect(() => {
-        if (!initializing && (!profile || !user)) {
+        if (!initializing && (!user)) {
             navigate('/login');
         }
-    }, [initializing, profile, user, navigate]);
+    }, [initializing, user, navigate]); // Removeu profile das dependências para evitar redirect enquanto profile carrega
 
-    if (initializing || !user) {
+    // Mostrar loading apenas se estiver inicializando a AUTH, não o profile
+    if (initializing) {
         return (
             <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
-                <div className="text-2xl font-semibold text-[#3100ff]">Carregando Configurações...</div>
+                <div className="text-2xl font-semibold text-[#3100ff]">Carregando...</div>
             </div>
         );
     }
+
+    if (!user) return null; // Proteção extra
 
     return (
         <div className="max-w-3xl mx-auto">

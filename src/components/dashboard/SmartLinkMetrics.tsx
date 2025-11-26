@@ -691,7 +691,12 @@ const SmartLinkMetrics: React.FC = () => {
   // ============================================================================
     // Effect principal para carregar dados
   useEffect(() => {
+    let mounted = true;
+
     const loadData = async () => {
+      // Se já estiver carregando ou não tiver usuário, não faz nada
+      if (!user?.id) return;
+
       try {
         setLoading(true);
         setError(null);        
@@ -702,32 +707,38 @@ const SmartLinkMetrics: React.FC = () => {
         ]);
         
       } catch (err: any) {
-        console.error('❌ Erro no carregamento de dados:', err);
-        setError(err.message || 'Erro ao carregar dados');
+        if (mounted) {
+          console.error('❌ Erro no carregamento de dados:', err);
+          setError(err.message || 'Erro ao carregar dados');
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    // Não tenta carregar nada até que a autenticação termine
-    if (!initializing) {
-      // Se depois da inicialização não houver usuário, redireciona para login
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-
+    // Só carrega se não estiver inicializando e tiver usuário
+    if (!initializing && user?.id) {
       loadData();
+    } else if (!initializing && !user) {
+      navigate('/login');
     }
-  }, [fetchUserMetrics, fetchUserItems, initializing, user, navigate]);  // Effect para recarregar métricas quando o período é alterado
+
+    return () => {
+      mounted = false;
+    };
+    // Removido 'loading' das dependências para evitar loop
+  }, [initializing, user?.id]); // Dependência apenas de user.id e initializing  // Effect para recarregar métricas quando o período é alterado
   useEffect(() => {
-    if (!loading) {
+    // Evita recarregar se já estiver carregando ou se for a carga inicial (que já chama fetchUserMetrics)
+    if (!loading && user?.id) {
       fetchUserMetrics().catch(err => {
         console.error('❌ Erro ao recarregar métricas:', err);
-        setError('Erro ao atualizar métricas');
+        // setError('Erro ao atualizar métricas'); // Não bloquear UI por erro de refresh
       });
     }
-  }, [selectedPeriod, fetchUserMetrics, loading]);
+  }, [selectedPeriod]); // Removeu fetchUserMetrics e loading das dependências
   // Effect para carregar métricas detalhadas quando um item específico é selecionado
   useEffect(() => {
     if (smartLinkId && !loading) {

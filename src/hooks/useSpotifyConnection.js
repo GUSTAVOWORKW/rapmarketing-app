@@ -11,7 +11,7 @@ export const useSpotifyConnection = () => {
 
   const checkSpotifyConnection = useCallback(async () => {
     // Se ainda não temos usuário, consideramos como não conectado e encerramos rápido
-    if (!user) {
+    if (!user?.id) {
       setIsConnected(false);
       setHasValidToken(false);
       setLoading(false);
@@ -48,7 +48,7 @@ export const useSpotifyConnection = () => {
       // Garantir que o loading sempre seja desligado, mesmo em qualquer tipo de erro
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.id]); // Dependência alterada para user.id para evitar loops com mudanças de referência do objeto user
 
   useEffect(() => {
     checkSpotifyConnection();
