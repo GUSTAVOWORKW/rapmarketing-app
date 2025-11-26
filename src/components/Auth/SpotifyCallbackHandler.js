@@ -75,7 +75,14 @@ export const SpotifyCallbackHandler = () => {
 
              if (saveError) {
                 console.error('❌ [SpotifyCallback] Erro ao salvar tokens:', saveError);
-                // Não retornar erro fatal ainda, verificar se o webhook salvou
+                
+                // Tratamento específico para erro de schema (22P02 = invalid text representation)
+                if (saveError.code === '22P02' && saveError.message.includes('bigint')) {
+                    setError('Erro de configuração no banco de dados (Schema incorreto). Execute o script CORRECAO_SCHEMA_SPOTIFY.sql no Supabase.');
+                } else {
+                    // Não retornar erro fatal ainda, verificar se o webhook salvou
+                    console.warn('⚠️ [SpotifyCallback] Falha no salvamento manual, verificando webhook...');
+                }
              } else {
                 console.log('✅ [SpotifyCallback] Tokens salvos com sucesso!');
                 setStatus('Conexão estabelecida com sucesso!');

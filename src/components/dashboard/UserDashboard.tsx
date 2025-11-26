@@ -57,7 +57,7 @@ const UserDashboard: React.FC = () => {
     };
 
     fetchActivePresaves();
-  }, [user]);
+  }, [user?.id]);
 
   // useEffect para buscar contagem de todos os smart links do usuário
   useEffect(() => {
@@ -87,7 +87,7 @@ const UserDashboard: React.FC = () => {
     fetchSmartLinksCount();
     // Para Smart Bios, manteremos 0 por enquanto e seu loading como false
     setSmartBiosCount(0); 
-  }, [user]);
+  }, [user?.id]);
 
 
   const handleDeleteLink = async () => {
@@ -121,7 +121,8 @@ const UserDashboard: React.FC = () => {
   // Mostrar loading global do dashboard apenas enquanto autenticação OU carregamentos locais ainda estão em andamento.
   // Quando a autenticação terminar (initializing === false) e algum dado específico falhar,
   // os efeitos acima já caem em fallback seguro (contagens = 0), evitando loop infinito de loading.
-  if (!forceShow && (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount)) {
+  // Se já temos profile, não bloqueamos por authLoading (background update)
+  if (!forceShow && (initializing || (authLoading && !profile) || loadingLink || loadingPresavesCount || loadingSmartLinksCount)) {
     return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
   }
 

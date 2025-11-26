@@ -10,9 +10,9 @@ export const AuthProvider = ({ children }) => {
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const fetchProfile = useCallback(async (userId) => {
+  const fetchProfile = useCallback(async (userId, showLoading = true) => {
     if (!userId) return;
-    setLoading(true);
+    if (showLoading) setLoading(true);
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Error fetching profile:", error);
       setProfile(null);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }, []);
 
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         setUser(initialSession?.user ?? null);
 
         if (initialSession?.user) {
-          await fetchProfile(initialSession.user.id);
+          await fetchProfile(initialSession.user.id, true);
         }
       } catch (error) {
         console.error("Error during initial session setup:", error);
@@ -63,7 +63,8 @@ export const AuthProvider = ({ children }) => {
           setUser(currentUser ?? null);
 
           if (currentUser) {
-            await fetchProfile(currentUser.id);
+            // Atualizações de sessão (ex: refresh token, foco na aba) não devem bloquear a UI
+            await fetchProfile(currentUser.id, false);
           } else {
             setProfile(null);
           }

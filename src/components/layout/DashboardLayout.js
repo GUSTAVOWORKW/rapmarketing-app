@@ -57,7 +57,7 @@ const DashboardLayout = ({ children }) => {
             console.error('[DashboardLayout] Error fetching smart link data:', error);
             setActiveSmartLink(null);
         }
-    }, [user]);
+    }, [user?.id]); // Dependência alterada para user.id para evitar loops
 
     useEffect(() => {
         fetchSmartLinkData();
@@ -111,7 +111,7 @@ const DashboardLayout = ({ children }) => {
         }
       };
       fetchTopArtists();
-    }, [user, spotifyPermanentlyUnavailable]);
+    }, [user?.id, spotifyPermanentlyUnavailable]); // Dependência alterada para user.id
 
     useEffect(() => {
       const fetchTopTracks = async () => {
