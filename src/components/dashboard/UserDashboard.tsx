@@ -1,14 +1,15 @@
 // src/components/dashboard/UserDashboard.tsx
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '../../services/supabase';
 import { useNavigate } from 'react-router-dom';
 import { 
   FaLink, FaMusic, FaCalendarAlt, FaChartLine, FaRocket, 
   FaEye, FaMousePointer, FaUsers, FaSpotify, FaPlus,
   FaCopy, FaExternalLinkAlt, FaArrowUp, FaArrowDown,
-  FaLightbulb, FaTrophy, FaBolt, FaFire, FaStar
+  FaLightbulb, FaTrophy, FaBolt, FaFire, FaStar, FaUserAlt
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { spotifyTokenService } from '../../services/spotifyTokenService';
 
 // Componente de contador animado
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ 
@@ -230,11 +231,68 @@ const UserDashboard: React.FC = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [showAllTips, setShowAllTips] = useState(false);
 
+  // Estados do Spotify
+  const [topArtists, setTopArtists] = useState<any[]>([]);
+  const [topTracks, setTopTracks] = useState<any[]>([]);
+  const [spotifyFollowers, setSpotifyFollowers] = useState<number | null>(null);
+  const [loadingSpotify, setLoadingSpotify] = useState(true);
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+
   // Calcular taxa de conversão
   const conversionRate = useMemo(() => {
     if (stats.totalViews === 0) return 0;
     return Math.round((stats.totalClicks / stats.totalViews) * 100);
   }, [stats.totalViews, stats.totalClicks]);
+
+  // Carregar dados do Spotify
+  const fetchSpotifyData = useCallback(async () => {
+    const userId = user?.id;
+    if (!userId) {
+      setLoadingSpotify(false);
+      return;
+    }
+
+    setLoadingSpotify(true);
+
+    try {
+      // Verificar se tem conexão Spotify válida
+      const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
+      if (!hasSpotify) {
+        setSpotifyConnected(false);
+        setLoadingSpotify(false);
+        return;
+      }
+
+      setSpotifyConnected(true);
+
+      // Buscar dados em paralelo
+      const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
+        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
+        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term'),
+        spotifyTokenService.makeSpotifyRequest(userId, '/me')
+      ]);
+
+      if (artistsResponse.ok) {
+        const artistsData = await artistsResponse.json();
+        setTopArtists(artistsData.items || []);
+      }
+
+      if (tracksResponse.ok) {
+        const tracksData = await tracksResponse.json();
+        setTopTracks(tracksData.items || []);
+      }
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setSpotifyFollowers(userData.followers?.total ?? null);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados do Spotify:', error);
+      setSpotifyConnected(false);
+    } finally {
+      setLoadingSpotify(false);
+    }
+  }, [user?.id]);
 
   // Carregar dados do dashboard
   useEffect(() => {
@@ -302,14 +360,16 @@ const UserDashboard: React.FC = () => {
 
     if (!initializing && user?.id) {
       fetchDashboardData();
+      fetchSpotifyData();
     } else if (!initializing) {
       setLoadingData(false);
+      setLoadingSpotify(false);
     }
 
     return () => {
       cancelled = true;
     };
-  }, [user?.id, initializing]);
+  }, [user?.id, initializing, fetchSpotifyData]);
 
   // Dicas do sistema
   const tips = [
@@ -388,6 +448,115 @@ const UserDashboard: React.FC = () => {
             >
               <FaPlus /> Novo Link
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards do Spotify */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Card compacto de Seguidores Spotify */}
+        <div className="md:col-span-3 bg-gradient-to-br from-[#1db954] to-[#1ed760] rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] relative overflow-hidden group">
+          <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full bg-white/10 group-hover:scale-150 transition-transform duration-500" />
+          <div className="relative z-10 flex flex-col items-center justify-center h-full">
+            <div className="flex items-center gap-2 mb-2">
+              <FaSpotify className="text-white text-xl" />
+              <span className="text-white/90 font-semibold text-sm">Seguidores</span>
+            </div>
+            {loadingSpotify ? (
+              <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+            ) : spotifyConnected && spotifyFollowers !== null ? (
+              <span className="text-3xl font-extrabold text-white">
+                {spotifyFollowers.toLocaleString('pt-BR')}
+              </span>
+            ) : (
+              <button
+                onClick={() => navigate('/settings')}
+                className="text-xs text-white/80 hover:text-white underline"
+              >
+                Conectar Spotify
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Card de Top Artistas */}
+        <div className="md:col-span-4 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group">
+          <div className="bg-gradient-to-r from-[#ffb300] to-[#ff8c00] px-4 py-3 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <FaUserAlt className="text-white text-sm" />
+            </div>
+            <span className="text-white font-bold text-sm">Top Artistas</span>
+          </div>
+          <div className="p-3">
+            {loadingSpotify ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="w-6 h-6 border-2 border-[#ffb300]/20 border-t-[#ffb300] rounded-full animate-spin" />
+              </div>
+            ) : topArtists.length > 0 ? (
+              <ul className="space-y-2">
+                {topArtists.slice(0, 5).map((artist: any, index: number) => (
+                  <li key={artist.id} className="flex items-center gap-2 hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors">
+                    <span className="text-xs font-bold text-gray-400 w-3">{index + 1}</span>
+                    {artist.images && artist.images.length > 0 ? (
+                      <img src={artist.images[artist.images.length > 1 ? 1 : 0].url} alt={artist.name} className="w-8 h-8 rounded-full object-cover border border-[#ffb300]/30" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ffb300] to-[#ff8c00] flex items-center justify-center">
+                        <FaUserAlt className="text-white text-xs" />
+                      </div>
+                    )}
+                    <a href={artist.external_urls?.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 font-medium text-xs hover:text-[#ffb300] transition-colors truncate flex-1">
+                      {artist.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-400 text-xs">Conecte seu Spotify</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Card de Top Músicas */}
+        <div className="md:col-span-5 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden group">
+          <div className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] px-4 py-3 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+              <FaMusic className="text-white text-sm" />
+            </div>
+            <span className="text-white font-bold text-sm">Top Músicas</span>
+          </div>
+          <div className="p-3">
+            {loadingSpotify ? (
+              <div className="flex items-center justify-center py-6">
+                <div className="w-6 h-6 border-2 border-[#3100ff]/20 border-t-[#3100ff] rounded-full animate-spin" />
+              </div>
+            ) : topTracks.length > 0 ? (
+              <ul className="space-y-2">
+                {topTracks.slice(0, 5).map((track: any, index: number) => (
+                  <li key={track.id} className="flex items-center gap-2 hover:bg-gray-50 rounded-lg p-1 -m-1 transition-colors">
+                    <span className="text-xs font-bold text-gray-400 w-3">{index + 1}</span>
+                    {track.album?.images && track.album.images.length > 0 ? (
+                      <img src={track.album.images[track.album.images.length > 1 ? 1 : 0].url} alt={track.name} className="w-8 h-8 rounded object-cover border border-[#3100ff]/30" />
+                    ) : (
+                      <div className="w-8 h-8 rounded bg-gradient-to-br from-[#3100ff] to-[#a259ff] flex items-center justify-center">
+                        <FaMusic className="text-white text-xs" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <a href={track.external_urls?.spotify} target="_blank" rel="noopener noreferrer" className="text-gray-700 font-medium text-xs hover:text-[#3100ff] transition-colors truncate block">
+                        {track.name}
+                      </a>
+                      <span className="text-[10px] text-gray-400 truncate block">{track.artists?.map((a: any) => a.name).join(', ')}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-gray-400 text-xs">Conecte seu Spotify</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
