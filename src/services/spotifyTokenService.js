@@ -25,12 +25,12 @@ class SpotifyTokenService {
         .from('spotify_tokens')
         .select('access_token, refresh_token, expires_at')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error || !tokenData) {
-        // Erro 406 (Not Acceptable) geralmente significa que a tabela não existe ou erro de schema
-        // PGRST116 significa "nenhuma linha"
-        if (error?.code === 'PGRST116' || error?.code === '406' || error?.message?.includes('406') || error?.details?.includes('Results contain 0 rows')) {
+      if (error) {
+        // PGRST116 significa "nenhuma linha" - silencioso
+        // 42P01 significa tabela não existe - silencioso
+        if (error?.code === 'PGRST116' || error?.code === '42P01' || error?.message?.includes('does not exist')) {
           return null;
         }
 
@@ -39,6 +39,10 @@ class SpotifyTokenService {
           code: error?.code,
           userId: userId?.substring(0, 8) + '...'
         });
+        return null;
+      }
+      
+      if (!tokenData) {
         return null;
       }
 
