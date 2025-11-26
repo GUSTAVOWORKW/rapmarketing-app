@@ -10,6 +10,7 @@ export const useSpotifyConnection = () => {
   const [loading, setLoading] = useState(true);
 
   const checkSpotifyConnection = useCallback(async () => {
+    // Se ainda não temos usuário, consideramos como não conectado e encerramos rápido
     if (!user) {
       setIsConnected(false);
       setHasValidToken(false);
@@ -17,6 +18,7 @@ export const useSpotifyConnection = () => {
       return;
     }
 
+    // Se o usuário está logado, checamos a identidade no Supabase e o token no nosso serviço
     setLoading(true);
     try {
       const { data: identities, error: identitiesError } = await supabase.auth.getUserIdentities();
@@ -27,8 +29,14 @@ export const useSpotifyConnection = () => {
       setIsConnected(connected);
 
       if (connected) {
-        const validToken = await spotifyTokenService.hasValidSpotifyConnection(user.id);
-        setHasValidToken(validToken);
+        try {
+          const validToken = await spotifyTokenService.hasValidSpotifyConnection(user.id);
+          setHasValidToken(validToken);
+        } catch (tokenError) {
+          console.error('[useSpotifyConnection] Erro ao validar token Spotify:', tokenError);
+          // Mesmo com erro, não travar loading; apenas marcar como sem token válido
+          setHasValidToken(false);
+        }
       } else {
         setHasValidToken(false);
       }
@@ -37,6 +45,7 @@ export const useSpotifyConnection = () => {
       setIsConnected(false);
       setHasValidToken(false);
     } finally {
+      // Garantir que o loading sempre seja desligado, mesmo em qualquer tipo de erro
       setLoading(false);
     }
   }, [user]);

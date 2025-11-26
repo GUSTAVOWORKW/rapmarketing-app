@@ -82,7 +82,9 @@ const DashboardLayout = ({ children }) => {
             setTopArtists([]);
           }
         } catch (error) {
-          console.error('[DEBUG Dashboard] Erro na requisição de Top Artists:', error);
+          // Erros de token ausente/406 são esperados para usuários sem Spotify conectado.
+          // Apenas logamos de forma enxuta e seguimos com lista vazia, sem impactar outras métricas.
+          console.warn('[DEBUG Dashboard] Falha ao carregar Top Artists (provavelmente sem Spotify conectado):', error?.message || error);
           setTopArtists([]);
         } finally {
           setLoadingTopArtists(false);
@@ -112,7 +114,8 @@ const DashboardLayout = ({ children }) => {
             setTopTracks([]);
           }
         } catch (error) {
-          console.error('[DEBUG Dashboard] Erro na requisição de Top Tracks:', error);
+          // Mesmo comportamento dos artistas: tratar ausência de token como cenário normal.
+          console.warn('[DEBUG Dashboard] Falha ao carregar Top Tracks (provavelmente sem Spotify conectado):', error?.message || error);
           setTopTracks([]);
         } finally {
           setLoadingTopTracks(false);
