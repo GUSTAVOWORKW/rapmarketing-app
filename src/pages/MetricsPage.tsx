@@ -5,15 +5,105 @@ import {
   FaChartBar, 
   FaEye, 
   FaHandPointer, 
-  FaArrowTrendUp, 
-  FaCalendar,
+  FaArrowTrendUp,
+  FaArrowTrendDown,
   FaLink,
   FaMusic,
   FaShare,
   FaUsers,
-  FaPlay
+  FaArrowUp,
+  FaArrowDown,
+  FaChartLine,
+  FaFire,
+  FaTrophy,
+  FaSpotify,
+  FaApple,
+  FaDeezer,
+  FaYoutube,
+  FaSoundcloud,
+  FaAmazon
 } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
+
+// Componente de contador animado
+const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ 
+  end, 
+  duration = 1500, 
+  suffix = '' 
+}) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime: number;
+    let animationFrame: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeOutQuart * end));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return <span>{count.toLocaleString()}{suffix}</span>;
+};
+
+// Card de estatística estilizado
+interface StatCardProps {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  bgGradient: string;
+  trend?: number;
+  suffix?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, bgGradient, trend, suffix = '' }) => (
+  <div className={`relative overflow-hidden rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] ${bgGradient}`}>
+    <div className="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-white/10" />
+    <div className="absolute -right-2 -bottom-6 w-16 h-16 rounded-full bg-white/5" />
+    
+    <div className="relative z-10">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3 bg-white/20 backdrop-blur-sm text-white">
+        {icon}
+      </div>
+      <p className="text-white/80 text-sm font-medium mb-1">{title}</p>
+      <div className="flex items-end gap-2">
+        <h3 className="text-3xl font-bold text-white">
+          <AnimatedCounter end={value} suffix={suffix} />
+        </h3>
+        {trend !== undefined && trend !== 0 && (
+          <span className={`flex items-center text-xs font-medium px-2 py-0.5 rounded-full mb-1 ${
+            trend >= 0 ? 'bg-green-400/20 text-green-100' : 'bg-red-400/20 text-red-100'
+          }`}>
+            {trend >= 0 ? <FaArrowUp className="mr-1" /> : <FaArrowDown className="mr-1" />}
+            {Math.abs(trend).toFixed(1)}%
+          </span>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
+// Ícones das plataformas
+const platformIcons: Record<string, React.ReactNode> = {
+  spotify: <FaSpotify className="text-[#1DB954]" />,
+  apple: <FaApple className="text-[#FA243C]" />,
+  apple_music: <FaApple className="text-[#FA243C]" />,
+  deezer: <FaDeezer className="text-[#00C7F2]" />,
+  youtube: <FaYoutube className="text-[#FF0000]" />,
+  youtube_music: <FaYoutube className="text-[#FF0000]" />,
+  soundcloud: <FaSoundcloud className="text-[#FF5500]" />,
+  amazon: <FaAmazon className="text-[#FF9900]" />,
+  amazon_music: <FaAmazon className="text-[#FF9900]" />,
+};
 
 interface MetricsSummary {
   totalClicks: number;
@@ -269,10 +359,10 @@ const MetricsPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando métricas...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+          <p className="text-[#3100ff] font-medium">Carregando métricas...</p>
         </div>
       </div>
     );
@@ -280,14 +370,14 @@ const MetricsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <FaChartBar className="text-6xl text-gray-400 mx-auto mb-4" />
+      <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] flex items-center justify-center">
+        <div className="text-center max-w-md bg-white rounded-2xl p-8 shadow-lg">
+          <FaChartBar className="text-6xl text-[#a259ff] mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Erro ao carregar métricas</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white rounded-xl hover:shadow-lg transition-all duration-300 font-medium"
           >
             Tentar novamente
           </button>
@@ -297,23 +387,25 @@ const MetricsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                <FaChartBar className="mr-3 text-blue-600" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-[#3100ff] to-[#a259ff] flex items-center justify-center mr-4">
+                  <FaChartLine className="text-white text-xl" />
+                </div>
                 Métricas e Analytics
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-600 mt-2 ml-16">
                 Acompanhe o desempenho dos seus Smart Links e Pré-saves
               </p>
             </div>
             
             {/* Seletor de período */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 bg-white p-1 rounded-xl shadow-sm">
               {[
                 { value: '7d', label: '7 dias' },
                 { value: '30d', label: '30 dias' },
@@ -323,10 +415,10 @@ const MetricsPage: React.FC = () => {
                 <button
                   key={period.value}
                   onClick={() => setSelectedPeriod(period.value as any)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     selectedPeriod === period.value
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
+                      : 'text-gray-600 hover:bg-gray-50'
                   }`}
                 >
                   {period.label}
@@ -336,191 +428,213 @@ const MetricsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Cards de resumo */}
+        {/* Cards de resumo com gradientes */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total de Clicks</p>
-                <p className="text-3xl font-bold text-gray-900">{summary?.totalClicks.toLocaleString()}</p>
-              </div>
-              <FaHandPointer className="text-3xl text-blue-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Visualizações</p>
-                <p className="text-3xl font-bold text-gray-900">{summary?.totalViews.toLocaleString()}</p>
-              </div>
-              <FaEye className="text-3xl text-green-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Taxa de Clique</p>
-                <p className="text-3xl font-bold text-gray-900">{summary?.clickRate.toFixed(1)}%</p>
-              </div>
-              <FaArrowTrendUp className="text-3xl text-yellow-600" />
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Smart Links</p>
-                <p className="text-3xl font-bold text-gray-900">{summary?.totalSmartLinks}</p>
-              </div>
-              <FaLink className="text-3xl text-purple-600" />
-            </div>
-          </div>
+          <StatCard
+            title="Total de Clicks"
+            value={summary?.totalClicks || 0}
+            icon={<FaHandPointer className="text-xl" />}
+            bgGradient="bg-gradient-to-r from-[#3100ff] to-[#a259ff]"
+          />
+          <StatCard
+            title="Visualizações"
+            value={summary?.totalViews || 0}
+            icon={<FaEye className="text-xl" />}
+            bgGradient="bg-gradient-to-r from-[#a259ff] to-[#ffb300]"
+          />
+          <StatCard
+            title="Taxa de Clique"
+            value={summary?.clickRate || 0}
+            icon={<FaArrowTrendUp className="text-xl" />}
+            bgGradient="bg-gradient-to-r from-[#ffb300] to-[#ff7c00]"
+            suffix="%"
+          />
+          <StatCard
+            title="Smart Links"
+            value={summary?.totalSmartLinks || 0}
+            icon={<FaLink className="text-xl" />}
+            bgGradient="bg-gradient-to-r from-[#00c9a7] to-[#3100ff]"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Top Performing Items */}
-          <div className="bg-white rounded-lg shadow-sm p-6">            <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <FaArrowTrendUp className="mr-2 text-green-600" />
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+            <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#ffb300] to-[#ff7c00] flex items-center justify-center mr-3">
+                <FaTrophy className="text-white" />
+              </div>
               Melhor Performance
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {summary?.topPerformingItems.map((item, index) => (
-                <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div 
+                  key={item.id} 
+                  className="flex items-center justify-between p-4 bg-gradient-to-r from-[#e9e6ff]/50 to-transparent rounded-xl hover:from-[#e9e6ff] transition-all duration-200"
+                >
                   <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3 ${
-                      index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : index === 2 ? 'bg-yellow-600' : 'bg-gray-300'
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold mr-4 ${
+                      index === 0 
+                        ? 'bg-gradient-to-r from-[#ffb300] to-[#ff7c00]' 
+                        : index === 1 
+                          ? 'bg-gradient-to-r from-gray-400 to-gray-500' 
+                          : index === 2 
+                            ? 'bg-gradient-to-r from-[#cd7f32] to-[#a0522d]' 
+                            : 'bg-gradient-to-r from-gray-300 to-gray-400'
                     }`}>
                       {index + 1}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{item.title}</p>
-                      <p className="text-sm text-gray-600">
-                        {item.type === 'smartlink' ? 'Smart Link' : 'Pré-save'}
-                        • {item.views} visualizações
+                      <p className="font-medium text-gray-900 line-clamp-1">{item.title}</p>
+                      <p className="text-sm text-gray-500">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mr-2 ${
+                          item.type === 'smartlink' 
+                            ? 'bg-[#3100ff]/10 text-[#3100ff]' 
+                            : 'bg-[#a259ff]/10 text-[#a259ff]'
+                        }`}>
+                          {item.type === 'smartlink' ? 'Smart Link' : 'Pré-save'}
+                        </span>
+                        {item.views} visualizações
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">{item.clicks}</p>
-                    <p className="text-sm text-gray-600">clicks</p>
+                    <p className="text-xl font-bold text-[#3100ff]">{item.clicks}</p>
+                    <p className="text-xs text-gray-500">clicks</p>
                   </div>
                 </div>
               ))}
               {(!summary?.topPerformingItems || summary.topPerformingItems.length === 0) && (
-                <p className="text-gray-500 text-center py-8">Nenhum dado de performance disponível ainda</p>
+                <div className="text-center py-8">
+                  <FaFire className="text-4xl text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Nenhum dado de performance disponível ainda</p>
+                </div>
               )}
             </div>
           </div>
 
           {/* Platform Stats */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
             <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-              <FaShare className="mr-2 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#3100ff] to-[#a259ff] flex items-center justify-center mr-3">
+                <FaShare className="text-white" />
+              </div>
               Clicks por Plataforma
             </h3>
             <div className="space-y-4">
-              {summary?.platformStats.slice(0, 8).map((platform, index) => (
+              {summary?.platformStats.slice(0, 8).map((platform) => (
                 <div key={platform.platform} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div className="w-4 h-4 bg-blue-600 rounded-sm mr-3"></div>
-                    <span className="text-gray-900 capitalize">{platform.platform}</span>
+                  <div className="flex items-center min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
+                      {platformIcons[platform.platform.toLowerCase()] || <FaMusic className="text-gray-400" />}
+                    </div>
+                    <span className="text-gray-900 capitalize truncate">{platform.platform}</span>
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                  <div className="flex items-center ml-4">
+                    <div className="w-32 bg-[#e9e6ff] rounded-full h-2.5 mr-3 overflow-hidden">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full" 
-                        style={{ width: `${platform.percentage}%` }}
+                        className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] h-2.5 rounded-full transition-all duration-500" 
+                        style={{ width: `${Math.min(platform.percentage, 100)}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 w-12 text-right">
+                    <span className="text-sm font-bold text-[#3100ff] w-12 text-right">
                       {platform.clicks}
                     </span>
                   </div>
                 </div>
               ))}
               {(!summary?.platformStats || summary.platformStats.length === 0) && (
-                <p className="text-gray-500 text-center py-8">Nenhum dado de plataforma disponível ainda</p>
+                <div className="text-center py-8">
+                  <FaShare className="text-4xl text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">Nenhum dado de plataforma disponível ainda</p>
+                </div>
               )}
             </div>
           </div>
         </div>
 
         {/* Lista de itens do usuário */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-            <FaUsers className="mr-2 text-purple-600" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#a259ff] to-[#3100ff] flex items-center justify-center mr-3">
+              <FaUsers className="text-white" />
+            </div>
             Seus Smart Links e Pré-saves
           </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Item</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Tipo</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-900">Status</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-900">Visualizações</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-900">Clicks</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-900">Taxa</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-900">Ações</th>
+                <tr className="border-b-2 border-[#e9e6ff]">
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700">Item</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700">Tipo</th>
+                  <th className="text-left py-4 px-4 font-semibold text-gray-700">Status</th>
+                  <th className="text-right py-4 px-4 font-semibold text-gray-700">Visualizações</th>
+                  <th className="text-right py-4 px-4 font-semibold text-gray-700">Clicks</th>
+                  <th className="text-right py-4 px-4 font-semibold text-gray-700">Taxa</th>
+                  <th className="text-right py-4 px-4 font-semibold text-gray-700">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {userItems.map((item) => (
-                  <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={item.id} className="border-b border-gray-100 hover:bg-[#e9e6ff]/20 transition-colors duration-150">
                     <td className="py-4 px-4">
                       <div>
                         <p className="font-medium text-gray-900">{item.title}</p>
-                        <p className="text-sm text-gray-600">
-                          Criado em {new Date(item.created_at).toLocaleDateString()}
+                        <p className="text-sm text-gray-500">
+                          Criado em {new Date(item.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         item.type === 'smartlink' 
-                          ? 'bg-blue-100 text-blue-800' 
-                          : 'bg-green-100 text-green-800'
+                          ? 'bg-[#3100ff]/10 text-[#3100ff]' 
+                          : 'bg-[#a259ff]/10 text-[#a259ff]'
                       }`}>
                         {item.type === 'smartlink' ? (
                           <>
-                            <FaLink className="mr-1" />
+                            <FaLink className="mr-1.5" />
                             Smart Link
                           </>
                         ) : (
                           <>
-                            <FaMusic className="mr-1" />
+                            <FaMusic className="mr-1.5" />
                             Pré-save
                           </>
                         )}
                       </span>
                     </td>
                     <td className="py-4 px-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         item.is_public 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-gray-100 text-gray-600'
                       }`}>
                         {item.is_public ? 'Público' : 'Privado'}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-right font-medium text-gray-900">
-                      {item.views.toLocaleString()}
+                    <td className="py-4 px-4 text-right">
+                      <span className="font-bold text-gray-900">{item.views.toLocaleString()}</span>
                     </td>
-                    <td className="py-4 px-4 text-right font-medium text-gray-900">
-                      {item.clicks.toLocaleString()}
+                    <td className="py-4 px-4 text-right">
+                      <span className="font-bold text-[#3100ff]">{item.clicks.toLocaleString()}</span>
                     </td>
-                    <td className="py-4 px-4 text-right font-medium text-gray-900">
-                      {item.views > 0 ? ((item.clicks / item.views) * 100).toFixed(1) : '0.0'}%
+                    <td className="py-4 px-4 text-right">
+                      <span className={`font-medium ${
+                        item.views > 0 && (item.clicks / item.views) * 100 >= 10 
+                          ? 'text-green-600' 
+                          : 'text-gray-600'
+                      }`}>
+                        {item.views > 0 ? ((item.clicks / item.views) * 100).toFixed(1) : '0.0'}%
+                      </span>
                     </td>
                     <td className="py-4 px-4 text-right">
                       <Link
                         to={`/dashboard/metrics/${item.id}`}
-                        className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white text-sm rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium"
                       >
-                        <FaChartBar className="mr-1" />
-                        Ver Detalhes
+                        <FaChartBar className="mr-2" />
+                        Detalhes
                       </Link>
                     </td>
                   </tr>
@@ -528,23 +642,25 @@ const MetricsPage: React.FC = () => {
               </tbody>
             </table>
             {userItems.length === 0 && (
-              <div className="text-center py-12">
-                <FaChartBar className="text-6xl text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum item encontrado</h3>
-                <p className="text-gray-600 mb-6">
+              <div className="text-center py-16">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-r from-[#e9e6ff] to-[#f0f0f5] flex items-center justify-center mx-auto mb-4">
+                  <FaChartBar className="text-4xl text-[#a259ff]" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhum item encontrado</h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   Crie seus primeiros Smart Links ou Pré-saves para começar a ver suas métricas.
                 </p>
                 <div className="flex justify-center gap-4">
                   <Link
                     to="/criar-smart-link"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center px-5 py-3 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 font-medium"
                   >
                     <FaLink className="mr-2" />
                     Criar Smart Link
                   </Link>
                   <Link
                     to="/criar-presave"
-                    className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center px-5 py-3 bg-white text-[#3100ff] border-2 border-[#3100ff] rounded-xl hover:bg-[#e9e6ff] hover:scale-105 transition-all duration-200 font-medium"
                   >
                     <FaMusic className="mr-2" />
                     Criar Pré-save

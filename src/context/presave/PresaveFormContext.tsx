@@ -1,4 +1,4 @@
-// context/presave/PresaveFormContext.tsx - Context para estado persistente do formulário
+// context/presave/PresaveFormContext.tsx - Context para estado do formulário (SEM localStorage)
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 
 // Tipos
@@ -226,54 +226,17 @@ const presaveFormReducer = (state: PresaveFormState, action: any): PresaveFormSt
 // Contexto
 const PresaveFormContext = createContext<PresaveFormContextValue | null>(null);
 
-// Storage key - v3 para forçar limpeza de estados bugados
-const STORAGE_KEY = 'presave_form_draft_v3';
-
-// Provider
+// Provider - SEM localStorage, dados apenas em memória durante a sessão
 export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(presaveFormReducer, initialState);
   
-  // Limpar localStorage antigo na primeira execução
-  useEffect(() => {
-    localStorage.removeItem('presave_form_draft_v1');
-    localStorage.removeItem('presave_form_draft_v2');
-  }, []);
-
-  // Auto-save no localStorage com debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      try {
-        const draftData = {
-          ...state,
-          lastSavedAt: new Date().toISOString(),
-          // Não salvar File objects e estados temporários
-          artworkFile: null,
-          isSubmitting: false,
-          isLoadingData: false,
-          isUploadingArtwork: false
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
-      } catch (error) {
-        console.error('❌ Erro ao salvar draft:', error);
-      }
-    }, 1000); // Debounce de 1 segundo
-
-    return () => clearTimeout(timeoutId);
-  }, [state]);  // Carregar do localStorage na inicialização
+  // Limpar localStorage antigo (migração única)
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);
-        // Resetar estados de loading/submitting que não devem persistir
-        data.isSubmitting = false;
-        data.isLoadingData = false;
-        data.isUploadingArtwork = false;
-        dispatch({ type: ACTIONS.LOAD_DRAFT, data });
-      }
-    } catch (error) {
-      console.error('❌ Erro ao carregar draft:', error);
-    }
+      localStorage.removeItem('presave_form_draft_v1');
+      localStorage.removeItem('presave_form_draft_v2');
+      localStorage.removeItem('presave_form_draft_v3');
+    } catch {}
   }, []);
 
   // Actions
@@ -319,34 +282,20 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
         field: 'artworkUrl', 
         value: url 
       });
-    }, []),    saveToStorage: useCallback(() => {
-      try {
-        const draftData = {
-          ...state,
-          lastSavedAt: new Date().toISOString(),
-          artworkFile: null
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
-      } catch (error) {
-        console.error('❌ Erro ao salvar draft:', error);
-      }
-    }, [state]),    loadFromStorage: useCallback(() => {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const data = JSON.parse(saved);
-          dispatch({ type: ACTIONS.LOAD_DRAFT, data });
-        }
-      } catch (error) {
-        console.error('❌ Erro ao carregar draft:', error);
-      }
-    }, []),    clearDraft: useCallback(() => {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-        dispatch({ type: ACTIONS.RESET_FORM, template: null });
-      } catch (error) {
-        console.error('❌ Erro ao limpar draft:', error);
-      }
+    }, []),
+
+    // Funções mantidas para compatibilidade, mas agora são no-op
+    saveToStorage: useCallback(() => {
+      // Não faz nada - dados mantidos apenas em memória
+    }, []),
+
+    loadFromStorage: useCallback(() => {
+      // Não faz nada - dados mantidos apenas em memória
+    }, []),
+
+    clearDraft: useCallback(() => {
+      // Reseta o formulário em memória
+      dispatch({ type: ACTIONS.RESET_FORM, template: null });
     }, []),
 
     setSubmitting: useCallback((value: boolean) => {

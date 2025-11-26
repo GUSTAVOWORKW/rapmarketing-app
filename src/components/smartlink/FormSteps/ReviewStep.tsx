@@ -78,7 +78,7 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [state.slug]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.slug, checkedSlug, slugStatus, checkSlugAvailability]);
 
   // Monta o link final do Smart Link
   const smartLinkUrl = state.slug

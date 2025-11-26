@@ -145,14 +145,6 @@ const ArtistInfoStep: React.FC<ArtistInfoStepProps> = () => {
                   if (state.avatarUrl !== defaultImage) {
                     updateField('avatarUrl', defaultImage);
                   }
-                  if (state.avatarUrl && state.avatarUrl.startsWith('blob:')) {
-                    Object.keys(localStorage).forEach(key => {
-                      const value = localStorage.getItem(key);
-                      if (value === state.avatarUrl) {
-                        localStorage.removeItem(key);
-                      }
-                    });
-                  }
                 }}
               />
               {/* Overlay para trocar imagem */}
