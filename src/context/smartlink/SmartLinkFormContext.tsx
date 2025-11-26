@@ -1,5 +1,5 @@
 // src/context/smartlink/SmartLinkFormContext.tsx
-import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { PlatformLink, SocialLink } from '../../types';
@@ -251,7 +251,7 @@ const sanitizeUrl = (url: string | null | undefined, defaultUrl: string = ''): s
   
   // Se é uma blob URL, ela não será válida após reload
   if (url.startsWith('blob:')) {
-    console.warn('⚠️ URL blob detectada e removida:', url);
+    // Silenciosamente retorna default para evitar spam no console
     return defaultUrl;
   }
   
@@ -384,15 +384,19 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [state]);
 
   // Carregar avatar do usuário ao fazer login
+  const avatarLoadedRef = useRef(false);
   useEffect(() => {
-    if (user) {
+    // Só carregar uma vez por sessão de usuário
+    if (user && !avatarLoadedRef.current) {
       // Se não tem avatar ou se tem uma URL problemática, carregar novo avatar
       const shouldLoadNewAvatar = !state.avatarUrl || 
         state.avatarUrl === '' ||
+        state.avatarUrl.startsWith('blob:') ||
         state.avatarUrl.includes('facebook.com') ||
         state.avatarUrl.includes('fbcdn.net');
         
       if (shouldLoadNewAvatar) {
+        avatarLoadedRef.current = true; // Marcar como carregado ANTES do dispatch
         loadUserAvatar(user).then(avatarUrl => {
           // Sempre define um avatar, mesmo que seja o padrão
           const finalAvatarUrl = avatarUrl || '/avatars/perfilhomem1.png';
@@ -401,9 +405,16 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
             payload: { field: 'avatarUrl', value: finalAvatarUrl }
           });
         });
+      } else {
+        avatarLoadedRef.current = true; // Avatar já existe e é válido
       }
     }
-  }, [user, state.avatarUrl]); // Adicionado user e state.avatarUrl às dependências
+    
+    // Resetar quando usuário mudar
+    if (!user) {
+      avatarLoadedRef.current = false;
+    }
+  }, [user]); // REMOVIDO state.avatarUrl das dependências - causa loop!
 
   // Funções do contexto
   const updateField = useCallback((field: string, value: any) => {
