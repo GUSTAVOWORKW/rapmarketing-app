@@ -1,36 +1,54 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabase';
 import { spotifyTokenService } from '../services/spotifyTokenService';
-import { useAuth } from '../context/AuthContext'; // Importar o hook de contexto
+import { useAuth } from '../context/AuthContext';
 
 export const useSpotifyConnection = () => {
-  const { user, refreshProfile } = useAuth(); // Usar o contexto
-  const [isConnected, setIsConnected] = useState(false);
-  const [hasValidToken, setHasValidToken] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, refreshProfile } = useAuth();
   
-  // Ref para rastrear se já verificamos a conexão para este userId
-  const checkedUserIdRef = useRef(null);
-  const isMountedRef = useRef(true);
+  // Inicializar estados do cache do sessionStorage
+  const [isConnected, setIsConnected] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem(`spotify_connected_${user?.id}`);
+      return cached === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [hasValidToken, setHasValidToken] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem(`spotify_valid_${user?.id}`);
+      return cached === 'true';
+    } catch {
+      return false;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    // Se já temos cache, não mostrar loading
+    const cached = sessionStorage.getItem(`spotify_checked_${user?.id}`);
+    return !cached;
+  });
 
-  // Effect único para verificar conexão - executa apenas quando user.id muda
+  // Effect único para verificar conexão
   useEffect(() => {
-    isMountedRef.current = true;
+    let cancelled = false;
     
     const checkConnection = async () => {
       const userId = user?.id;
       
-      // Se não tem usuário, reseta estado e encerra
+      // Se não tem usuário, reseta estado
       if (!userId) {
         setIsConnected(false);
         setHasValidToken(false);
         setLoading(false);
-        checkedUserIdRef.current = null;
         return;
       }
       
-      // Se já verificamos para este userId, não verifica novamente
-      if (checkedUserIdRef.current === userId) {
+      const cacheKey = `spotify_checked_${userId}`;
+      
+      // Se já verificamos (sessionStorage), não verifica novamente
+      if (sessionStorage.getItem(cacheKey)) {
+        setLoading(false);
         return;
       }
       
@@ -43,36 +61,41 @@ export const useSpotifyConnection = () => {
         const spotifyIdentity = identities?.identities?.find(id => id.provider === 'spotify');
         const connected = !!spotifyIdentity;
         
-        if (isMountedRef.current) {
-          setIsConnected(connected);
+        if (cancelled) return;
+        
+        setIsConnected(connected);
+        sessionStorage.setItem(`spotify_connected_${userId}`, String(connected));
 
-          if (connected) {
-            try {
-              const validToken = await spotifyTokenService.hasValidSpotifyConnection(userId);
-              if (isMountedRef.current) {
-                setHasValidToken(validToken);
-              }
-            } catch (tokenError) {
-              console.error('[useSpotifyConnection] Erro ao validar token Spotify:', tokenError);
-              if (isMountedRef.current) {
-                setHasValidToken(false);
-              }
+        if (connected) {
+          try {
+            const validToken = await spotifyTokenService.hasValidSpotifyConnection(userId);
+            if (!cancelled) {
+              setHasValidToken(validToken);
+              sessionStorage.setItem(`spotify_valid_${userId}`, String(validToken));
             }
-          } else {
-            setHasValidToken(false);
+          } catch (tokenError) {
+            console.error('[useSpotifyConnection] Erro ao validar token:', tokenError);
+            if (!cancelled) {
+              setHasValidToken(false);
+              sessionStorage.setItem(`spotify_valid_${userId}`, 'false');
+            }
           }
-          
-          // Marca que já verificamos para este userId
-          checkedUserIdRef.current = userId;
+        } else {
+          setHasValidToken(false);
+          sessionStorage.setItem(`spotify_valid_${userId}`, 'false');
         }
+        
+        // Marca que já verificamos
+        sessionStorage.setItem(cacheKey, 'true');
+        
       } catch (error) {
-        console.error('[useSpotifyConnection] Erro ao verificar conexão:', error);
-        if (isMountedRef.current) {
+        console.error('[useSpotifyConnection] Erro:', error);
+        if (!cancelled) {
           setIsConnected(false);
           setHasValidToken(false);
         }
       } finally {
-        if (isMountedRef.current) {
+        if (!cancelled) {
           setLoading(false);
         }
       }
@@ -81,9 +104,9 @@ export const useSpotifyConnection = () => {
     checkConnection();
 
     return () => {
-      isMountedRef.current = false;
+      cancelled = true;
     };
-  }, [user?.id]); // Apenas user.id como dependência
+  }, [user?.id]);
 
   const disconnectSpotify = useCallback(async () => {
     if (!user) return { success: false, error: 'Usuário não encontrado' };
@@ -100,58 +123,59 @@ export const useSpotifyConnection = () => {
       const { error: unlinkError } = await supabase.auth.unlinkIdentity(spotifyIdentity);
       if (unlinkError) throw unlinkError;
 
-      // Limpar o token do nosso banco de dados também
+      // Limpar o token do nosso banco de dados
       await spotifyTokenService._clearSpotifyConnection(user.id);
 
-      // Forçar a atualização do perfil para refletir a mudança em toda a UI
+      // Limpar cache do sessionStorage
+      sessionStorage.removeItem(`spotify_checked_${user.id}`);
+      sessionStorage.removeItem(`spotify_connected_${user.id}`);
+      sessionStorage.removeItem(`spotify_valid_${user.id}`);
+
+      // Forçar a atualização do perfil
       await refreshProfile(user.id);
 
       setIsConnected(false);
       setHasValidToken(false);
-      
-      // Resetar o ref para permitir re-verificação após desconectar
-      checkedUserIdRef.current = null;
 
       return { success: true };
     } catch (error) {
-      console.error('[disconnectSpotify] Erro completo:', error);
+      console.error('[disconnectSpotify] Erro:', error);
       return { success: false, error: error.message };
     }
   }, [user, refreshProfile]);
 
-  const refresh = useCallback(() => {
-    // Resetar o ref para forçar nova verificação
-    checkedUserIdRef.current = null;
-    // Re-trigger do effect acontecerá naturalmente na próxima renderização
-    // Ou podemos forçar chamando diretamente
+  const refresh = useCallback(async () => {
+    const userId = user?.id;
+    if (!userId) return;
+    
+    // Limpar cache para forçar nova verificação
+    sessionStorage.removeItem(`spotify_checked_${userId}`);
+    
     setLoading(true);
-    const checkConnection = async () => {
-      const userId = user?.id;
-      if (!userId) {
-        setLoading(false);
-        return;
+    
+    try {
+      const { data: identities } = await supabase.auth.getUserIdentities();
+      const spotifyIdentity = identities?.identities?.find(id => id.provider === 'spotify');
+      const connected = !!spotifyIdentity;
+      
+      setIsConnected(connected);
+      sessionStorage.setItem(`spotify_connected_${userId}`, String(connected));
+
+      if (connected) {
+        const validToken = await spotifyTokenService.hasValidSpotifyConnection(userId);
+        setHasValidToken(validToken);
+        sessionStorage.setItem(`spotify_valid_${userId}`, String(validToken));
+      } else {
+        setHasValidToken(false);
+        sessionStorage.setItem(`spotify_valid_${userId}`, 'false');
       }
       
-      try {
-        const { data: identities } = await supabase.auth.getUserIdentities();
-        const spotifyIdentity = identities?.identities?.find(id => id.provider === 'spotify');
-        const connected = !!spotifyIdentity;
-        setIsConnected(connected);
-
-        if (connected) {
-          const validToken = await spotifyTokenService.hasValidSpotifyConnection(userId);
-          setHasValidToken(validToken);
-        } else {
-          setHasValidToken(false);
-        }
-        checkedUserIdRef.current = userId;
-      } catch (error) {
-        console.error('[useSpotifyConnection] refresh error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkConnection();
+      sessionStorage.setItem(`spotify_checked_${userId}`, 'true');
+    } catch (error) {
+      console.error('[useSpotifyConnection] refresh error:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
 
   return {

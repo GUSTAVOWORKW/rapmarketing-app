@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import Papa from 'papaparse';
@@ -475,18 +475,34 @@ const SmartLinkMetrics: React.FC = () => {
   // Estado principal
   const smartLinkId = routeSmartLinkId === 'default' ? null : routeSmartLinkId || null;
   
-  // Refs para controlar carregamento único
-  const loadedUserIdRef = useRef<string | null>(null);
-  const isMountedRef = useRef<boolean>(true);
-  
   // Estados otimizados com loading granular
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(() => {
+    // Se já temos dados em cache, não mostrar loading
+    const cacheKey = `metrics_loaded_${user?.id}`;
+    return !sessionStorage.getItem(cacheKey);
+  });
   const [loadingMetrics, setLoadingMetrics] = useState<boolean>(false);
   const [loadingItemDetails, setLoadingItemDetails] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [userMetrics, setUserMetrics] = useState<OptimizedUserMetrics | null>(null);
+  const [userMetrics, setUserMetrics] = useState<OptimizedUserMetrics | null>(() => {
+    // Tentar recuperar do cache
+    try {
+      const cached = sessionStorage.getItem(`metrics_data_${user?.id}`);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [itemMetrics, setItemMetrics] = useState<OptimizedItemMetrics | null>(null);
-  const [userItems, setUserItems] = useState<UserItem[]>([]);
+  const [userItems, setUserItems] = useState<UserItem[]>(() => {
+    // Tentar recuperar do cache
+    try {
+      const cached = sessionStorage.getItem(`metrics_items_${user?.id}`);
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   // Estados para filtros (usando enums)
   const [selectedPeriod, setSelectedPeriod] = useState<string>(PeriodType.MONTH);
   const [activeTab, setActiveTab] = useState<TabType>(
@@ -695,9 +711,9 @@ const SmartLinkMetrics: React.FC = () => {
   // EFFECTS OTIMIZADOS
   // ============================================================================
   
-  // Effect principal para carregar dados - executa apenas uma vez por userId
+  // Effect principal para carregar dados - usa sessionStorage como cache
   useEffect(() => {
-    isMountedRef.current = true;
+    let cancelled = false;
 
     const loadData = async () => {
       const userId = user?.id;
@@ -708,8 +724,12 @@ const SmartLinkMetrics: React.FC = () => {
         return;
       }
       
-      // Se já carregamos para este userId, apenas mostra os dados existentes
-      if (loadedUserIdRef.current === userId) {
+      const cacheKey = `metrics_loaded_${userId}`;
+      const dataCacheKey = `metrics_data_${userId}`;
+      const itemsCacheKey = `metrics_items_${userId}`;
+      
+      // Se já carregamos para este userId (verificar sessionStorage), não recarrega
+      if (sessionStorage.getItem(cacheKey) && userMetrics !== null) {
         setLoading(false);
         return;
       }
@@ -744,73 +764,77 @@ const SmartLinkMetrics: React.FC = () => {
           .eq('user_id', userId)
           .order('created_at', { ascending: false });
         
-        if (isMountedRef.current) {
-          // Processar métricas
-          if (metricsData && typeof metricsData === 'object') {
-            const sanitizedData = {
-              ...metricsData,
-              summary: {
-                total_clicks: Math.max(0, Number(metricsData.summary?.total_clicks) || 0),
-                total_views: Math.max(0, Number(metricsData.summary?.total_views) || 0),
-                total_items: Math.max(0, Number(metricsData.summary?.total_items) || 0),
-                total_smartlinks: Math.max(0, Number(metricsData.summary?.total_smartlinks) || 0),
-                total_presaves: Math.max(0, Number(metricsData.summary?.total_presaves) || 0)
-              },
-              platform_stats: Array.isArray(metricsData.platform_stats) ? metricsData.platform_stats : [],
-              top_items: Array.isArray(metricsData.top_items) ? metricsData.top_items.map((item: any) => ({
-                ...item,
-                clicks: Math.max(0, Number(item.clicks) || 0),
-                views: Math.max(0, Number(item.views) || 0),
-                click_rate: Number(item.click_rate) || 0
-              })) : [],
-              recent_activity: Array.isArray(metricsData.recent_activity) ? metricsData.recent_activity : []
-            };
-            setUserMetrics(sanitizedData);
-          } else {
-            setUserMetrics({
-              summary: { total_clicks: 0, total_views: 0, total_items: 0, total_smartlinks: 0, total_presaves: 0 },
-              platform_stats: [],
-              top_items: [],
-              recent_activity: []
-            });
-          }
-          
-          // Processar itens
-          const allItems: UserItem[] = [
-            ...(smartLinks || []).map(item => ({
-              id: item.id,
-              title: `${item.artist_name || 'Artista'} - ${item.release_title || 'Título'}`,
-              slug: item.slug,
-              type: 'smartlink' as const,
-              artist_name: item.artist_name,
-              release_title: item.release_title,
-              created_at: item.created_at,
-              is_public: item.is_public || false
-            })),
-            ...(presaves || []).map(item => ({
-              id: item.id,
-              title: `${item.artist_name || 'Artista'} - ${item.track_name || 'Faixa'}`,
-              slug: item.shareable_slug,
-              type: 'presave' as const,
-              artist_name: item.artist_name,
-              track_name: item.track_name,
-              created_at: item.created_at,
-              is_public: true
-            }))
-          ];
-          setUserItems(allItems);
-          
-          // Marca que carregou para este userId
-          loadedUserIdRef.current = userId;
+        if (cancelled) return;
+        
+        // Processar métricas
+        let processedMetrics: OptimizedUserMetrics;
+        if (metricsData && typeof metricsData === 'object') {
+          processedMetrics = {
+            ...metricsData,
+            summary: {
+              total_clicks: Math.max(0, Number(metricsData.summary?.total_clicks) || 0),
+              total_views: Math.max(0, Number(metricsData.summary?.total_views) || 0),
+              total_items: Math.max(0, Number(metricsData.summary?.total_items) || 0),
+              total_smartlinks: Math.max(0, Number(metricsData.summary?.total_smartlinks) || 0),
+              total_presaves: Math.max(0, Number(metricsData.summary?.total_presaves) || 0)
+            },
+            platform_stats: Array.isArray(metricsData.platform_stats) ? metricsData.platform_stats : [],
+            top_items: Array.isArray(metricsData.top_items) ? metricsData.top_items.map((item: any) => ({
+              ...item,
+              clicks: Math.max(0, Number(item.clicks) || 0),
+              views: Math.max(0, Number(item.views) || 0),
+              click_rate: Number(item.click_rate) || 0
+            })) : [],
+            recent_activity: Array.isArray(metricsData.recent_activity) ? metricsData.recent_activity : []
+          };
+        } else {
+          processedMetrics = {
+            summary: { total_clicks: 0, total_views: 0, total_items: 0, total_smartlinks: 0, total_presaves: 0 },
+            platform_stats: [],
+            top_items: [],
+            recent_activity: []
+          };
         }
         
+        // Processar itens
+        const allItems: UserItem[] = [
+          ...(smartLinks || []).map(item => ({
+            id: item.id,
+            title: `${item.artist_name || 'Artista'} - ${item.release_title || 'Título'}`,
+            slug: item.slug,
+            type: 'smartlink' as const,
+            artist_name: item.artist_name,
+            release_title: item.release_title,
+            created_at: item.created_at,
+            is_public: item.is_public || false
+          })),
+          ...(presaves || []).map(item => ({
+            id: item.id,
+            title: `${item.artist_name || 'Artista'} - ${item.track_name || 'Faixa'}`,
+            slug: item.shareable_slug,
+            type: 'presave' as const,
+            artist_name: item.artist_name,
+            track_name: item.track_name,
+            created_at: item.created_at,
+            is_public: true
+          }))
+        ];
+        
+        // Salvar no cache e no estado
+        sessionStorage.setItem(cacheKey, 'true');
+        sessionStorage.setItem(dataCacheKey, JSON.stringify(processedMetrics));
+        sessionStorage.setItem(itemsCacheKey, JSON.stringify(allItems));
+        
+        setUserMetrics(processedMetrics);
+        setUserItems(allItems);
+        
       } catch (err: any) {
-        if (isMountedRef.current) {
+        if (!cancelled) {
           console.error('❌ Erro no carregamento de dados:', err);
           setError(err.message || 'Erro ao carregar dados');
         }
       } finally {
-        if (isMountedRef.current) {
+        if (!cancelled) {
           setLoading(false);
         }
       }
@@ -821,12 +845,16 @@ const SmartLinkMetrics: React.FC = () => {
       loadData();
     } else if (!initializing && !user) {
       navigate('/login');
+    } else if (initializing) {
+      // Ainda inicializando - mantém loading
+    } else {
+      setLoading(false);
     }
 
     return () => {
-      isMountedRef.current = false;
+      cancelled = true;
     };
-  }, [initializing, user?.id, navigate]); // Removeu selectedPeriod - carrega apenas no mount
+  }, [initializing, user?.id, navigate, userMetrics, selectedPeriod]);
 
   // Effect para recarregar métricas quando o período é alterado (não no mount inicial)
   const [periodChanged, setPeriodChanged] = React.useState(false);
