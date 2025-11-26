@@ -1,10 +1,11 @@
 // components/smartlink/FormSteps/ReviewStep.tsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useSmartLinkForm } from '../../../context/smartlink/SmartLinkFormContext';
 import { PlatformLink, SocialLink } from '../../../types'; // Importar tipos globais
-import { FaCheckCircle, FaStar } from 'react-icons/fa';
+import { FaCheckCircle, FaStar, FaSpinner, FaTimesCircle } from 'react-icons/fa';
 import { SOCIAL_PLATFORMS } from '../../../data/socials';
 import { PLATFORMS } from '../../../data/platforms';
+import { supabase } from '../../../services/supabase';
 
 // As props foram removidas, pois a navegação e submissão
 // são controladas pela página pai (CreateSmartLinkPage)
@@ -12,9 +13,12 @@ interface ReviewStepProps {}
 
 // Ícones das plataformas
 const ReviewStep: React.FC<ReviewStepProps> = () => {
-  const { state, updateField, generateSlug } = useSmartLinkForm();
+  const { state, updateField, generateSlug, setErrors } = useSmartLinkForm();
   const platformsWithLinks = state.platforms.filter((p: PlatformLink) => p.url.trim() !== '');
   const socialLinksWithUrls = state.socialLinks.filter((s: SocialLink) => s.url.trim() !== '');
+
+  // Estado para verificação de slug
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
   // Gera o slug a partir do nome do artista quando o componente é montado
   // ou quando o nome do artista muda, mas apenas se o slug ainda não foi definido pelo usuário
@@ -24,6 +28,46 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
       updateField('slug', newSlug);
     }
   }, [state.artistName, state.slug, generateSlug, updateField]);
+
+  // Verificar disponibilidade do slug com debounce
+  const checkSlugAvailability = useCallback(async (slug: string) => {
+    if (!slug || slug.length < 3) {
+      setSlugStatus('idle');
+      return;
+    }
+
+    setSlugStatus('checking');
+    try {
+      const { data, error } = await supabase
+        .from('smart_links')
+        .select('slug')
+        .eq('slug', slug)
+        .single();
+
+      if (error && error.code === 'PGRST116') {
+        // Nenhum registro encontrado - slug disponível
+        setSlugStatus('available');
+        setErrors({ ...state.errors, slug: '' });
+      } else if (data) {
+        // Slug já existe
+        setSlugStatus('taken');
+        setErrors({ ...state.errors, slug: 'Esta URL já está em uso. Escolha outra.' });
+      }
+    } catch (error) {
+      console.error('Erro ao verificar slug:', error);
+      setSlugStatus('idle');
+    }
+  }, [setErrors, state.errors]);
+
+  // Debounce da verificação de slug
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (state.slug) {
+        checkSlugAvailability(state.slug);
+      }
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [state.slug, checkSlugAvailability]);
 
 
   // Monta o link final do Smart Link
@@ -71,21 +115,43 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
           <span className="text-sm text-gray-500 mb-2">URL do seu Smart Link</span>
           <div className="flex items-center space-x-2">
             <span className="text-gray-500">rapmarketing.link/</span>
-            <input
-              type="text"
-              value={state.slug}
-              onChange={(e) => updateField('slug', e.target.value)}
-              className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-blue-700 font-semibold text-center focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+            <div className="relative">
+              <input
+                type="text"
+                value={state.slug}
+                onChange={(e) => updateField('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                className={`w-full max-w-xs px-3 py-2 border rounded-lg bg-gray-50 text-blue-700 font-semibold text-center focus:outline-none focus:ring-2 
+                  ${slugStatus === 'available' ? 'border-green-400 focus:ring-green-400' : 
+                    slugStatus === 'taken' ? 'border-red-400 focus:ring-red-400' : 
+                    'border-gray-300 focus:ring-blue-400'}`}
+              />
+              {/* Indicador de status */}
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                {slugStatus === 'checking' && <FaSpinner className="animate-spin text-blue-500" />}
+                {slugStatus === 'available' && <FaCheckCircle className="text-green-500" />}
+                {slugStatus === 'taken' && <FaTimesCircle className="text-red-500" />}
+              </div>
+            </div>
             <button
               type="button"
               className="px-3 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
               onClick={() => navigator.clipboard.writeText(smartLinkUrl)}
-              disabled={!state.slug}
+              disabled={!state.slug || slugStatus === 'taken'}
             >
               Copiar
             </button>
           </div>
+          {/* Status message */}
+          {slugStatus === 'available' && (
+            <p className="text-green-500 text-xs mt-2 flex items-center">
+              <FaCheckCircle className="mr-1" /> URL disponível!
+            </p>
+          )}
+          {slugStatus === 'taken' && (
+            <p className="text-red-500 text-xs mt-2 flex items-center">
+              <FaTimesCircle className="mr-1" /> URL já em uso. Escolha outra.
+            </p>
+          )}
           {state.errors.slug && <p className="text-red-500 text-xs mt-2">{state.errors.slug}</p>}
           <span className="text-xs text-gray-400 mt-2">Você pode customizar sua URL!</span>
         </div>

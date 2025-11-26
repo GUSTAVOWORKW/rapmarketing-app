@@ -35,10 +35,13 @@ const BaileDeFavela: React.FC<BaileDeFavelaProps> = (data) => {
         id, // Adicionando o ID para tracking
         artist_name = 'Nome do Artista',
         release_title = 'Título do Lançamento',
+        feat, // Featuring/participação especial
         avatar_url, // Recebe a URL da imagem do avatar (pode ser blob ou URL final)
         cover_image_url, // Recebe a URL da imagem de capa
         platforms = [],
         social_links = [],
+        contact_button_text = 'Contato',
+        contact_button_url,
     } = data;
 
     // Hook de tracking
@@ -96,6 +99,11 @@ const BaileDeFavela: React.FC<BaileDeFavelaProps> = (data) => {
               <h1 className="text-4xl font-bold text-white tracking-tight">
                 {artist_name}
               </h1>
+              {feat && (
+                <p className="text-yellow-400 text-sm font-medium mt-1">
+                  feat. {feat}
+                </p>
+              )}
               {release_title && (
                 <p className="text-lg text-gray-300 font-light mt-1">
                   {release_title}
@@ -160,7 +168,7 @@ const BaileDeFavela: React.FC<BaileDeFavelaProps> = (data) => {
               </section>
   
               {finalSocials.length > 0 && (
-                <footer className="text-center">
+                <footer className="text-center mb-6">
                   <div className="social-links-container">
                     {finalSocials.map((link, index) => {
                       const Icon = link.icon;
@@ -182,6 +190,20 @@ const BaileDeFavela: React.FC<BaileDeFavelaProps> = (data) => {
                     })}
                   </div>
                 </footer>
+              )}
+
+              {/* Botão de Contato */}
+              {contact_button_url && (
+                <div className="text-center mt-6">
+                  <a 
+                    href={contact_button_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  >
+                    {contact_button_text || 'Entre em Contato'}
+                  </a>
+                </div>
               )}
             </main>
           </div>

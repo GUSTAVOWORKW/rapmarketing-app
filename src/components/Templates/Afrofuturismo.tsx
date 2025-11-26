@@ -12,6 +12,7 @@ const Afrofuturismo: React.FC<Partial<SmartLink>> = ({
   artist_title,
   title,
   bio,
+  feat, // Featuring/participação especial
   avatar_url,
   release_title,
   cover_image_url,

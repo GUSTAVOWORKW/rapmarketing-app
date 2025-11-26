@@ -15,6 +15,7 @@ const NoiteCarioca: React.FC<Partial<SmartLink>> = ({
   bio,
   avatar_url,
   release_title,
+  feat, // Featuring/participação especial
   cover_image_url,
   player_url,
   platforms = [], // Alterado de platform_links para platforms
@@ -115,16 +116,11 @@ const NoiteCarioca: React.FC<Partial<SmartLink>> = ({
     return () => { if (style.parentNode) style.parentNode.removeChild(style); };
   }, []);
 
-  // DEBUG: Log das props recebidas
-  console.log('🎨 DEBUG [NoiteCarioca] - platforms recebidas:', platforms);
-  console.log('🎨 DEBUG [NoiteCarioca] - social_links recebidos:', social_links);
-
   // Preparar dados das plataformas, agora lendo da prop `platforms`
   const finalPlatforms = (platforms || [])
     .filter(link => link.url && link.platform_id)
     .map(link => {
       const platformData = PLATFORMS.find(p => p.id === link.platform_id);
-      console.log('🔗 DEBUG - Processando plataforma:', link.platform_id, 'URL:', link.url);
       return {
         id: link.platform_id,
         name: platformData?.name || link.platform_id,
@@ -167,6 +163,11 @@ const NoiteCarioca: React.FC<Partial<SmartLink>> = ({
           <h1 className="text-2xl font-bold text-white neon-text mb-1">
             {artist_name || 'Artista'}
           </h1>
+          {feat && (
+            <p className="text-pink-300 text-sm font-medium mb-1">
+              feat. {feat}
+            </p>
+          )}
           {artist_title && (
             <p className="text-lg text-yellow-300 font-medium mb-2">
               {artist_title}

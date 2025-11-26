@@ -22,6 +22,7 @@ export interface SmartLink {
   artist_name?: string; // Adicionado
   artist_title?: string; // Adicionado
   release_title?: string; // Adicionado
+  feat?: string; // Featuring/participação especial
   title?: string; // Título opcional para SEO/compartilhamento
   description?: string;
   bio?: string; // Adicionado

@@ -36,10 +36,6 @@ const templateMap: { [key: string]: React.FC<Partial<SmartLink>> } = {
 const SmartLinkMobileView: React.FC = () => {
   const { state } = useSmartLinkForm();
 
-  // DEBUG: Log para verificar o estado recebido pelo preview
-  console.log('DEBUG [SmartLinkMobileView]: State platforms:', state.platforms);
-  console.log('DEBUG [SmartLinkMobileView]: State socialLinks:', state.socialLinks);
-
   // Preparar dados do SmartLink para o template, usando Partial<SmartLink> para flexibilidade
   const smartLinkData: Partial<SmartLink> = {
     // Mapeamento direto dos campos do estado do formulário
@@ -47,6 +43,7 @@ const SmartLinkMobileView: React.FC = () => {
     artist_name: state.artistName || 'Artista',
     artist_title: state.artistTitle,
     release_title: state.releaseTitle || 'Nova Música',
+    feat: state.feat, // Featuring/participação
     bio: state.bio,
     avatar_url: state.avatarUrl || '/avatars/perfilhomem1.png',
     cover_image_url: state.coverImageUrl || '/assets/defaults/default-cover.png',

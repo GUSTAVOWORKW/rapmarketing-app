@@ -8,11 +8,14 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
   artist_name,
   artist_title,
   bio,
+  feat, // Featuring/participação especial
   avatar_url,
   cover_image_url,
   player_url,
   platforms = [],
   social_links = [],
+  contact_button_text = 'Contato',
+  contact_button_url,
 }) => {
 
   useEffect(() => {
@@ -98,6 +101,11 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
           <h1 className="text-4xl font-bold text-white tracking-wide" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
             {artist_name || 'Artista'}
           </h1>
+          {feat && (
+            <p className="text-amber-100 text-sm font-medium mt-1">
+              feat. {feat}
+            </p>
+          )}
           {artist_title && (
             <p className="text-lg text-amber-200 font-light mt-1">
               {artist_title}
@@ -165,7 +173,7 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
           </section>
 
           {finalSocialLinks.length > 0 && (
-            <footer className="text-center">
+            <footer className="text-center mb-6">
               <div className="flex justify-center items-center space-x-6">
                 {finalSocialLinks.map(social => {
                   const Icon = social.icon;
@@ -183,6 +191,20 @@ const PorDoSolNoArpoador: React.FC<Partial<SmartLink>> = ({
                 })}
               </div>
             </footer>
+          )}
+
+          {/* Botão de Contato */}
+          {contact_button_url && (
+            <div className="text-center mt-6">
+              <a 
+                href={contact_button_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gradient-to-r from-amber-400 to-orange-500 text-black font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                {contact_button_text || 'Entre em Contato'}
+              </a>
+            </div>
           )}
         </main>
       </div>
