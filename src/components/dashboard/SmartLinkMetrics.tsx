@@ -669,13 +669,13 @@ const SmartLinkMetrics: React.FC = () => {
       ];
       
       // Validação crítica: verificar se os números fazem sentido
-      if ((smartLinks?.length || 0) > 200 || (presaves?.length || 0) > 200) {
-        console.error('🚨 ALERTA: Números muito altos detectados!', {
-          smartLinks: smartLinks?.length,
-          presaves: presaves?.length,
-          user_id: user.id
-        });
-      }
+      // if ((smartLinks?.length || 0) > 200 || (presaves?.length || 0) > 200) {
+      //   console.error('🚨 ALERTA: Números muito altos detectados!', {
+      //     smartLinks: smartLinks?.length,
+      //     presaves: presaves?.length,
+      //     user_id: user.id
+      //   });
+      // }
       
       setUserItems(allItems);
       

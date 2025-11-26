@@ -37,7 +37,7 @@ const SmartLinkMobileView: React.FC = () => {
   const { state } = useSmartLinkForm();
 
   // DEBUG: Log para verificar o estado recebido pelo preview
-  console.log('DEBUG [SmartLinkMobileView]: Template state received:', state.template);
+  // console.log('DEBUG [SmartLinkMobileView]: Template state received:', state.template);
 
   // Preparar dados do SmartLink para o template, usando Partial<SmartLink> para flexibilidade
   const smartLinkData: Partial<SmartLink> = {
@@ -65,7 +65,7 @@ const SmartLinkMobileView: React.FC = () => {
     const TemplateComponent = templateMap[state.template] || NoiteCarioca; // Fallback para NoiteCarioca
     
     // DEBUG: Log para verificar qual componente está sendo renderizado
-    console.log('DEBUG [SmartLinkMobileView]: Rendering template:', TemplateComponent.displayName || TemplateComponent.name);
+    // console.log('DEBUG [SmartLinkMobileView]: Rendering template:', TemplateComponent.displayName || TemplateComponent.name);
 
     return <TemplateComponent {...smartLinkData} />;
   };

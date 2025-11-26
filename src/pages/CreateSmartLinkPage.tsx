@@ -143,7 +143,7 @@ const StepIndicator: React.FC<{ currentStep: number }> = ({ currentStep }) => {
 
 // Componente principal da página
 const CreateSmartLinkPage: React.FC = () => {
-  console.log('DEBUG: CreateSmartLinkPage renderizou');
+  // console.log('DEBUG: CreateSmartLinkPage renderizou');
 
   const navigate = useNavigate();
   const { id: smartLinkId } = useParams();
