@@ -212,7 +212,12 @@ const UserSettings = () => {
                                 const { error } = await supabase.auth.signInWithOAuth({
                                     provider: 'spotify',
                                     options: {
-                                        redirectTo: `${window.location.origin}/auth/callback`,
+                                        redirectTo: `${window.location.origin}/spotify-callback`,
+                                        scopes: 'user-read-email user-read-private user-top-read user-read-recently-played',
+                                        queryParams: {
+                                            access_type: 'offline',
+                                            prompt: 'consent',
+                                        },
                                     },
                                 });
 

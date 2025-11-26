@@ -28,8 +28,9 @@ class SpotifyTokenService {
         .single();
 
       if (error || !tokenData) {
-        // Erro 406 / PGRST116 significa "nenhuma linha" → usuário ainda não conectou Spotify.
-        if (error?.code === 'PGRST116' || error?.details?.includes('Results contain 0 rows')) {
+        // Erro 406 (Not Acceptable) geralmente significa que a tabela não existe ou erro de schema
+        // PGRST116 significa "nenhuma linha"
+        if (error?.code === 'PGRST116' || error?.code === '406' || error?.message?.includes('406') || error?.details?.includes('Results contain 0 rows')) {
           return null;
         }
 

@@ -19,24 +19,76 @@ export const SpotifyCallbackHandler = () => {
 
       console.log('🔍 [SpotifyCallback] Processando callback (webhook mode)...');
       
-      // Limpar URL primeiro para remover tokens da URL
+      // 1. Tentar obter sessão e tokens IMEDIATAMENTE, antes de limpar a URL
+      const { data: { session } } = await supabase.auth.getSession();
+      const capturedHash = window.location.hash;
+
+      // Limpar URL primeiro para remover tokens da URL (estética)
       window.history.replaceState({}, document.title, window.location.pathname);
 
       setStatus('Verificando usuário...');
       
       try {
-        // const { data: { user }, error: userError } = await supabase.auth.getUser(); // Removido, usando user do useAuth
+        // Garantir que temos o usuário (da sessão ou do contexto)
+        const currentUser = session?.user || user;
 
-        if (!user || !user.id) {
+        if (!currentUser || !currentUser.id) {
           console.error('❌ [SpotifyCallback] Usuário não autenticado.');
           setError('Usuário não autenticado. Faça login e tente novamente.');
           setTimeout(() => navigate('/login'), 3000);
           return;
         }
 
-        console.log('✅ [SpotifyCallback] Usuário autenticado:', user.id);
+        console.log('✅ [SpotifyCallback] Usuário autenticado:', currentUser.id);
         setStatus('Verificando tokens do Spotify...');
 
+        // Tentar extrair tokens da sessão (método preferido)
+        let accessToken = session?.provider_token;
+        let refreshToken = session?.provider_refresh_token;
+        let expiresIn = session?.expires_in; // Pode não vir aqui, assumir 3600
+
+        // Se não estiver na sessão, tentar extrair do hash manualmente (fallback)
+        if (!accessToken && capturedHash) {
+            console.log('⚠️ [SpotifyCallback] Tokens não na sessão, tentando hash...');
+            const params = new URLSearchParams(capturedHash.substring(1));
+            accessToken = params.get('provider_token');
+            refreshToken = params.get('provider_refresh_token');
+            expiresIn = params.get('expires_in');
+        }
+
+        // Se encontramos tokens, salvar IMEDIATAMENTE
+        if (accessToken) {
+             console.log('🔧 [SpotifyCallback] Tokens encontrados! Salvando manualmente...');
+             setStatus('Salvando tokens do Spotify...');
+
+             const tokenData = {
+                user_id: currentUser.id,
+                access_token: accessToken,
+                refresh_token: refreshToken || '', // Refresh token pode não vir em re-auth implícito
+                expires_at: new Date(Date.now() + ((parseInt(expiresIn) || 3600) * 1000)).toISOString(),
+                updated_at: new Date().toISOString()
+             };
+
+             const { error: saveError } = await supabase
+                .from('spotify_tokens')
+                .upsert([tokenData], { onConflict: 'user_id' });
+
+             if (saveError) {
+                console.error('❌ [SpotifyCallback] Erro ao salvar tokens:', saveError);
+                // Não retornar erro fatal ainda, verificar se o webhook salvou
+             } else {
+                console.log('✅ [SpotifyCallback] Tokens salvos com sucesso!');
+                setStatus('Conexão estabelecida com sucesso!');
+                window.dispatchEvent(new CustomEvent('spotify-connected'));
+                setTimeout(() => {
+                    navigate('/settings');
+                    window.location.reload();
+                }, 1500);
+                return;
+             }
+        }
+
+        // Se não salvamos manualmente (ou deu erro), verificar se o webhook salvou
         // Aguardar um momento para a edge function auth-webhook processar
         await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -44,53 +96,14 @@ export const SpotifyCallbackHandler = () => {
         const { data: tokenData, error: tokenError } = await supabase
           .from('spotify_tokens')
           .select('access_token, expires_at')
-          .eq('user_id', user.id)
+          .eq('user_id', currentUser.id)
           .single();
 
         if (tokenError || !tokenData) {
-          console.warn('⚠️ [SpotifyCallback] Tokens não encontrados via webhook, tentando fallback...');
-          
-          // FALLBACK: Extrair tokens da URL e salvar manualmente
-          const capturedHash = window.location.hash;
-          if (capturedHash) {
-            const params = new URLSearchParams(capturedHash.substring(1));
-            const accessToken = params.get('provider_token');
-            const refreshToken = params.get('provider_refresh_token');
-            const expiresIn = params.get('expires_in') || '3600';
-
-            if (accessToken) {
-              console.log('🔧 [SpotifyCallback] Salvando tokens manualmente...');
-              setStatus('Salvando tokens do Spotify...');
-
-              const tokenData = {
-                user_id: user.id,
-                access_token: accessToken,
-                refresh_token: refreshToken || '',
-                expires_at: Date.now() + (parseInt(expiresIn) * 1000),
-              };
-
-              const { error: saveError } = await supabase
-                .from('spotify_tokens')
-                .upsert([tokenData], { onConflict: 'user_id' });
-
-              if (saveError) {
-                console.error('❌ [SpotifyCallback] Erro ao salvar tokens manualmente:', saveError);
-                setError('Erro ao salvar conexão. Verifique se a tabela spotify_tokens existe.');
-                setTimeout(() => navigate('/settings'), 3000);
-                return;
-              }
-              
-              console.log('✅ [SpotifyCallback] Tokens salvos manualmente com sucesso!');
-            } else {
-              setError('Tokens não encontrados na URL. Tente conectar novamente.');
-              setTimeout(() => navigate('/settings'), 3000);
-              return;
-            }
-          } else {
-            setError('Webhook não funcionou e não há tokens na URL. Verifique a configuração.');
-            setTimeout(() => navigate('/settings'), 3000);
-            return;
-          }
+          console.warn('⚠️ [SpotifyCallback] Tokens não encontrados via webhook nem manual.');
+          setError('Não foi possível obter os tokens do Spotify. Tente novamente.');
+          setTimeout(() => navigate('/settings'), 3000);
+          return;
         } else {
           console.log('✅ [SpotifyCallback] Tokens encontrados via webhook!');
         }

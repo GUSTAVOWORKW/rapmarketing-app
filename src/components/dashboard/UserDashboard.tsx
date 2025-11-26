@@ -106,10 +106,22 @@ const UserDashboard: React.FC = () => {
     ? `${window.location.origin}/${smartLink.slug}` 
     : null;
 
+  // Timeout de segurança para evitar loading infinito
+  const [forceShow, setForceShow] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) {
+        console.warn('[UserDashboard] Loading demorou muito, forçando exibição.');
+        setForceShow(true);
+      }
+    }, 5000); // 5 segundos de timeout
+    return () => clearTimeout(timer);
+  }, [initializing, authLoading, loadingLink, loadingPresavesCount, loadingSmartLinksCount]);
+
   // Mostrar loading global do dashboard apenas enquanto autenticação OU carregamentos locais ainda estão em andamento.
   // Quando a autenticação terminar (initializing === false) e algum dado específico falhar,
   // os efeitos acima já caem em fallback seguro (contagens = 0), evitando loop infinito de loading.
-  if (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) {
+  if (!forceShow && (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount)) {
     return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
   }
 
