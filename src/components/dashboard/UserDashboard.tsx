@@ -351,7 +351,6 @@ const UserDashboard: React.FC = () => {
 
     if (!initializing && user?.id) {
       fetchDashboardData();
-      fetchSpotifyData();
     } else if (!initializing) {
       setLoadingData(false);
       setLoadingSpotify(false);
@@ -360,6 +359,13 @@ const UserDashboard: React.FC = () => {
     return () => {
       cancelled = true;
     };
+  }, [user?.id, initializing]);
+
+  // Carregar dados do Spotify separadamente
+  useEffect(() => {
+    if (!initializing && user?.id) {
+      fetchSpotifyData();
+    }
   }, [user?.id, initializing, fetchSpotifyData]);
 
   // Dicas do sistema

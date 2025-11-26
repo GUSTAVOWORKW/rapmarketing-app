@@ -854,7 +854,7 @@ const SmartLinkMetrics: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [initializing, user?.id, navigate, userMetrics, selectedPeriod]);
+  }, [initializing, user?.id, navigate]); // Removido userMetrics e selectedPeriod para evitar loops
 
   // Effect para recarregar métricas quando o período é alterado (não no mount inicial)
   const [periodChanged, setPeriodChanged] = React.useState(false);
