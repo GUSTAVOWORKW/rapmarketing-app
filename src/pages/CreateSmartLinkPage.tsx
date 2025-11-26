@@ -198,23 +198,15 @@ const CreateSmartLinkPage: React.FC = () => {
     }
   }, [smartLinkId, user, loadDraft]);
 
+  // Memoizar dependências complexas para o useEffect de validação
+  const platformUrls = useMemo(() => JSON.stringify(platforms.map(p => p.url)), [platforms]);
+
   // Efeito para redirecionar se o usuário não estiver autenticado
   useEffect(() => {
     if (!initializing && !user) {
       navigate('/login');
     }
   }, [user, initializing, navigate]);
-
-  // Enquanto o contexto de autenticação ainda está inicializando, exibe um loading específico da página
-  if (initializing || !user) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
-        <div className="text-2xl font-semibold text-[#3100ff]">Carregando criação de Smart Link...</div>
-      </div>
-    );
-  }
-  // Memoizar dependências complexas para o useEffect de validação
-  const platformUrls = useMemo(() => JSON.stringify(platforms.map(p => p.url)), [platforms]);
 
   // Efeito para validar o formulário sempre que os dados relevantes mudam
   useEffect(() => {
