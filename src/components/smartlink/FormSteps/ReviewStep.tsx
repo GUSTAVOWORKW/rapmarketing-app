@@ -1,17 +1,14 @@
 // components/smartlink/FormSteps/ReviewStep.tsx
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useSmartLinkForm } from '../../../context/smartlink/SmartLinkFormContext';
-import { PlatformLink, SocialLink } from '../../../types'; // Importar tipos globais
+import { PlatformLink, SocialLink } from '../../../types';
 import { FaCheckCircle, FaStar, FaSpinner, FaTimesCircle } from 'react-icons/fa';
 import { SOCIAL_PLATFORMS } from '../../../data/socials';
 import { PLATFORMS } from '../../../data/platforms';
 import { supabase } from '../../../services/supabase';
 
-// As props foram removidas, pois a navegação e submissão
-// são controladas pela página pai (CreateSmartLinkPage)
 interface ReviewStepProps {}
 
-// Ícones das plataformas
 const ReviewStep: React.FC<ReviewStepProps> = () => {
   const { state, updateField, generateSlug } = useSmartLinkForm();
   const platformsWithLinks = state.platforms.filter((p: PlatformLink) => p.url.trim() !== '');
@@ -19,25 +16,39 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
 
   // Estado para verificação de slug
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
-  
-  // Usar ref para controlar o último slug verificado (não causa re-render)
-  const lastCheckedSlugRef = useRef<string>('');
-  const checkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true);
+  const [checkedSlug, setCheckedSlug] = useState('');
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Cleanup ao desmontar
-  useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-      if (checkTimeoutRef.current) {
-        clearTimeout(checkTimeoutRef.current);
+  // Função de verificação de slug
+  const checkSlugAvailability = useCallback(async (slug: string) => {
+    if (!slug || slug.length < 3) {
+      setSlugStatus('idle');
+      return;
+    }
+
+    setSlugStatus('checking');
+
+    try {
+      const { count, error } = await supabase
+        .from('smart_links')
+        .select('*', { count: 'exact', head: true })
+        .eq('slug', slug);
+
+      if (error) {
+        console.warn('Erro ao verificar slug:', error.message);
+        setSlugStatus('available');
+        return;
       }
-    };
+
+      setCheckedSlug(slug);
+      setSlugStatus(count && count > 0 ? 'taken' : 'available');
+    } catch (err) {
+      console.error('Erro:', err);
+      setSlugStatus('available');
+    }
   }, []);
 
-  // Gera o slug a partir do nome do artista quando o componente é montado
-  // ou quando o nome do artista muda, mas apenas se o slug ainda não foi definido pelo usuário
+  // Gera o slug inicial a partir do nome do artista
   useEffect(() => {
     if (state.artistName && !state.slug) {
       const newSlug = generateSlug(state.artistName);
@@ -45,76 +56,29 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
     }
   }, [state.artistName, state.slug, generateSlug, updateField]);
 
-  // Verificação de slug com debounce usando useEffect único
+  // Verificar slug quando mudar (com debounce)
   useEffect(() => {
-    const slug = state.slug;
-    
-    // Validações básicas
-    if (!slug || slug.length < 3) {
-      setSlugStatus('idle');
-      lastCheckedSlugRef.current = '';
-      return;
-    }
-
-    // Se já verificamos este slug E temos um status válido, não verificar novamente
-    if (slug === lastCheckedSlugRef.current && slugStatus !== 'idle' && slugStatus !== 'checking') {
+    // Se o slug já foi verificado, não verificar novamente
+    if (state.slug === checkedSlug && slugStatus !== 'idle') {
       return;
     }
 
     // Limpar timeout anterior
-    if (checkTimeoutRef.current) {
-      clearTimeout(checkTimeoutRef.current);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    // Definir status como verificando
-    setSlugStatus('checking');
+    // Debounce de 600ms
+    debounceRef.current = setTimeout(() => {
+      checkSlugAvailability(state.slug);
+    }, 600);
 
-    // Função async para verificar
-    const checkSlug = async () => {
-      try {
-        const { count, error } = await supabase
-          .from('smart_links')
-          .select('*', { count: 'exact', head: true })
-          .eq('slug', slug);
-
-        // Verificar se ainda está montado e se o slug não mudou
-        if (!isMountedRef.current || slug !== state.slug) {
-          return;
-        }
-
-        // Atualizar ref
-        lastCheckedSlugRef.current = slug;
-
-        if (error) {
-          console.warn('Aviso ao verificar slug:', error.message);
-          setSlugStatus('available'); // Em caso de erro, assumir disponível
-          return;
-        }
-
-        if (count && count > 0) {
-          setSlugStatus('taken');
-        } else {
-          setSlugStatus('available');
-        }
-      } catch (error) {
-        console.error('Erro ao verificar slug:', error);
-        if (isMountedRef.current) {
-          setSlugStatus('available'); // Em caso de erro, assumir disponível
-        }
-      }
-    };
-
-    // Debounce de 500ms
-    checkTimeoutRef.current = setTimeout(checkSlug, 500);
-
-    // Cleanup
     return () => {
-      if (checkTimeoutRef.current) {
-        clearTimeout(checkTimeoutRef.current);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
       }
     };
-  }, [state.slug, slugStatus]); // Adicionar slugStatus para re-verificar se necessário
-
+  }, [state.slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Monta o link final do Smart Link
   const smartLinkUrl = state.slug

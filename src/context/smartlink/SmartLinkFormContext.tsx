@@ -313,82 +313,25 @@ const loadUserAvatar = async (user: any) => {
   }
 };
 
-// Chave do localStorage - v3 para forçar limpeza de estados bugados
-const STORAGE_KEY = 'smartlink_form_draft_v3';
-
-// Provider do contexto
+// Provider do contexto - SEM localStorage, dados apenas em memória
 export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(smartLinkFormReducer, {
     ...initialState,
-    currentSmartLinkId: `smartlink-${Date.now()}`, // Usar timestamp para id único
+    currentSmartLinkId: `smartlink-${Date.now()}`,
   });
   const { user } = useAuth() as { user: any };
 
-  // Limpar localStorage antigo na primeira execução
+  // Limpar localStorage antigo (migração)
   useEffect(() => {
-    // Remover versões antigas do localStorage
     localStorage.removeItem('smartlink_form_draft_v1');
     localStorage.removeItem('smartlink_form_draft_v2');
+    localStorage.removeItem('smartlink_form_draft_v3');
   }, []);
-
-  // Carregar draft do localStorage na inicialização
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);        // Migração: Corrige o valor antigo do template no rascunho salvo
-        if (data.template === 'noite-carioca') {
-          data.template = 'noitecarioca';
-        }
-
-        // Garantir que sempre temos uma capa padrão
-        if (!data.coverImageUrl) {
-          data.coverImageUrl = '/assets/defaults/default-cover.png';
-        }
-
-        // Sanitizar URLs blob que podem ter ficado no localStorage
-        data.avatarUrl = sanitizeUrl(data.avatarUrl, initialState.avatarUrl);
-        data.coverImageUrl = sanitizeUrl(data.coverImageUrl, initialState.coverImageUrl);
-
-        // Resetar estados de loading/saving que não devem persistir
-        data.isSaving = false;
-        data.isLoading = false;
-
-        dispatch({ type: ACTIONS.LOAD_DRAFT, payload: data });
-      }
-    } catch (error) {
-      console.error('❌ Erro ao carregar draft do localStorage:', error);
-    }
-  }, []);
-
-  // Auto-save no localStorage com debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      try {
-        // Não salvar File objects (não serializáveis) e estados temporários
-        const draftData = {
-          ...state,
-          avatarFile: null,
-          coverImageFile: null,
-          faviconFile: null,
-          isSaving: false,
-          isLoading: false,
-          lastSavedAt: new Date().toISOString(),
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
-      } catch (error) {
-        console.error('❌ Erro ao salvar draft no localStorage:', error);
-      }
-    }, 800); // Debounce de 800ms
-    return () => clearTimeout(timeoutId);
-  }, [state]);
 
   // Carregar avatar do usuário ao fazer login
   const avatarLoadedRef = useRef(false);
   useEffect(() => {
-    // Só carregar uma vez por sessão de usuário
     if (user && !avatarLoadedRef.current) {
-      // Se não tem avatar ou se tem uma URL problemática, carregar novo avatar
       const shouldLoadNewAvatar = !state.avatarUrl || 
         state.avatarUrl === '' ||
         state.avatarUrl.startsWith('blob:') ||
@@ -396,7 +339,7 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         state.avatarUrl.includes('fbcdn.net');
         
       if (shouldLoadNewAvatar) {
-        avatarLoadedRef.current = true; // Marcar como carregado ANTES do dispatch
+        avatarLoadedRef.current = true;
         loadUserAvatar(user).then(avatarUrl => {
           // Sempre define um avatar, mesmo que seja o padrão
           const finalAvatarUrl = avatarUrl || '/avatars/perfilhomem1.png';
@@ -471,7 +414,6 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const resetForm = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
     dispatch({ type: ACTIONS.RESET_FORM });
   }, []);
 
