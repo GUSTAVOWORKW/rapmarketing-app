@@ -689,22 +689,103 @@ const SmartLinkMetrics: React.FC = () => {
   // ============================================================================
   // EFFECTS OTIMIZADOS
   // ============================================================================
-    // Effect principal para carregar dados
+  
+  // Effect principal para carregar dados - executa apenas uma vez no mount
   useEffect(() => {
     let mounted = true;
+    let hasLoaded = false;
 
     const loadData = async () => {
-      // Se já estiver carregando ou não tiver usuário, não faz nada
-      if (!user?.id) return;
+      // Se já carregou ou não tem usuário, não faz nada
+      if (hasLoaded || !user?.id) return;
+      hasLoaded = true;
 
       try {
         setLoading(true);
         setError(null);        
+        
         // Carregar dados em paralelo
-        await Promise.all([
-          fetchUserMetrics(),
-          fetchUserItems()
-        ]);
+        const { startDate, endDate } = calculatePeriodDates(selectedPeriod);
+        
+        // Buscar métricas do usuário diretamente
+        const { data: metricsData, error: metricsError } = await supabase.rpc('get_user_metrics_summary', {
+          p_user_id: user.id,
+          p_start_date: startDate.toISOString(),
+          p_end_date: endDate.toISOString()
+        });
+        
+        if (metricsError) throw new Error(metricsError.message);
+        
+        // Buscar Smart Links
+        const { data: smartLinks } = await supabase
+          .from('smart_links')
+          .select('id, artist_name, release_title, slug, created_at, is_public')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        // Buscar Presaves
+        const { data: presaves } = await supabase
+          .from('presaves')
+          .select('id, artist_name, track_name, shareable_slug, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        if (mounted) {
+          // Processar métricas
+          if (metricsData && typeof metricsData === 'object') {
+            const sanitizedData = {
+              ...metricsData,
+              summary: {
+                total_clicks: Math.max(0, Number(metricsData.summary?.total_clicks) || 0),
+                total_views: Math.max(0, Number(metricsData.summary?.total_views) || 0),
+                total_items: Math.max(0, Number(metricsData.summary?.total_items) || 0),
+                total_smartlinks: Math.max(0, Number(metricsData.summary?.total_smartlinks) || 0),
+                total_presaves: Math.max(0, Number(metricsData.summary?.total_presaves) || 0)
+              },
+              platform_stats: Array.isArray(metricsData.platform_stats) ? metricsData.platform_stats : [],
+              top_items: Array.isArray(metricsData.top_items) ? metricsData.top_items.map((item: any) => ({
+                ...item,
+                clicks: Math.max(0, Number(item.clicks) || 0),
+                views: Math.max(0, Number(item.views) || 0),
+                click_rate: Number(item.click_rate) || 0
+              })) : [],
+              recent_activity: Array.isArray(metricsData.recent_activity) ? metricsData.recent_activity : []
+            };
+            setUserMetrics(sanitizedData);
+          } else {
+            setUserMetrics({
+              summary: { total_clicks: 0, total_views: 0, total_items: 0, total_smartlinks: 0, total_presaves: 0 },
+              platform_stats: [],
+              top_items: [],
+              recent_activity: []
+            });
+          }
+          
+          // Processar itens
+          const allItems: UserItem[] = [
+            ...(smartLinks || []).map(item => ({
+              id: item.id,
+              title: `${item.artist_name || 'Artista'} - ${item.release_title || 'Título'}`,
+              slug: item.slug,
+              type: 'smartlink' as const,
+              artist_name: item.artist_name,
+              release_title: item.release_title,
+              created_at: item.created_at,
+              is_public: item.is_public || false
+            })),
+            ...(presaves || []).map(item => ({
+              id: item.id,
+              title: `${item.artist_name || 'Artista'} - ${item.track_name || 'Faixa'}`,
+              slug: item.shareable_slug,
+              type: 'presave' as const,
+              artist_name: item.artist_name,
+              track_name: item.track_name,
+              created_at: item.created_at,
+              is_public: true
+            }))
+          ];
+          setUserItems(allItems);
+        }
         
       } catch (err: any) {
         if (mounted) {
@@ -728,17 +809,56 @@ const SmartLinkMetrics: React.FC = () => {
     return () => {
       mounted = false;
     };
-    // Removido 'loading' das dependências para evitar loop
-  }, [initializing, user?.id]); // Dependência apenas de user.id e initializing  // Effect para recarregar métricas quando o período é alterado
+  }, [initializing, user?.id, navigate]); // Removeu selectedPeriod - carrega apenas no mount
+
+  // Effect para recarregar métricas quando o período é alterado (não no mount inicial)
+  const [periodChanged, setPeriodChanged] = React.useState(false);
+  
   useEffect(() => {
-    // Evita recarregar se já estiver carregando ou se for a carga inicial (que já chama fetchUserMetrics)
-    if (!loading && user?.id) {
-      fetchUserMetrics().catch(err => {
-        console.error('❌ Erro ao recarregar métricas:', err);
-        // setError('Erro ao atualizar métricas'); // Não bloquear UI por erro de refresh
-      });
+    if (periodChanged && user?.id && !loading) {
+      const loadPeriodData = async () => {
+        try {
+          setLoadingMetrics(true);
+          const { startDate, endDate } = calculatePeriodDates(selectedPeriod);
+          
+          const { data, error } = await supabase.rpc('get_user_metrics_summary', {
+            p_user_id: user.id,
+            p_start_date: startDate.toISOString(),
+            p_end_date: endDate.toISOString()
+          });
+          
+          if (!error && data) {
+            const sanitizedData = {
+              ...data,
+              summary: {
+                total_clicks: Math.max(0, Number(data.summary?.total_clicks) || 0),
+                total_views: Math.max(0, Number(data.summary?.total_views) || 0),
+                total_items: Math.max(0, Number(data.summary?.total_items) || 0),
+                total_smartlinks: Math.max(0, Number(data.summary?.total_smartlinks) || 0),
+                total_presaves: Math.max(0, Number(data.summary?.total_presaves) || 0)
+              },
+              platform_stats: Array.isArray(data.platform_stats) ? data.platform_stats : [],
+              top_items: Array.isArray(data.top_items) ? data.top_items.map((item: any) => ({
+                ...item,
+                clicks: Math.max(0, Number(item.clicks) || 0),
+                views: Math.max(0, Number(item.views) || 0),
+                click_rate: Number(item.click_rate) || 0
+              })) : [],
+              recent_activity: Array.isArray(data.recent_activity) ? data.recent_activity : []
+            };
+            setUserMetrics(sanitizedData);
+          }
+        } catch (err) {
+          console.error('Erro ao recarregar métricas:', err);
+        } finally {
+          setLoadingMetrics(false);
+          setPeriodChanged(false);
+        }
+      };
+      loadPeriodData();
     }
-  }, [selectedPeriod]); // Removeu fetchUserMetrics e loading das dependências
+  }, [periodChanged, user?.id, loading, selectedPeriod]);
+
   // Effect para carregar métricas detalhadas quando um item específico é selecionado
   useEffect(() => {
     if (smartLinkId && !loading) {
@@ -747,18 +867,20 @@ const SmartLinkMetrics: React.FC = () => {
         setError('Erro ao carregar métricas detalhadas');
       });
     }
-  }, [smartLinkId, fetchItemMetrics, loading, selectedPeriod]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [smartLinkId]); // Apenas smartLinkId - evita loop com loading e selectedPeriod
 
   // Effect para sincronizar a aba ativa com a presença de smartLinkId na URL
   useEffect(() => {
     if (smartLinkId) {
       setActiveTab(TabType.DETAILED);
-    } else if (activeTab === TabType.DETAILED) {
-      setActiveTab(TabType.OVERVIEW);
     }
-  }, [smartLinkId, activeTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [smartLinkId]); // Removeu activeTab para evitar loop
 
   // Effect para ouvir mudanças no banco de dados em tempo real
+  // DESABILITADO temporariamente para evitar possíveis loops de realtime
+  /*
   useEffect(() => {
     // Se estamos na visão detalhada, ouvimos eventos apenas para aquele item
     if (smartLinkId) {
@@ -785,6 +907,7 @@ const SmartLinkMetrics: React.FC = () => {
       };
     }
   }, [smartLinkId, fetchUserMetrics, fetchItemMetrics]);
+  */
 
   // ============================================================================
   // HOOKS PERSONALIZADOS E CACHES OTIMIZADOS
@@ -930,7 +1053,10 @@ const SmartLinkMetrics: React.FC = () => {
           <div className="flex items-center space-x-4">
             {/* Filtro de período */}            <select
               value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
+              onChange={(e) => {
+                setSelectedPeriod(e.target.value);
+                setPeriodChanged(true);
+              }}
               className="bg-gray-800 border border-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value={PeriodType.WEEK}>Últimos 7 dias</option>
