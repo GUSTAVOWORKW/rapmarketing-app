@@ -616,7 +616,9 @@ const SmartLinkMetrics: React.FC = () => {
   const fetchUserItems = useCallback(async () => {
     try {
       if (!user?.id) {
-        throw new Error('Usuário não autenticado');
+        console.warn('⚠️ fetchUserItems chamado sem user.id, retornando lista vazia.');
+        setUserItems([]);
+        return;
       }
       
       // Buscar Smart Links
@@ -677,11 +679,12 @@ const SmartLinkMetrics: React.FC = () => {
       
       setUserItems(allItems);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Erro na fetchUserItems:', err);
-      throw err;
+      // Em caso de erro, registra e continua com lista vazia para não travar o loading geral
+      setUserItems([]);
     }
-  }, []);
+  }, [user?.id]);
   
   // ============================================================================
   // EFFECTS OTIMIZADOS
