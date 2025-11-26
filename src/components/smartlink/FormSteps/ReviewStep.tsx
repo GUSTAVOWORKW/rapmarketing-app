@@ -23,6 +23,18 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
   // Usar ref para controlar o último slug verificado (não causa re-render)
   const lastCheckedSlugRef = useRef<string>('');
   const checkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Cleanup ao desmontar
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (checkTimeoutRef.current) {
+        clearTimeout(checkTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Gera o slug a partir do nome do artista quando o componente é montado
   // ou quando o nome do artista muda, mas apenas se o slug ainda não foi definido pelo usuário
@@ -35,58 +47,65 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
 
   // Verificação de slug com debounce usando useEffect único
   useEffect(() => {
-    // Limpar timeout anterior
-    if (checkTimeoutRef.current) {
-      clearTimeout(checkTimeoutRef.current);
-    }
-
     const slug = state.slug;
     
     // Validações básicas
     if (!slug || slug.length < 3) {
       setSlugStatus('idle');
+      lastCheckedSlugRef.current = '';
       return;
     }
 
-    // Se já verificamos este slug, não verificar novamente
-    if (slug === lastCheckedSlugRef.current) {
+    // Se já verificamos este slug E temos um status válido, não verificar novamente
+    if (slug === lastCheckedSlugRef.current && slugStatus !== 'idle' && slugStatus !== 'checking') {
       return;
+    }
+
+    // Limpar timeout anterior
+    if (checkTimeoutRef.current) {
+      clearTimeout(checkTimeoutRef.current);
     }
 
     // Definir status como verificando
     setSlugStatus('checking');
 
-    // Debounce de 800ms
-    checkTimeoutRef.current = setTimeout(async () => {
+    // Função async para verificar
+    const checkSlug = async () => {
       try {
-        // Usar count ao invés de select para evitar erro 406
         const { count, error } = await supabase
           .from('smart_links')
           .select('*', { count: 'exact', head: true })
           .eq('slug', slug);
 
-        // Atualizar ref ANTES de setar status para evitar loop
+        // Verificar se ainda está montado e se o slug não mudou
+        if (!isMountedRef.current || slug !== state.slug) {
+          return;
+        }
+
+        // Atualizar ref
         lastCheckedSlugRef.current = slug;
 
         if (error) {
-          // Silenciar erros de permissão/RLS - assumir disponível
           console.warn('Aviso ao verificar slug:', error.message);
-          setSlugStatus('available');
+          setSlugStatus('available'); // Em caso de erro, assumir disponível
           return;
         }
 
         if (count && count > 0) {
-          // Slug já existe
           setSlugStatus('taken');
         } else {
-          // Slug disponível
           setSlugStatus('available');
         }
       } catch (error) {
         console.error('Erro ao verificar slug:', error);
-        setSlugStatus('idle');
+        if (isMountedRef.current) {
+          setSlugStatus('available'); // Em caso de erro, assumir disponível
+        }
       }
-    }, 800);
+    };
+
+    // Debounce de 500ms
+    checkTimeoutRef.current = setTimeout(checkSlug, 500);
 
     // Cleanup
     return () => {
@@ -94,7 +113,7 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
         clearTimeout(checkTimeoutRef.current);
       }
     };
-  }, [state.slug]); // Apenas state.slug como dependência
+  }, [state.slug, slugStatus]); // Adicionar slugStatus para re-verificar se necessário
 
 
   // Monta o link final do Smart Link
