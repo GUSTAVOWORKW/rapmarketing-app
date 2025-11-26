@@ -26,9 +26,9 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
   }, [state.artistName, state.slug, generateSlug, updateField]);
 
 
-  // Monta o link final do Smart Link (localhost em dev)
+  // Monta o link final do Smart Link
   const smartLinkUrl = state.slug
-    ? `http://localhost:3000/sl/${state.slug}`
+    ? `${window.location.origin}/${state.slug}`
     : 'Seu link será gerado após salvar';
 
   // Renderização das redes sociais conectadas
@@ -70,7 +70,7 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8 flex flex-col items-center">
           <span className="text-sm text-gray-500 mb-2">URL do seu Smart Link</span>
           <div className="flex items-center space-x-2">
-            <span className="text-gray-500">localhost:3000/sl/</span>
+            <span className="text-gray-500">rapmarketing.link/</span>
             <input
               type="text"
               value={state.slug}

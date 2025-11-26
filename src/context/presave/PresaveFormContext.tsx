@@ -226,12 +226,19 @@ const presaveFormReducer = (state: PresaveFormState, action: any): PresaveFormSt
 // Contexto
 const PresaveFormContext = createContext<PresaveFormContextValue | null>(null);
 
-// Storage key
-const STORAGE_KEY = 'presave_form_draft_v2';
+// Storage key - v3 para forçar limpeza de estados bugados
+const STORAGE_KEY = 'presave_form_draft_v3';
 
 // Provider
 export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(presaveFormReducer, initialState);
+  
+  // Limpar localStorage antigo na primeira execução
+  useEffect(() => {
+    localStorage.removeItem('presave_form_draft_v1');
+    localStorage.removeItem('presave_form_draft_v2');
+  }, []);
+
   // Auto-save no localStorage com debounce
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -239,8 +246,11 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
         const draftData = {
           ...state,
           lastSavedAt: new Date().toISOString(),
-          // Não salvar File objects
-          artworkFile: null
+          // Não salvar File objects e estados temporários
+          artworkFile: null,
+          isSubmitting: false,
+          isLoadingData: false,
+          isUploadingArtwork: false
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
       } catch (error) {
@@ -255,6 +265,10 @@ export const PresaveFormProvider: React.FC<{ children: React.ReactNode }> = ({ c
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const data = JSON.parse(saved);
+        // Resetar estados de loading/submitting que não devem persistir
+        data.isSubmitting = false;
+        data.isLoadingData = false;
+        data.isUploadingArtwork = false;
         dispatch({ type: ACTIONS.LOAD_DRAFT, data });
       }
     } catch (error) {

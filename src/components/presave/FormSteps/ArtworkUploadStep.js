@@ -14,40 +14,6 @@ const ArtworkUploadStep = ({ userId }) => {
   });
 
   const [dragActive, setDragActive] = useState(false);
-  // Upload para Supabase
-  const uploadToSupabase = async (file) => {
-    try {
-      const timestamp = Date.now();
-      // CORREÇÃO: Usar estrutura de pasta conforme política RLS
-      // Política espera: (storage.foldername(name))[1] = (auth.uid())::text
-      const fileName = `${userId}/${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      
-      console.log('📁 Uploading file:', fileName);
-      
-      const { error } = await supabase.storage
-        .from('presave-artworks')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error('Erro no upload Supabase:', error);
-        throw new Error('Erro ao fazer upload para o Supabase');
-      }
-
-      // Obter URL pública
-      const { data: { publicUrl } } = supabase.storage
-        .from('presave-artworks')
-        .getPublicUrl(fileName);
-
-      console.log('✅ Upload realizado com sucesso:', publicUrl);
-      return publicUrl;
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      throw error;
-    }
-  };
 
   // Handle file selection
   const handleFileSelect = useCallback(async (files) => {
@@ -56,68 +22,101 @@ const ArtworkUploadStep = ({ userId }) => {
 
     // Validação básica
     if (!file.type.startsWith('image/')) {
-      setUploadState(prev => ({ ...prev, error: 'Arquivo deve ser uma imagem' }));
+      setUploadState(prev => ({ ...prev, error: 'Arquivo deve ser uma imagem', isUploading: false }));
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setUploadState(prev => ({ ...prev, error: 'Arquivo muito grande (max 5MB)' }));
+      setUploadState(prev => ({ ...prev, error: 'Arquivo muito grande (max 5MB)', isUploading: false }));
       return;
     }
 
-    try {
-      setUploadState(prev => ({ ...prev, error: null, isUploading: true, progress: 0 }));
+    // Definir estado de upload
+    setUploadState(prev => ({ ...prev, error: null, isUploading: true, progress: 0 }));
 
-      // Criar preview local
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const preview = e.target.result;
-        setUploadState(prev => ({ ...prev, preview, progress: 25 }));
+    // Função de upload para Supabase com timeout
+    const uploadToSupabase = async (fileToUpload) => {
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Upload timeout - operação demorou muito')), 30000);
+      });
+      
+      const uploadPromise = (async () => {
+        const timestamp = Date.now();
+        const fileName = `${userId}/${timestamp}_${fileToUpload.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        
+        console.log('📁 Uploading file:', fileName);
+        
+        const { error } = await supabase.storage
+          .from('presave-artworks')
+          .upload(fileName, fileToUpload, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
-        try {
-          // Upload para Supabase
-          setUploadState(prev => ({ ...prev, progress: 50 }));
-          const publicUrl = await uploadToSupabase(file);
-          
-          setUploadState(prev => ({ ...prev, progress: 100 }));          // Atualizar estado do formulário
-          setArtwork(file, publicUrl, userId);
-
-          setUploadState(prev => ({ 
-            ...prev, 
-            isUploading: false, 
-            progress: 0
-          }));
-
-          console.log('Upload concluído:', publicUrl);
-
-        } catch (uploadError) {
-          console.error('Erro no upload, usando preview local:', uploadError);
-            // Fallback: usar preview local
-          setArtwork(file, preview, userId);
-          
-          setUploadState(prev => ({ 
-            ...prev, 
-            isUploading: false, 
-            progress: 0,
-            error: 'Upload falhou, usando preview local'
-          }));
+        if (error) {
+          console.error('Erro no upload Supabase:', error);
+          throw new Error('Erro ao fazer upload para o Supabase');
         }
-      };
 
-      reader.onerror = () => {
+        const { data: { publicUrl } } = supabase.storage
+          .from('presave-artworks')
+          .getPublicUrl(fileName);
+
+        console.log('✅ Upload realizado com sucesso:', publicUrl);
+        return publicUrl;
+      })();
+      
+      return Promise.race([uploadPromise, timeoutPromise]);
+    };
+
+    try {
+      // Criar preview local primeiro
+      const preview = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => reject(new Error('Erro ao ler arquivo'));
+        reader.readAsDataURL(file);
+      });
+
+      setUploadState(prev => ({ ...prev, preview, progress: 25 }));
+
+      // Tentar upload para Supabase
+      try {
+        setUploadState(prev => ({ ...prev, progress: 50 }));
+        const publicUrl = await uploadToSupabase(file);
+        
+        setUploadState(prev => ({ ...prev, progress: 100 }));
+        
+        // Atualizar estado do formulário com URL do Supabase
+        setArtwork(file, publicUrl, userId);
+        
         setUploadState(prev => ({ 
           ...prev, 
           isUploading: false, 
-          error: 'Erro ao ler arquivo'
+          progress: 0
         }));
-      };      reader.readAsDataURL(file);
 
+        console.log('✅ Upload concluído:', publicUrl);
+      } catch (uploadError) {
+        console.error('⚠️ Erro no upload Supabase, usando preview local:', uploadError);
+        
+        // Fallback: usar preview local
+        setArtwork(file, preview, userId);
+        
+        setUploadState(prev => ({ 
+          ...prev, 
+          isUploading: false, 
+          progress: 0,
+          error: 'Upload falhou, usando preview local'
+        }));
+      }
     } catch (error) {
-      console.error('Erro geral:', error);
+      console.error('❌ Erro geral:', error);
       setUploadState(prev => ({ 
         ...prev, 
         isUploading: false, 
-        error: 'Erro inesperado'
+        progress: 0,
+        error: error.message || 'Erro inesperado'
       }));
     }
   }, [userId, setArtwork]);

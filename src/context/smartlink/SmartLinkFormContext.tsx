@@ -313,8 +313,8 @@ const loadUserAvatar = async (user: any) => {
   }
 };
 
-// Chave do localStorage
-const STORAGE_KEY = 'smartlink_form_draft_v1';
+// Chave do localStorage - v2 para forçar limpeza de estados bugados
+const STORAGE_KEY = 'smartlink_form_draft_v2';
 
 // Provider do contexto
 export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -323,6 +323,12 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
     currentSmartLinkId: `smartlink-${Date.now()}`, // Usar timestamp para id único
   });
   const { user } = useAuth() as { user: any };
+
+  // Limpar localStorage antigo na primeira execução
+  useEffect(() => {
+    // Remover versão antiga do localStorage
+    localStorage.removeItem('smartlink_form_draft_v1');
+  }, []);
 
   // Carregar draft do localStorage na inicialização
   useEffect(() => {
@@ -343,6 +349,10 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
         data.avatarUrl = sanitizeUrl(data.avatarUrl, initialState.avatarUrl);
         data.coverImageUrl = sanitizeUrl(data.coverImageUrl, initialState.coverImageUrl);
 
+        // Resetar estados de loading/saving que não devem persistir
+        data.isSaving = false;
+        data.isLoading = false;
+
         dispatch({ type: ACTIONS.LOAD_DRAFT, payload: data });
       }
     } catch (error) {
@@ -354,12 +364,14 @@ export const SmartLinkFormProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       try {
-        // Não salvar File objects (não serializáveis)
+        // Não salvar File objects (não serializáveis) e estados temporários
         const draftData = {
           ...state,
           avatarFile: null,
           coverImageFile: null,
           faviconFile: null,
+          isSaving: false,
+          isLoading: false,
           lastSavedAt: new Date().toISOString(),
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(draftData));
