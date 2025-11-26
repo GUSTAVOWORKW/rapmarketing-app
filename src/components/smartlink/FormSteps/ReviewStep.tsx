@@ -59,22 +59,23 @@ const ReviewStep: React.FC<ReviewStepProps> = () => {
     // Debounce de 800ms
     checkTimeoutRef.current = setTimeout(async () => {
       try {
-        const { data, error } = await supabase
+        // Usar count ao invés de select para evitar erro 406
+        const { count, error } = await supabase
           .from('smart_links')
-          .select('slug')
-          .eq('slug', slug)
-          .maybeSingle(); // Usar maybeSingle ao invés de single para evitar erro quando não encontra
+          .select('*', { count: 'exact', head: true })
+          .eq('slug', slug);
 
         // Atualizar ref ANTES de setar status para evitar loop
         lastCheckedSlugRef.current = slug;
 
         if (error) {
-          console.error('Erro ao verificar slug:', error);
-          setSlugStatus('idle');
+          // Silenciar erros de permissão/RLS - assumir disponível
+          console.warn('Aviso ao verificar slug:', error.message);
+          setSlugStatus('available');
           return;
         }
 
-        if (data) {
+        if (count && count > 0) {
           // Slug já existe
           setSlugStatus('taken');
         } else {

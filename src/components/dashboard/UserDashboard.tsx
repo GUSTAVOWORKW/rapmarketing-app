@@ -317,19 +317,17 @@ const UserDashboard: React.FC = () => {
         ] = await Promise.all([
           supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId),
           supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-          supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count, click_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4),
-          supabase.from('smart_links').select('view_count, click_count').eq('user_id', userId)
+          supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4),
+          supabase.from('smart_links').select('view_count').eq('user_id', userId)
         ]);
 
         if (!cancelled) {
           // Calcular totais de métricas a partir dos smart_links
           let totalViews = 0;
-          let totalClicks = 0;
           
           if (allLinksForMetrics) {
             allLinksForMetrics.forEach((link: any) => {
               totalViews += link.view_count || 0;
-              totalClicks += link.click_count || 0;
             });
           }
 
@@ -337,7 +335,7 @@ const UserDashboard: React.FC = () => {
             smartLinks: smartLinksCount ?? 0,
             presaves: presavesCount ?? 0,
             totalViews,
-            totalClicks
+            totalClicks: 0 // Coluna click_count não existe na tabela
           });
 
           setRecentLinks(linksData || []);
