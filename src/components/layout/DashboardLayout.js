@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { FaUserCircle, FaCalendarAlt, FaChartBar, FaCog, FaSignOutAlt, FaSpotify, FaUserAlt, FaMusic } from 'react-icons/fa';
 import { supabase } from '../../services/supabase';
 import SpotifyFollowersCounter from '../dashboard/SpotifyFollowersCounter';
-import { useAuth } from '../../context/AuthContext'; // Importar o NOVO hook de contexto
+import { useAuth } from '../../context/AuthContext';
 import HeaderBar from '../Common/HeaderBar';
 import { spotifyTokenService } from '../../services/spotifyTokenService';
 
@@ -14,16 +14,39 @@ const DashboardLayout = ({ children }) => {
     const [activeSmartLink, setActiveSmartLink] = useState(null);
     const [showOnboardingCards, setShowOnboardingCards] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { user, profile, loading: authLoading, initializing, signOut } = useAuth(); // Obter user, profile, estados de loading e signOut do useAuth
+    const { user, profile, initializing, signOut } = useAuth();
 
-  const [topArtists, setTopArtists] = useState([]);
-  const [loadingTopArtists, setLoadingTopArtists] = useState(true);
-  const [topTracks, setTopTracks] = useState([]);
-  const [loadingTopTracks, setLoadingTopTracks] = useState(true);
-  // Flag simples para evitar chamadas repetidas ao Spotify quando sabemos que o usuário não tem conexão válida
-  const [spotifyPermanentlyUnavailable, setSpotifyPermanentlyUnavailable] = useState(false);
+    // Estados com cache do sessionStorage
+    const [topArtists, setTopArtists] = useState(() => {
+      try {
+        const cached = sessionStorage.getItem(`spotify_artists_${user?.id}`);
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    });
+    const [loadingTopArtists, setLoadingTopArtists] = useState(() => {
+      return !sessionStorage.getItem(`spotify_data_loaded_${user?.id}`);
+    });
+    const [topTracks, setTopTracks] = useState(() => {
+      try {
+        const cached = sessionStorage.getItem(`spotify_tracks_${user?.id}`);
+        return cached ? JSON.parse(cached) : [];
+      } catch { return []; }
+    });
+    const [loadingTopTracks, setLoadingTopTracks] = useState(() => {
+      return !sessionStorage.getItem(`spotify_data_loaded_${user?.id}`);
+    });
+    const [spotifyPermanentlyUnavailable, setSpotifyPermanentlyUnavailable] = useState(() => {
+      return sessionStorage.getItem(`spotify_unavailable_${user?.id}`) === 'true';
+    });
 
     const handleSignOut = async () => {
+        // Limpar cache ao sair
+        if (user?.id) {
+          sessionStorage.removeItem(`spotify_artists_${user.id}`);
+          sessionStorage.removeItem(`spotify_tracks_${user.id}`);
+          sessionStorage.removeItem(`spotify_data_loaded_${user.id}`);
+          sessionStorage.removeItem(`spotify_unavailable_${user.id}`);
+        }
         await signOut();
         navigate('/login');
     };
@@ -32,7 +55,7 @@ const DashboardLayout = ({ children }) => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    // A lógica de fetchSidebarData foi simplificada, pois o profile já vem do contexto
+    // Buscar SmartLink ativo para sidebar
     const fetchSmartLinkData = useCallback(async () => {
         if (!user?.id) {
             setActiveSmartLink(null);
@@ -48,105 +71,101 @@ const DashboardLayout = ({ children }) => {
                 .maybeSingle();
 
             if (smartLinkError) {
-                console.error("[DashboardLayout] Error fetching smart link for sidebar:", smartLinkError);
                 setActiveSmartLink(null);
             } else {
                 setActiveSmartLink(smartLinkData);
             }
         } catch (error) {
-            console.error('[DashboardLayout] Error fetching smart link data:', error);
             setActiveSmartLink(null);
         }
-    }, [user?.id]); // Dependência alterada para user.id para evitar loops
+    }, [user?.id]);
 
     useEffect(() => {
         fetchSmartLinkData();
     }, [fetchSmartLinkData]);
 
+    // Effect único para buscar dados do Spotify com cache
     useEffect(() => {
-      const fetchTopArtists = async () => {
-        if (!user?.id || spotifyPermanentlyUnavailable) {
+      let cancelled = false;
+
+      const fetchSpotifyData = async () => {
+        const userId = user?.id;
+        if (!userId) {
           setLoadingTopArtists(false);
-          setTopArtists([]);
+          setLoadingTopTracks(false);
           return;
         }
 
-        // Checa antes se existe conexão Spotify válida; se não houver, evita chamada na API
+        const cacheKey = `spotify_data_loaded_${userId}`;
+        
+        // Se já carregamos ou Spotify está indisponível, não recarrega
+        if (sessionStorage.getItem(cacheKey) || spotifyPermanentlyUnavailable) {
+          setLoadingTopArtists(false);
+          setLoadingTopTracks(false);
+          return;
+        }
+
+        // Verificar se tem conexão Spotify válida
         try {
-          const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(user.id);
+          const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
           if (!hasSpotify) {
             setSpotifyPermanentlyUnavailable(true);
+            sessionStorage.setItem(`spotify_unavailable_${userId}`, 'true');
             setLoadingTopArtists(false);
-            setTopArtists([]);
+            setLoadingTopTracks(false);
             return;
           }
-        } catch (checkError) {
+        } catch {
           setSpotifyPermanentlyUnavailable(true);
+          sessionStorage.setItem(`spotify_unavailable_${userId}`, 'true');
           setLoadingTopArtists(false);
-          setTopArtists([]);
+          setLoadingTopTracks(false);
           return;
         }
 
         setLoadingTopArtists(true);
-        try {
-          const response = await spotifyTokenService.makeSpotifyRequest(user.id, '/me/top/artists?limit=5&time_range=long_term');
-          if (response.ok) {
-            const data = await response.json();
-            setTopArtists(data.items);
-          } else {
-            setTopArtists([]);
-          }
-        } catch (error) {
-          setSpotifyPermanentlyUnavailable(true);
-          setTopArtists([]);
-        } finally {
-          setLoadingTopArtists(false);
-        }
-      };
-      fetchTopArtists();
-    }, [user?.id, spotifyPermanentlyUnavailable]); // Dependência alterada para user.id
-
-    useEffect(() => {
-      const fetchTopTracks = async () => {
-        if (!user?.id || spotifyPermanentlyUnavailable) {
-          setLoadingTopTracks(false);
-          setTopTracks([]);
-          return;
-        }
-
-        // Checa antes se existe conexão Spotify válida; se não houver, evita chamada na API
-        try {
-          const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(user.id);
-          if (!hasSpotify) {
-            setSpotifyPermanentlyUnavailable(true);
-            setLoadingTopTracks(false);
-            setTopTracks([]);
-            return;
-          }
-        } catch (checkError) {
-          setSpotifyPermanentlyUnavailable(true);
-          setLoadingTopTracks(false);
-          setTopTracks([]);
-          return;
-        }
-
         setLoadingTopTracks(true);
+
         try {
-          const response = await spotifyTokenService.makeSpotifyRequest(user.id, '/me/top/tracks?limit=5&time_range=long_term');
-          if (response.ok) {
-            const data = await response.json();
-            setTopTracks(data.items);
-          } else {
-            setTopTracks([]);
+          // Buscar artistas e tracks em paralelo
+          const [artistsResponse, tracksResponse] = await Promise.all([
+            spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
+            spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term')
+          ]);
+
+          if (!cancelled) {
+            if (artistsResponse.ok) {
+              const artistsData = await artistsResponse.json();
+              setTopArtists(artistsData.items || []);
+              sessionStorage.setItem(`spotify_artists_${userId}`, JSON.stringify(artistsData.items || []));
+            }
+
+            if (tracksResponse.ok) {
+              const tracksData = await tracksResponse.json();
+              setTopTracks(tracksData.items || []);
+              sessionStorage.setItem(`spotify_tracks_${userId}`, JSON.stringify(tracksData.items || []));
+            }
+
+            sessionStorage.setItem(cacheKey, 'true');
           }
         } catch (error) {
-          setSpotifyPermanentlyUnavailable(true);
-          setTopTracks([]);
+          if (!cancelled) {
+            setSpotifyPermanentlyUnavailable(true);
+            sessionStorage.setItem(`spotify_unavailable_${userId}`, 'true');
+          }
         } finally {
-          setLoadingTopTracks(false);
+          if (!cancelled) {
+            setLoadingTopArtists(false);
+            setLoadingTopTracks(false);
+          }
         }
       };
-      fetchTopTracks();
+
+      fetchSpotifyData();
+
+      return () => {
+        cancelled = true;
+      };
     }, [user?.id, spotifyPermanentlyUnavailable]);
 
     useEffect(() => {
@@ -164,16 +183,16 @@ const DashboardLayout = ({ children }) => {
             localStorage.setItem('dashboardOnboardedV2', 'true');
         }
     };
+    
     const handleNavigateToMetrics = () => {
         navigate('/dashboard/metrics');
     };
     
-  const handleNavigateToDashboardHome = () => {
-    navigate('/dashboard');
-  };
+    const handleNavigateToDashboardHome = () => {
+      navigate('/dashboard');
+    };
 
-  // Enquanto o contexto de autenticação ainda está inicializando, mostrar apenas uma vez a tela de carregamento global.
-  // Depois que `initializing` virar false, o painel não deve mais travar em estado de loading ao trocar de aba.
+  // Enquanto o contexto de autenticação ainda está inicializando
   if (initializing) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">

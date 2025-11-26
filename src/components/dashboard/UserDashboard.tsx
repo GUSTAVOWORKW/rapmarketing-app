@@ -1,22 +1,39 @@
 // src/components/dashboard/UserDashboard.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import { useUserSmartLink } from '../../hooks/useUserSmartLinks'; 
 import { useSmartLink } from '../../hooks/useSmartLink';
 import { UserProfile, PlatformLink } from '../../types';
 import { FaTrash, FaLink, FaMusic, FaThList, FaUserCircle } from 'react-icons/fa';
-import { useAuth } from '../../context/AuthContext'; // Importar o novo useAuth
+import { useAuth } from '../../context/AuthContext';
 
 const UserDashboard: React.FC = () => {
-  const { user, profile, initializing, loading: authLoading } = useAuth(); // Obter user, profile e estados de loading do contexto
+  const { user, profile, initializing } = useAuth();
 
-  const [activePresavesCount, setActivePresavesCount] = useState<number | null>(null);
-  const [loadingPresavesCount, setLoadingPresavesCount] = useState(true);
-  // Estado para contagem de Smart Links (simplificado por enquanto)
-  const [smartLinksCount, setSmartLinksCount] = useState<number>(0);
-  // Estado para contagem de Smart Bios (placeholder)
-  const [smartBiosCount, setSmartBiosCount] = useState<number>(0);
-  const [loadingSmartLinksCount, setLoadingSmartLinksCount] = useState(true); // Novo estado de loading
+  // Estados com cache de sessionStorage para evitar re-fetch ao trocar abas
+  const [activePresavesCount, setActivePresavesCount] = useState<number | null>(() => {
+    try {
+      const cached = sessionStorage.getItem(`dashboard_presaves_${user?.id}`);
+      return cached !== null ? parseInt(cached, 10) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [smartLinksCount, setSmartLinksCount] = useState<number>(() => {
+    try {
+      const cached = sessionStorage.getItem(`dashboard_smartlinks_${user?.id}`);
+      return cached !== null ? parseInt(cached, 10) : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [smartBiosCount] = useState<number>(0);
+  
+  // Loading inicial baseado no cache
+  const [loadingData, setLoadingData] = useState<boolean>(() => {
+    const cached = sessionStorage.getItem(`dashboard_loaded_${user?.id}`);
+    return !cached;
+  });
 
   const { 
     smartLink, 
@@ -27,75 +44,84 @@ const UserDashboard: React.FC = () => {
   
   const { deleteSmartLink } = useSmartLink(null); 
 
-  
-
-  // Novo useEffect para buscar contagem de pré-saves ativos
+  // Effect único para carregar dados do dashboard com cache
   useEffect(() => {
-    const fetchActivePresaves = async () => {
-      if (!user?.id) {
-        setLoadingPresavesCount(false);
-        setActivePresavesCount(0);
+    let cancelled = false;
+
+    const fetchDashboardData = async () => {
+      const userId = user?.id;
+      if (!userId) {
+        setLoadingData(false);
         return;
       }
-      setLoadingPresavesCount(true);
+
+      const cacheKey = `dashboard_loaded_${userId}`;
+      
+      // Se já carregamos, não recarrega
+      if (sessionStorage.getItem(cacheKey)) {
+        setLoadingData(false);
+        return;
+      }
+
+      setLoadingData(true);
+
       try {
+        // Buscar presaves ativos
         const currentDate = new Date().toISOString();
-        const { count, error } = await supabase
-          .from('presaves') 
+        const { count: presavesCount } = await supabase
+          .from('presaves')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id) 
-          .gt('release_date', currentDate); 
+          .eq('user_id', userId)
+          .gt('release_date', currentDate);
 
-        if (error) throw error;
-        setActivePresavesCount(count ?? 0);
-      } catch (error) {
-        console.error('Error fetching active presaves count:', error);
-        setActivePresavesCount(0); 
-      } finally {
-        setLoadingPresavesCount(false);
-      }
-    };
-
-    fetchActivePresaves();
-  }, [user?.id]);
-
-  // useEffect para buscar contagem de todos os smart links do usuário
-  useEffect(() => {
-    const fetchSmartLinksCount = async () => {
-      if (!user?.id) {
-        setLoadingSmartLinksCount(false);
-        setSmartLinksCount(0);
-        return;
-      }
-      setLoadingSmartLinksCount(true);
-      try {
-        const { count, error } = await supabase
+        // Buscar smart links count
+        const { count: linksCount } = await supabase
           .from('smart_links')
           .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id);
+          .eq('user_id', userId);
 
-        if (error) throw error;
-        setSmartLinksCount(count ?? 0);
+        if (!cancelled) {
+          const presaves = presavesCount ?? 0;
+          const links = linksCount ?? 0;
+          
+          setActivePresavesCount(presaves);
+          setSmartLinksCount(links);
+          
+          // Salvar no cache
+          sessionStorage.setItem(`dashboard_presaves_${userId}`, String(presaves));
+          sessionStorage.setItem(`dashboard_smartlinks_${userId}`, String(links));
+          sessionStorage.setItem(cacheKey, 'true');
+        }
       } catch (error) {
-        console.error('Error fetching smart links count:', error);
-        setSmartLinksCount(0);
+        console.error('Error fetching dashboard data:', error);
+        if (!cancelled) {
+          setActivePresavesCount(0);
+          setSmartLinksCount(0);
+        }
       } finally {
-        setLoadingSmartLinksCount(false);
+        if (!cancelled) {
+          setLoadingData(false);
+        }
       }
     };
 
-    fetchSmartLinksCount();
-    // Para Smart Bios, manteremos 0 por enquanto e seu loading como false
-    setSmartBiosCount(0); 
-  }, [user?.id]);
+    if (!initializing && user?.id) {
+      fetchDashboardData();
+    } else if (!initializing) {
+      setLoadingData(false);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, initializing]);
 
 
   const handleDeleteLink = async () => {
     if (smartLink && smartLink.id && window.confirm('Tem certeza que deseja excluir seu Smart Link?')) {
       const success = await deleteSmartLink(smartLink.id);
       if (success) {
-        clearUserSmartLinkState(); // Update UI by clearing the link
-        // Optionally, show a success notification
+        clearUserSmartLinkState();
       } else {
         alert("Falha ao excluir o link.");
       }
@@ -106,23 +132,8 @@ const UserDashboard: React.FC = () => {
     ? `${window.location.origin}/${smartLink.slug}` 
     : null;
 
-  // Timeout de segurança para evitar loading infinito
-  const [forceShow, setForceShow] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) {
-        console.warn('[UserDashboard] Loading demorou muito, forçando exibição.');
-        setForceShow(true);
-      }
-    }, 5000); // 5 segundos de timeout
-    return () => clearTimeout(timer);
-  }, [initializing, authLoading, loadingLink, loadingPresavesCount, loadingSmartLinksCount]);
-
-  // Mostrar loading global do dashboard apenas enquanto autenticação OU carregamentos locais ainda estão em andamento.
-  // Quando a autenticação terminar (initializing === false) e algum dado específico falhar,
-  // os efeitos acima já caem em fallback seguro (contagens = 0), evitando loop infinito de loading.
-  // Se já temos profile, não bloqueamos por authLoading (background update)
-  if (!forceShow && (initializing || (authLoading && !profile) || loadingLink || loadingPresavesCount || loadingSmartLinksCount)) {
+  // Mostrar loading apenas se ainda estamos inicializando ou carregando dados
+  if (initializing || loadingData) {
     return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
   }
 
