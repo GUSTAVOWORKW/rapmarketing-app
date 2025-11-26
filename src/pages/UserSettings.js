@@ -21,7 +21,7 @@ const socialPlatforms = [
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const { user, profile, initializing, refreshProfile, signInWithSpotify } = useAuth(); // Usar o novo useAuth
+    const { user, profile, initializing, refreshProfile } = useAuth(); // Usar o novo useAuth
     const [socialLinks, setSocialLinks] = useState({});
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null); 
@@ -201,12 +201,29 @@ const UserSettings = () => {
                     </div>
                 ) : (
                     <button
-                        onClick={() => {
+                        onClick={async () => {
                             if (!user) {
                                 setError('Usuário não autenticado.');
                                 return;
                             }
-                            signInWithSpotify();
+
+                            try {
+                                // Iniciar fluxo de login com Spotify via Supabase
+                                const { error } = await supabase.auth.signInWithOAuth({
+                                    provider: 'spotify',
+                                    options: {
+                                        redirectTo: `${window.location.origin}/auth/callback`,
+                                    },
+                                });
+
+                                if (error) {
+                                    console.error('Erro ao conectar com Spotify:', error);
+                                    setError('Falha ao iniciar conexão com o Spotify. Tente novamente.');
+                                }
+                            } catch (authError) {
+                                console.error('Erro inesperado ao conectar com Spotify:', authError);
+                                setError('Erro inesperado ao conectar com o Spotify.');
+                            }
                         }}
                         className="flex items-center px-6 py-3 bg-[#1db954] text-white font-bold rounded-lg shadow hover:bg-[#169c46] transition"
                     >

@@ -8,7 +8,7 @@ import { FaTrash, FaLink, FaMusic, FaThList, FaUserCircle } from 'react-icons/fa
 import { useAuth } from '../../context/AuthContext'; // Importar o novo useAuth
 
 const UserDashboard: React.FC = () => {
-  const { user, profile, loading: authLoading } = useAuth(); // Obter user, profile e loading do contexto
+  const { user, profile, initializing, loading: authLoading } = useAuth(); // Obter user, profile e estados de loading do contexto
 
   const [activePresavesCount, setActivePresavesCount] = useState<number | null>(null);
   const [loadingPresavesCount, setLoadingPresavesCount] = useState(true);
@@ -106,7 +106,10 @@ const UserDashboard: React.FC = () => {
     ? `${window.location.origin}/${smartLink.slug}` 
     : null;
 
-  if (authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) { // Adicionado loadingSmartLinksCount
+  // Mostrar loading global do dashboard apenas enquanto autenticação OU carregamentos locais ainda estão em andamento.
+  // Quando a autenticação terminar (initializing === false) e algum dado específico falhar,
+  // os efeitos acima já caem em fallback seguro (contagens = 0), evitando loop infinito de loading.
+  if (initializing || authLoading || loadingLink || loadingPresavesCount || loadingSmartLinksCount) {
     return <div className="flex justify-center items-center h-screen"><p>Carregando dados do dashboard...</p></div>;
   }
 
