@@ -116,7 +116,7 @@ interface ItemDetails {
 }
 
 const SmartLinkMetrics: React.FC = () => {
-  const { id: itemId } = useParams<{ id?: string }>();
+  const { linkId: itemId } = useParams<{ linkId?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('30d');
