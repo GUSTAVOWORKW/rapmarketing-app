@@ -308,6 +308,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
   // Ref para o AbortController
   const abortControllerRef = useRef<AbortController | null>(null);
+  // Ref para o ID da requisição atual (para evitar race conditions sem depender de AbortError)
+  const requestIdRef = useRef(0);
 
   const fetchMetrics = useCallback(async () => {
     // Cancelar request anterior se houver
@@ -315,13 +317,14 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       abortControllerRef.current.abort();
     }
     
-    // Criar novo controller
+    // Criar novo controller e ID
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
-    const signal = abortController.signal;
+    const currentRequestId = requestIdRef.current + 1;
+    requestIdRef.current = currentRequestId;
 
     if (!userId) {
-      if (isMountedRef.current && abortControllerRef.current === abortController) {
+      if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setLoading(false);
       }
       return;
@@ -332,33 +335,26 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       setError(null);
     }
 
-    // Timeout de segurança
-    const timeoutId = setTimeout(() => {
-      if (isMountedRef.current && abortControllerRef.current === abortController) {
-        console.warn('Metrics fetch timed out - forcing loading false');
-        setLoading(false);
-      }
-    }, 15000);
-
     try {
       const { start, end } = getDateRange(period);
 
       // Buscar contagem de smart_links do usuário
+      // Removido .abortSignal(signal) para evitar problemas com a biblioteca Supabase
       const { count: smartlinksCount, error: smartlinksError } = await supabase
         .from('smart_links')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .abortSignal(signal);
+        .eq('user_id', userId);
 
+      if (requestIdRef.current !== currentRequestId) return;
       if (smartlinksError) throw smartlinksError;
 
       // Buscar contagem de presaves do usuário
       const { count: presavesCount, error: presavesError } = await supabase
         .from('presaves')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId)
-        .abortSignal(signal);
+        .eq('user_id', userId);
 
+      if (requestIdRef.current !== currentRequestId) return;
       if (presavesError) throw presavesError;
 
       const totalSmartlinks = smartlinksCount || 0;
@@ -387,7 +383,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           hourly: [],
           weekdays: []
         };
-        if (isMountedRef.current) {
+        if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(emptyData);
           // Loading será tratado no finally
         }
@@ -402,12 +398,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         .gte('clicked_at', start)
         .lte('clicked_at', end)
         .order('clicked_at', { ascending: false })
-        .limit(10000)
-        .abortSignal(signal);
+        .limit(10000);
+
+      if (requestIdRef.current !== currentRequestId) return;
 
       if (!allClicksError && allClicksData) {
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
-        if (isMountedRef.current) {
+        if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(metricsData);
           // Loading será tratado no finally
         }
@@ -423,15 +420,17 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         .from('smart_links')
         .select('id')
         .eq('user_id', userId)
-        .limit(500)
-        .abortSignal(signal);
+        .limit(500);
+
+      if (requestIdRef.current !== currentRequestId) return;
 
       const { data: presaves } = await supabase
         .from('presaves')
         .select('id')
         .eq('user_id', userId)
-        .limit(500)
-        .abortSignal(signal);
+        .limit(500);
+
+      if (requestIdRef.current !== currentRequestId) return;
 
       const smartlinkIds = smartlinks?.map(s => s.id) || [];
       const presaveIds = presaves?.map(p => p.id) || [];
@@ -440,6 +439,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       let allPresaveClicks: any[] = [];
 
       for (let i = 0; i < smartlinkIds.length; i += BATCH_SIZE) {
+        if (requestIdRef.current !== currentRequestId) return;
         const batch = smartlinkIds.slice(i, i + BATCH_SIZE);
         if (batch.length === 0) continue;
         
@@ -448,13 +448,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           .select('*')
           .in('smartlink_id', batch)
           .gte('clicked_at', start)
-          .lte('clicked_at', end)
-          .abortSignal(signal);
+          .lte('clicked_at', end);
         
         if (clicks) allSmartlinkClicks = [...allSmartlinkClicks, ...clicks];
       }
 
       for (let i = 0; i < presaveIds.length; i += BATCH_SIZE) {
+        if (requestIdRef.current !== currentRequestId) return;
         const batch = presaveIds.slice(i, i + BATCH_SIZE);
         if (batch.length === 0) continue;
         
@@ -463,8 +463,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           .select('*')
           .in('presave_id', batch)
           .gte('clicked_at', start)
-          .lte('clicked_at', end)
-          .abortSignal(signal);
+          .lte('clicked_at', end);
         
         if (clicks) allPresaveClicks = [...allPresaveClicks, ...clicks];
       }
@@ -488,31 +487,22 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       ];
 
       const metricsData = processClicksToMetrics(allClicks, totalSmartlinks, totalPresaves);
-      if (isMountedRef.current) {
+      if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setData(metricsData);
       }
 
     } catch (err) {
-      // Verificar se foi abortado
-      if (signal.aborted) return;
-      if (err instanceof Error && err.name === 'AbortError') return;
+      // Se mudou o ID, ignora o erro pois é de uma requisição antiga
+      if (requestIdRef.current !== currentRequestId) return;
 
       console.error('Erro ao buscar métricas:', err);
       
-      // Se for erro 400 (Bad Request), provavelmente é um problema de requisição que não deve travar o loading
-      // Mas vamos logar para debug
-      if (typeof err === 'object' && err !== null && 'code' in err && (err as any).code === '400') {
-         console.warn('Erro 400 detectado, ignorando para evitar loading infinito');
-      }
-
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
       }
     } finally {
-      clearTimeout(timeoutId);
-      // Só atualiza o loading se este for o controller ATUAL
-      // Isso evita que requisições antigas cancelem o loading de requisições novas
-      if (isMountedRef.current && abortControllerRef.current === abortController) {
+      // Só atualiza o loading se este for o ID ATUAL
+      if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setLoading(false);
       }
     }

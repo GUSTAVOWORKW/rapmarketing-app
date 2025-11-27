@@ -251,6 +251,8 @@ const UserDashboard: React.FC = () => {
   // Refs para controle de requisições
   const dashboardAbortControllerRef = useRef<AbortController | null>(null);
   const spotifyAbortControllerRef = useRef<AbortController | null>(null);
+  const dashboardRequestIdRef = useRef(0);
+  const spotifyRequestIdRef = useRef(0);
 
   // Função para conectar com Spotify
   const handleConnectSpotify = async () => {
@@ -292,7 +294,8 @@ const UserDashboard: React.FC = () => {
 
     const abortController = new AbortController();
     spotifyAbortControllerRef.current = abortController;
-    const signal = abortController.signal;
+    const currentRequestId = spotifyRequestIdRef.current + 1;
+    spotifyRequestIdRef.current = currentRequestId;
 
     if (isMountedRef.current) {
       setLoadingSpotify(true);
@@ -302,15 +305,14 @@ const UserDashboard: React.FC = () => {
       const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
       
       if (!hasSpotify) {
-        if (isMountedRef.current && spotifyAbortControllerRef.current === abortController) {
+        if (isMountedRef.current && spotifyRequestIdRef.current === currentRequestId) {
           setSpotifyConnected(false);
           setLoadingSpotify(false);
         }
         return;
       }
 
-      // Se foi abortado durante a verificação
-      if (signal.aborted) return;
+      if (spotifyRequestIdRef.current !== currentRequestId) return;
 
       const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
         spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
@@ -318,7 +320,7 @@ const UserDashboard: React.FC = () => {
         spotifyTokenService.makeSpotifyRequest(userId, '/me')
       ]);
 
-      if (signal.aborted) return;
+      if (spotifyRequestIdRef.current !== currentRequestId) return;
 
       if (isMountedRef.current) {
         const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
@@ -331,11 +333,11 @@ const UserDashboard: React.FC = () => {
         setSpotifyConnected(true);
       }
     } catch (error) {
-      if (signal.aborted) return;
+      if (spotifyRequestIdRef.current !== currentRequestId) return;
       console.error('Erro ao buscar dados do Spotify:', error);
       if (isMountedRef.current) setSpotifyConnected(false);
     } finally {
-      if (isMountedRef.current && spotifyAbortControllerRef.current === abortController) {
+      if (isMountedRef.current && spotifyRequestIdRef.current === currentRequestId) {
         setLoadingSpotify(false);
       }
     }
@@ -353,35 +355,29 @@ const UserDashboard: React.FC = () => {
 
     const abortController = new AbortController();
     dashboardAbortControllerRef.current = abortController;
-    const signal = abortController.signal;
+    const currentRequestId = dashboardRequestIdRef.current + 1;
+    dashboardRequestIdRef.current = currentRequestId;
 
     if (isMountedRef.current) {
       setLoadingData(true);
     }
 
-    // Timeout de segurança para garantir que o loading não fique preso
-    const timeoutId = setTimeout(() => {
-      if (isMountedRef.current && dashboardAbortControllerRef.current === abortController) {
-        console.warn('Dashboard fetch timed out - forcing loading false');
-        setLoadingData(false);
-      }
-    }, 15000); // 15 segundos
-
     try {
       // Buscar dados em paralelo
+      // Removido .abortSignal(signal) para evitar problemas com a biblioteca Supabase
       const [
         { count: smartLinksCount },
         { count: presavesCount },
         { data: linksData },
         { data: allLinksForMetrics }
       ] = await Promise.all([
-        supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
-        supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
-        supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4).abortSignal(signal),
-        supabase.from('smart_links').select('view_count').eq('user_id', userId).abortSignal(signal)
+        supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+        supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+        supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4),
+        supabase.from('smart_links').select('view_count').eq('user_id', userId)
       ]);
 
-      if (signal.aborted) return;
+      if (dashboardRequestIdRef.current !== currentRequestId) return;
 
       if (isMountedRef.current) {
         let totalViews = 0;
@@ -403,12 +399,10 @@ const UserDashboard: React.FC = () => {
         setRecentLinks(linksData || []);
       }
     } catch (error) {
-      if (signal.aborted) return;
-      if (error instanceof Error && error.name === 'AbortError') return;
+      if (dashboardRequestIdRef.current !== currentRequestId) return;
       console.error('Error fetching dashboard data:', error);
     } finally {
-      clearTimeout(timeoutId);
-      if (isMountedRef.current && dashboardAbortControllerRef.current === abortController) {
+      if (isMountedRef.current && dashboardRequestIdRef.current === currentRequestId) {
         setLoadingData(false);
       }
     }
