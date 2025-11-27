@@ -9,7 +9,9 @@ interface PresaveFormState {
   
   // Template e design
   selectedTemplate: { id: string; name: string } | null;
+  templateName: string; // Nome editável do template
   templateBackgroundColor: string;
+  accentColor: string; // Cor de destaque para botões
     // Informações básicas
   artistName: string;
   trackName: string;
@@ -106,7 +108,10 @@ const initialState: PresaveFormState = {
   currentPresaveId: null,
   lastSavedAt: null,
   selectedTemplate: { id: 'holographic', name: 'Trap Future' },
-  templateBackgroundColor: '#000000',  artistName: '',
+  templateName: 'Trap Future', // Nome editável
+  templateBackgroundColor: '#000000',
+  accentColor: '#FFFFFF', // Cor de destaque
+  artistName: '',
   trackName: '',
   releaseDate: '',
   shareableSlug: '',

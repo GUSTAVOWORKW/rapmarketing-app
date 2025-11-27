@@ -109,12 +109,15 @@ const PresaveTemplateRenderer = ({
     trackName: presaveData.track_name,
     releaseDate: presaveData.release_date,
     artworkUrl: presaveData.artwork_url,
+    templateName: presaveData.template_name, // Nome editável do template
     platformLinks: platformLinks,
     socialLinks: socialLinks,
     isReleased: isReleased,
     onPlatformClick: onPlatformClick,
     // Props específicos para alguns templates
     templateBackgroundColor: presaveData.template_background_color,
+    backgroundColor: presaveData.template_background_color,
+    accentColor: presaveData.accent_color || '#FFFFFF',
     isMobilePreview: false, // Não é preview, é a página real
     // Mapeamento para compatibilidade com props legadas
     streamingLinks: platformLinks,

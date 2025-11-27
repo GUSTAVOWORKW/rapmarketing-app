@@ -47,6 +47,9 @@ export interface PresaveTemplateProps {
   trackName: string;
   releaseDate: string;
   artworkUrl: string;
+  
+  // Nome editável do template (aparece no header)
+  templateName?: string;
 
   // Links estruturados (arrays padronizados)
   platformLinks: PlatformLink[];
@@ -59,6 +62,7 @@ export interface PresaveTemplateProps {
   
   // Customização visual
   backgroundColor?: string;
+  accentColor?: string;
   customColors?: CustomColors;
   
   // Event handlers

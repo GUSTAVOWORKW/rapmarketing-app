@@ -55,6 +55,8 @@ const BasicInfoStep = ({ errors = {} }) => {
   const handleTemplateChange = (templateId) => {
     const template = templates.find(t => t.id === templateId);
     actions.updateField('selectedTemplate', template);
+    // Atualizar o nome editável quando trocar de template
+    actions.updateField('templateName', template.name);
   };
 
   return (
@@ -241,29 +243,74 @@ const BasicInfoStep = ({ errors = {} }) => {
             <div className="bg-gray-50 rounded-xl p-4 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
                 <FaPaintBrush className="mr-2 text-blue-500" />
-                Cor de Destaque
+                Personalização do Template
               </h3>
-              <div className="flex items-center space-x-3">
+              
+              {/* Nome do Template Editável */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Nome do Template (aparece na página)
+                </label>
                 <input
-                  type="color"
-                  value={state.templateBackgroundColor}
-                  onChange={(e) => handleFieldChange('templateBackgroundColor', e.target.value)}
-                  className="w-12 h-12 border-2 border-gray-300 rounded-lg cursor-pointer shadow-sm"
+                  type="text"
+                  value={state.templateName || state.selectedTemplate?.name || ''}
+                  onChange={(e) => handleFieldChange('templateName', e.target.value)}
+                  placeholder="Ex: Noite Carioca"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  maxLength={50}
                 />
-                <div className="flex-1 max-w-xs">
-                  <input
-                    type="text"
-                    value={state.templateBackgroundColor}
-                    onChange={(e) => handleFieldChange('templateBackgroundColor', e.target.value)}
-                    placeholder="#000000"
-                    className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono"
-                    pattern="^#[0-9A-Fa-f]{6}$"
-                  />
+                <p className="text-gray-500 text-xs mt-1">
+                  Este nome aparecerá no cabeçalho do seu pré-save
+                </p>
+              </div>
+              
+              {/* Cores */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Cor de Fundo/Destaque */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Cor Principal
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={state.templateBackgroundColor}
+                      onChange={(e) => handleFieldChange('templateBackgroundColor', e.target.value)}
+                      className="w-12 h-12 border-2 border-gray-300 rounded-lg cursor-pointer shadow-sm"
+                    />
+                    <input
+                      type="text"
+                      value={state.templateBackgroundColor}
+                      onChange={(e) => handleFieldChange('templateBackgroundColor', e.target.value)}
+                      placeholder="#000000"
+                      className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono"
+                      pattern="^#[0-9A-Fa-f]{6}$"
+                    />
+                  </div>
                 </div>
-                <div 
-                  className="w-12 h-12 rounded-lg border-2 border-gray-300 shadow-sm flex-shrink-0" 
-                  style={{ backgroundColor: state.templateBackgroundColor }}
-                ></div>
+                
+                {/* Cor de Destaque (Accent) */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Cor dos Botões
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={state.accentColor || '#FFFFFF'}
+                      onChange={(e) => handleFieldChange('accentColor', e.target.value)}
+                      className="w-12 h-12 border-2 border-gray-300 rounded-lg cursor-pointer shadow-sm"
+                    />
+                    <input
+                      type="text"
+                      value={state.accentColor || '#FFFFFF'}
+                      onChange={(e) => handleFieldChange('accentColor', e.target.value)}
+                      placeholder="#FFFFFF"
+                      className="flex-1 px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-mono"
+                      pattern="^#[0-9A-Fa-f]{6}$"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}

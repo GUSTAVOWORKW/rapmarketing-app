@@ -15,6 +15,7 @@ const HolographicPresave: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName, // Nome editável do template
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
@@ -72,7 +73,7 @@ const HolographicPresave: React.FC<PresaveTemplateProps> = ({
         <div className="holo-header">
           <div className="trap-logo">
             <span className="dollar-icon">💰</span>
-            <h1 className="trap-title">TRAP FUTURE</h1>
+            <h1 className="trap-title">{templateName || 'TRAP FUTURE'}</h1>
             <span className="dollar-icon">💎</span>
           </div>
           <p className="trap-subtitle">MONEY MOVES PRESAVE</p>

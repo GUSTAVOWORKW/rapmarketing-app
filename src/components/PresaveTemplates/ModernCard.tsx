@@ -10,6 +10,7 @@ const ModernCard: React.FC<PresaveTemplateProps & { id?: string }> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName,
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
@@ -150,7 +151,7 @@ const ModernCard: React.FC<PresaveTemplateProps & { id?: string }> = ({
 
         {/* Call to Action - "Tá Pronto pro Hit?" */}
         <div className={styles.callToAction}>
-          <h3 className={styles.ctaTitle}>TÁ PRONTO PRO HIT?</h3>
+          <h3 className={styles.ctaTitle}>{templateName || 'TÁ PRONTO PRO HIT?'}</h3>
           <p className={styles.ctaSubtitle}>
             {isReleased ? 'O som já tá rolando!' : 'Garante já o seu pré-save!'}
           </p>

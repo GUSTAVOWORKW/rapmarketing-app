@@ -9,12 +9,14 @@ const NoiteCariocaPresave: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName, // Nome editável do template
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
   backgroundColor,
+  accentColor,
   customColors,
   onPlatformClick,
   // Compatibilidade com props legadas
@@ -96,7 +98,7 @@ const NoiteCariocaPresave: React.FC<PresaveTemplateProps> = ({
         {/* Header Cinematográfico */}
         <div className={styles.cinematicHeader}>
           <div className={styles.brandArea}>
-            <div className={styles.templateLabel}>NOITE CARIOCA</div>
+            <div className={styles.templateLabel}>{templateName || 'NOITE CARIOCA'}</div>
             <div className={styles.subtitle}>A ambição, a rua e a melancolia</div>
           </div>
         </div>

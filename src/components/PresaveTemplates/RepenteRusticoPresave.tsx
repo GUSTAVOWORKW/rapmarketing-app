@@ -9,12 +9,14 @@ const RepenteRusticoPresave: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName, // Nome editável do template
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
   isMobilePreview = false,
   isReleased = false,
   backgroundColor,
+  accentColor: propsAccentColor,
   customColors,
   onPlatformClick,
   // Compatibilidade com props legadas
@@ -93,7 +95,7 @@ const RepenteRusticoPresave: React.FC<PresaveTemplateProps> = ({
         <div className={styles.cordelHeader}>
           <div className={styles.xilogravuraIcon}>🌵</div>
           <div className={styles.headerText}>
-            <div className={styles.templateLabel}>REPENTE RÚSTICO</div>
+            <div className={styles.templateLabel}>{templateName || 'REPENTE RÚSTICO'}</div>
             <div className={styles.subtitle}>A poesia da rua com a força do sertão</div>
           </div>
         </div>

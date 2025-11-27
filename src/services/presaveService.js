@@ -91,11 +91,13 @@ export const savePresave = async (formData, userId) => {
     const presaveData = {
       user_id: userId,
       template_id: formData.selectedTemplate?.id || 'default',
+      template_name: formData.templateName || formData.selectedTemplate?.name || 'Template Personalizado',
       artist_name: formData.artistName,
       track_name: formData.trackName,
       release_date: formData.releaseDate,
       artwork_url: formData.artworkUrl,
       template_background_color: formData.templateBackgroundColor || '#000000',
+      accent_color: formData.accentColor || '#FFFFFF',
       shareable_slug: shareableSlug,
       status: 'publicado',      // Dados estruturados como JSONB
       platforms: {

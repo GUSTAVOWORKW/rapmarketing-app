@@ -13,6 +13,7 @@ const NeonGlow: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName,
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
@@ -52,7 +53,7 @@ const NeonGlow: React.FC<PresaveTemplateProps> = ({
         {/* Header com logo neon */}
         <div className={styles.header}>
           <div className={styles.neonLogo}>
-            <span className={styles.neonText}>PRESAVE</span>
+            <span className={styles.neonText}>{templateName || 'PRESAVE'}</span>
             <div className={styles.neonUnderline}></div>
           </div>
         </div>

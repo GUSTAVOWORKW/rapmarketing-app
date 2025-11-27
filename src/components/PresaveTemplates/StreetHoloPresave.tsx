@@ -8,6 +8,7 @@ const StreetHoloPresave: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName,
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
@@ -95,7 +96,7 @@ const StreetHoloPresave: React.FC<PresaveTemplateProps> = ({
         {/* Header com Logo D17 */}
         <div className={styles.streetHeader}>
           <div className={styles.logoArea}>
-            <span className={styles.logoText}>RapMarketing</span>
+            <span className={styles.logoText}>{templateName || 'RapMarketing'}</span>
             <div className={styles.districtTag}>D17</div>
           </div>
           <div className={styles.statusIndicator}>

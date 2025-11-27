@@ -128,6 +128,9 @@ const transformFormDataToTemplateProps = (state) => {
     releaseDate: state.releaseDate,
     artworkUrl: state.artworkUrl || '/assets/defaults/default-cover.png',
     
+    // Template name (editável)
+    templateName: state.templateName || state.selectedTemplate?.name || 'Template',
+    
     // Structured links (standardized arrays)
     platformLinks,
     socialLinks,
@@ -139,11 +142,12 @@ const transformFormDataToTemplateProps = (state) => {
     
     // Visual customization
     backgroundColor: state.templateBackgroundColor || '#000000',
+    accentColor: state.accentColor || '#FFFFFF',
     customColors: {
       background: state.templateBackgroundColor || '#000000',
       primary: '#ffffff',
       secondary: 'rgba(255, 255, 255, 0.7)',
-      accent: '#ffffff',
+      accent: state.accentColor || '#FFFFFF',
     },
     
     // Event handlers

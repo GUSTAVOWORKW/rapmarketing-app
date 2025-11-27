@@ -12,6 +12,7 @@ const VintageVinyl: React.FC<PresaveTemplateProps> = ({
   trackName,
   releaseDate,
   artworkUrl,
+  templateName,
   platformLinks = [],
   socialLinks = [],
   contactLinks = [],
@@ -47,7 +48,7 @@ const VintageVinyl: React.FC<PresaveTemplateProps> = ({
       <div className={styles.content}>
         {/* Header vintage */}
         <div className={styles.header}>
-          <h1 className={styles.vintageTitle}>PRESAVE</h1>
+          <h1 className={styles.vintageTitle}>{templateName || 'PRESAVE'}</h1>
           <p className={styles.subtitle}>Vintage Music Experience</p>
         </div>
 
