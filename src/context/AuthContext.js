@@ -143,7 +143,8 @@ export const AuthProvider = ({ children }) => {
   }, []);  // Removido fetchProfile das dependências para evitar loop
 
   const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/choose-username' } });
+    // Redireciona para um callback neutro; decisão de rota ficará no App após carregar profile
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/auth/callback' } });
   };
 
   const signOut = async () => {

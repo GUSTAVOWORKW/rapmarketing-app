@@ -49,6 +49,11 @@ const ProtectedRoutes = () => {
     return <Navigate to="/login" replace />;
   }
 
+  // Se o profile ainda não foi carregado, evita decidir e mostra uma tela de loading leve
+  if (profile === null) {
+    return <LoadingScreen />;
+  }
+
   if (!profile?.username) {
     return <Navigate to="/choose-username" replace />;
   }
