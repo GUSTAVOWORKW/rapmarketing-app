@@ -218,7 +218,7 @@ const TipCard: React.FC<TipCardProps> = ({ title, description, icon, action, onC
 
 const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { user, profile, initializing } = useAuth();
+  const { user, profile, initializing, registerGlobalRefetch } = useAuth();
 
   // Estados principais
   const [stats, setStats] = useState({
@@ -435,11 +435,18 @@ const UserDashboard: React.FC = () => {
     fetchDashboardData();
     fetchSpotifyData();
 
-    // Listener removido: revalidação global via AuthContext
+    // Revalidação global via AuthContext: registra callbacks
+    const unregister = registerGlobalRefetch(() => {
+      if (user?.id) {
+        fetchDashboardData();
+        fetchSpotifyData();
+      }
+    });
 
     return () => {
       if (dashboardAbortControllerRef.current) dashboardAbortControllerRef.current.abort();
       if (spotifyAbortControllerRef.current) spotifyAbortControllerRef.current.abort();
+      unregister && unregister();
     };
   }, [user?.id, initializing]);
 
