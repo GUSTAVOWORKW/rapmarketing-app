@@ -306,7 +306,20 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     };
   }, []);
 
+  // Ref para o AbortController
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const fetchMetrics = useCallback(async () => {
+    // Cancelar request anterior se houver
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Criar novo controller
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    const signal = abortController.signal;
+
     if (!userId) {
       if (isMountedRef.current) {
         setLoading(false);
@@ -326,7 +339,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       const { count: smartlinksCount, error: smartlinksError } = await supabase
         .from('smart_links')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .abortSignal(signal);
 
       if (smartlinksError) throw smartlinksError;
 
@@ -334,7 +348,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       const { count: presavesCount, error: presavesError } = await supabase
         .from('presaves')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .abortSignal(signal);
 
       if (presavesError) throw presavesError;
 
@@ -379,7 +394,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         .gte('clicked_at', start)
         .lte('clicked_at', end)
         .order('clicked_at', { ascending: false })
-        .limit(10000);
+        .limit(10000)
+        .abortSignal(signal);
 
       if (!allClicksError && allClicksData) {
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
@@ -399,13 +415,15 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         .from('smart_links')
         .select('id')
         .eq('user_id', userId)
-        .limit(500);
+        .limit(500)
+        .abortSignal(signal);
 
       const { data: presaves } = await supabase
         .from('presaves')
         .select('id')
         .eq('user_id', userId)
-        .limit(500);
+        .limit(500)
+        .abortSignal(signal);
 
       const smartlinkIds = smartlinks?.map(s => s.id) || [];
       const presaveIds = presaves?.map(p => p.id) || [];
@@ -422,7 +440,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           .select('*')
           .in('smartlink_id', batch)
           .gte('clicked_at', start)
-          .lte('clicked_at', end);
+          .lte('clicked_at', end)
+          .abortSignal(signal);
         
         if (clicks) allSmartlinkClicks = [...allSmartlinkClicks, ...clicks];
       }
@@ -436,7 +455,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           .select('*')
           .in('presave_id', batch)
           .gte('clicked_at', start)
-          .lte('clicked_at', end);
+          .lte('clicked_at', end)
+          .abortSignal(signal);
         
         if (clicks) allPresaveClicks = [...allPresaveClicks, ...clicks];
       }
@@ -465,12 +485,16 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       }
 
     } catch (err) {
+      // Ignorar erro de abort
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       console.error('Erro ao buscar métricas:', err);
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
       }
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && (!abortControllerRef.current?.signal.aborted)) {
         setLoading(false);
       }
     }
@@ -479,9 +503,27 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   useEffect(() => {
     isMountedRef.current = true;
     fetchMetrics();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMetrics();
+      }
+    };
+
+    const handleFocus = () => {
+      fetchMetrics();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
     
     return () => {
       isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
     };
   }, [fetchMetrics]);
 

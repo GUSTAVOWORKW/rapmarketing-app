@@ -279,6 +279,8 @@ const UserDashboard: React.FC = () => {
   // Carregar dados do Spotify
   useEffect(() => {
     const userId = user?.id;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
 
     if (!userId || initializing) {
       if (!userId && !initializing) setLoadingSpotify(false);
@@ -307,6 +309,8 @@ const UserDashboard: React.FC = () => {
           spotifyTokenService.makeSpotifyRequest(userId, '/me')
         ]);
 
+        if (signal.aborted) return;
+
         if (isMountedRef.current) {
           const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
           const tracksData = tracksResponse.ok ? await tracksResponse.json() : { items: [] };
@@ -318,21 +322,36 @@ const UserDashboard: React.FC = () => {
           setSpotifyConnected(true);
         }
       } catch (error) {
+        if (signal.aborted) return;
         console.error('Erro ao buscar dados do Spotify:', error);
         if (isMountedRef.current) setSpotifyConnected(false);
       } finally {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && !signal.aborted) {
           setLoadingSpotify(false);
         }
       }
     };
 
     fetchSpotifyData();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchSpotifyData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      abortController.abort();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [user?.id, initializing]);
 
   // Carregar dados do dashboard
   useEffect(() => {
     const userId = user?.id;
+    const abortController = new AbortController();
+    const signal = abortController.signal;
 
     if (!userId || initializing) {
       if (!userId && !initializing) setLoadingData(false);
@@ -352,11 +371,13 @@ const UserDashboard: React.FC = () => {
           { data: linksData },
           { data: allLinksForMetrics }
         ] = await Promise.all([
-          supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-          supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId),
-          supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4),
-          supabase.from('smart_links').select('view_count').eq('user_id', userId)
+          supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
+          supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
+          supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4).abortSignal(signal),
+          supabase.from('smart_links').select('view_count').eq('user_id', userId).abortSignal(signal)
         ]);
+
+        if (signal.aborted) return;
 
         if (isMountedRef.current) {
           let totalViews = 0;
@@ -378,15 +399,28 @@ const UserDashboard: React.FC = () => {
           setRecentLinks(linksData || []);
         }
       } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') return;
         console.error('Error fetching dashboard data:', error);
       } finally {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && !signal.aborted) {
           setLoadingData(false);
         }
       }
     };
 
     fetchDashboardData();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDashboardData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      abortController.abort();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [user?.id, initializing]);
 
   // Cleanup na desmontagem
