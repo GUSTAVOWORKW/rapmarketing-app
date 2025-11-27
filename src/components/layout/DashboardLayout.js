@@ -14,7 +14,8 @@ const DashboardLayout = ({ children }) => {
     const [activeSmartLink, setActiveSmartLink] = useState(null);
     const [showOnboardingCards, setShowOnboardingCards] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const { user, profile, initializing, signOut } = useAuth();
+  const { user, profile, initializing, signOut } = useAuth();
+  const [isInitialMount, setIsInitialMount] = useState(true);
 
     // Estados com cache do sessionStorage
     const [topArtists, setTopArtists] = useState(() => {
@@ -192,8 +193,14 @@ const DashboardLayout = ({ children }) => {
       navigate('/dashboard');
     };
 
-  // Enquanto o contexto de autenticação ainda está inicializando
-  if (initializing) {
+  // Mostrar loading apenas no primeiro mount
+  useEffect(() => {
+    if (isInitialMount) {
+      setIsInitialMount(false);
+    }
+  }, [isInitialMount]);
+
+  if (initializing && isInitialMount) {
     return (
       <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
         <div className="text-2xl font-semibold text-[#3100ff]">Carregando Painel...</div>

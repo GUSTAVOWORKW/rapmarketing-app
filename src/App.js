@@ -35,8 +35,13 @@ const LoadingScreen = () => (
 // AGORA USA O CONTEXTO DIRETAMENTE
 const ProtectedRoutes = () => {
   const { session, profile, initializing } = useAuth();
+  const [isInitialMount, setIsInitialMount] = React.useState(true);
 
-  if (initializing) {
+  React.useEffect(() => {
+    if (isInitialMount) setIsInitialMount(false);
+  }, [isInitialMount]);
+
+  if (initializing && isInitialMount) {
     return <LoadingScreen />;
   }
 
@@ -71,8 +76,13 @@ function App() {
 // Componente separado para as rotas, para que possa acessar o AuthContext
 const AppRoutes = () => {
   const { session, initializing } = useAuth();
+  const [isInitialMount, setIsInitialMount] = React.useState(true);
 
-  if (initializing) {
+  React.useEffect(() => {
+    if (isInitialMount) setIsInitialMount(false);
+  }, [isInitialMount]);
+
+  if (initializing && isInitialMount) {
     return <LoadingScreen />;
   }
 
