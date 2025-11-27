@@ -230,6 +230,7 @@ const UserDashboard: React.FC = () => {
   const [recentLinks, setRecentLinks] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [showAllTips, setShowAllTips] = useState(false);
+  const loadingTimeoutRef = useRef<number | null>(null);
 
   // Estados do Spotify
   const [topArtists, setTopArtists] = useState<any[]>([]);
@@ -373,6 +374,15 @@ const UserDashboard: React.FC = () => {
 
     if (isMountedRef.current) {
       setLoadingData(true);
+      // Timeout defensivo para evitar loading infinito
+      if (loadingTimeoutRef.current) {
+        window.clearTimeout(loadingTimeoutRef.current);
+      }
+      loadingTimeoutRef.current = window.setTimeout(() => {
+        if (isMountedRef.current) {
+          setLoadingData(false);
+        }
+      }, 15000);
     }
 
     try {
@@ -417,6 +427,10 @@ const UserDashboard: React.FC = () => {
     } finally {
       if (isMountedRef.current && dashboardRequestIdRef.current === currentRequestId) {
         setLoadingData(false);
+        if (loadingTimeoutRef.current) {
+          window.clearTimeout(loadingTimeoutRef.current);
+          loadingTimeoutRef.current = null;
+        }
       }
     }
   };
@@ -447,6 +461,10 @@ const UserDashboard: React.FC = () => {
       if (dashboardAbortControllerRef.current) dashboardAbortControllerRef.current.abort();
       if (spotifyAbortControllerRef.current) spotifyAbortControllerRef.current.abort();
       unregister && unregister();
+      if (loadingTimeoutRef.current) {
+        window.clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
     };
   }, [user?.id, initializing]);
 
