@@ -285,7 +285,14 @@ const UserDashboard: React.FC = () => {
   // Carregar dados do Spotify
   const fetchSpotifyData = async () => {
     const userId = user?.id;
-    if (!userId) return;
+    // Se não houver usuário, garanta que não ficaremos presos em loading
+    if (!userId) {
+      if (isMountedRef.current) {
+        setLoadingSpotify(false);
+        setSpotifyConnected(false);
+      }
+      return;
+    }
 
     // Cancelar anterior
     if (spotifyAbortControllerRef.current) {
@@ -346,7 +353,13 @@ const UserDashboard: React.FC = () => {
   // Carregar dados do dashboard
   const fetchDashboardData = async () => {
     const userId = user?.id;
-    if (!userId) return;
+    // Se não houver usuário, finalize loading para evitar loop infinito
+    if (!userId) {
+      if (isMountedRef.current) {
+        setLoadingData(false);
+      }
+      return;
+    }
 
     // Cancelar anterior
     if (dashboardAbortControllerRef.current) {
@@ -423,7 +436,8 @@ const UserDashboard: React.FC = () => {
     fetchSpotifyData();
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
+      // Revalida apenas quando voltar para visível E existe usuário
+      if (document.visibilityState === 'visible' && user?.id) {
         fetchDashboardData();
         fetchSpotifyData();
       }
