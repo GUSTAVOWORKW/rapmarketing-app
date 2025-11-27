@@ -1,5 +1,5 @@
 // src/components/dashboard/UserDashboard.tsx
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -10,6 +10,10 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { spotifyTokenService } from '../../services/spotifyTokenService';
+
+// Constantes para controle de cache
+const SPOTIFY_CACHE_PREFIX = 'dashboard_spotify_';
+const SPOTIFY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // Componente de contador animado
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ 
@@ -237,6 +241,11 @@ const UserDashboard: React.FC = () => {
   const [spotifyFollowers, setSpotifyFollowers] = useState<number | null>(null);
   const [loadingSpotify, setLoadingSpotify] = useState(true);
   const [spotifyConnected, setSpotifyConnected] = useState(false);
+  const [connectingSpotify, setConnectingSpotify] = useState(false);
+
+  // Refs para evitar chamadas duplicadas
+  const spotifyFetchedRef = useRef(false);
+  const dashboardFetchedRef = useRef(false);
 
   // Calcular taxa de conversão
   const conversionRate = useMemo(() => {
@@ -244,55 +253,125 @@ const UserDashboard: React.FC = () => {
     return Math.round((stats.totalClicks / stats.totalViews) * 100);
   }, [stats.totalViews, stats.totalClicks]);
 
-  // Carregar dados do Spotify
-  const fetchSpotifyData = useCallback(async () => {
+  // Função para conectar com Spotify
+  const handleConnectSpotify = async () => {
+    if (!user) return;
+    setConnectingSpotify(true);
+    
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'spotify',
+        options: {
+          redirectTo: `${window.location.origin}/spotify-callback`,
+          scopes: 'user-read-email user-read-private user-top-read user-read-recently-played',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        console.error('Erro ao conectar com Spotify:', error);
+      }
+    } catch (authError) {
+      console.error('Erro inesperado ao conectar com Spotify:', authError);
+    } finally {
+      setConnectingSpotify(false);
+    }
+  };
+
+  // Carregar dados do Spotify - com cache e proteção contra loops
+  useEffect(() => {
+    let cancelled = false;
     const userId = user?.id;
-    if (!userId) {
-      setLoadingSpotify(false);
+
+    if (!userId || initializing || spotifyFetchedRef.current) {
+      if (!userId && !initializing) setLoadingSpotify(false);
       return;
     }
 
-    setLoadingSpotify(true);
-
-    try {
-      // Verificar se tem conexão Spotify válida
-      const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
-      if (!hasSpotify) {
-        setSpotifyConnected(false);
-        setLoadingSpotify(false);
-        return;
+    const fetchSpotifyData = async () => {
+      // Verificar cache
+      const cacheKey = `${SPOTIFY_CACHE_PREFIX}${userId}`;
+      const cachedData = sessionStorage.getItem(cacheKey);
+      
+      if (cachedData) {
+        try {
+          const { data, timestamp } = JSON.parse(cachedData);
+          if (Date.now() - timestamp < SPOTIFY_CACHE_DURATION) {
+            setTopArtists(data.artists || []);
+            setTopTracks(data.tracks || []);
+            setSpotifyFollowers(data.followers);
+            setSpotifyConnected(data.connected);
+            setLoadingSpotify(false);
+            spotifyFetchedRef.current = true;
+            return;
+          }
+        } catch { /* Cache inválido, continuar */ }
       }
 
-      setSpotifyConnected(true);
+      setLoadingSpotify(true);
 
-      // Buscar dados em paralelo
-      const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
-        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
-        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term'),
-        spotifyTokenService.makeSpotifyRequest(userId, '/me')
-      ]);
+      try {
+        const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
+        
+        if (!hasSpotify) {
+          if (!cancelled) {
+            setSpotifyConnected(false);
+            setLoadingSpotify(false);
+            spotifyFetchedRef.current = true;
+            // Cache estado desconectado
+            sessionStorage.setItem(cacheKey, JSON.stringify({
+              data: { connected: false, artists: [], tracks: [], followers: null },
+              timestamp: Date.now()
+            }));
+          }
+          return;
+        }
 
-      if (artistsResponse.ok) {
-        const artistsData = await artistsResponse.json();
-        setTopArtists(artistsData.items || []);
+        const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
+          spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
+          spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term'),
+          spotifyTokenService.makeSpotifyRequest(userId, '/me')
+        ]);
+
+        if (!cancelled) {
+          const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
+          const tracksData = tracksResponse.ok ? await tracksResponse.json() : { items: [] };
+          const userData = userResponse.ok ? await userResponse.json() : {};
+
+          setTopArtists(artistsData.items || []);
+          setTopTracks(tracksData.items || []);
+          setSpotifyFollowers(userData.followers?.total ?? null);
+          setSpotifyConnected(true);
+
+          // Cache dados
+          sessionStorage.setItem(cacheKey, JSON.stringify({
+            data: {
+              connected: true,
+              artists: artistsData.items || [],
+              tracks: tracksData.items || [],
+              followers: userData.followers?.total ?? null
+            },
+            timestamp: Date.now()
+          }));
+        }
+      } catch (error) {
+        console.error('Erro ao buscar dados do Spotify:', error);
+        if (!cancelled) setSpotifyConnected(false);
+      } finally {
+        if (!cancelled) {
+          setLoadingSpotify(false);
+          spotifyFetchedRef.current = true;
+        }
       }
+    };
 
-      if (tracksResponse.ok) {
-        const tracksData = await tracksResponse.json();
-        setTopTracks(tracksData.items || []);
-      }
+    fetchSpotifyData();
 
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        setSpotifyFollowers(userData.followers?.total ?? null);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar dados do Spotify:', error);
-      setSpotifyConnected(false);
-    } finally {
-      setLoadingSpotify(false);
-    }
-  }, [user?.id]);
+    return () => { cancelled = true; };
+  }, [user?.id, initializing]);
 
   // Carregar dados do dashboard
   useEffect(() => {
@@ -361,21 +440,14 @@ const UserDashboard: React.FC = () => {
     };
   }, [user?.id, initializing]);
 
-  // Carregar dados do Spotify separadamente
-  useEffect(() => {
-    if (!initializing && user?.id) {
-      fetchSpotifyData();
-    }
-  }, [user?.id, initializing, fetchSpotifyData]);
-
-  // Dicas do sistema
+  // Dicas do sistema - atualizado para usar handleConnectSpotify
   const tips = [
     {
       title: 'Conecte seu Spotify',
       description: 'Obtenha estatísticas detalhadas conectando sua conta Spotify.',
       icon: <FaSpotify />,
-      action: 'Conectar agora',
-      onClick: () => navigate('/dashboard/settings')
+      action: spotifyConnected ? 'Conectado!' : 'Conectar agora',
+      onClick: spotifyConnected ? () => {} : handleConnectSpotify
     },
     {
       title: 'Adicione mais plataformas',
@@ -467,10 +539,11 @@ const UserDashboard: React.FC = () => {
               </span>
             ) : (
               <button
-                onClick={() => navigate('/settings')}
-                className="text-xs text-white/80 hover:text-white underline"
+                onClick={handleConnectSpotify}
+                disabled={connectingSpotify}
+                className="text-xs text-white/80 hover:text-white underline disabled:opacity-50"
               >
-                Conectar Spotify
+                {connectingSpotify ? 'Conectando...' : 'Conectar Spotify'}
               </button>
             )}
           </div>
@@ -629,11 +702,12 @@ const UserDashboard: React.FC = () => {
                 onClick={() => navigate('/dashboard/metrics')}
               />
               <QuickAction
-                title="Conectar Spotify"
-                description="Sincronize seus dados do Spotify"
+                title={spotifyConnected ? "Spotify Conectado" : "Conectar Spotify"}
+                description={spotifyConnected ? "Sua conta está sincronizada" : "Sincronize seus dados do Spotify"}
                 icon={<FaSpotify className="text-xl text-white" />}
                 color="bg-gradient-to-br from-[#1db954] to-[#1ed760]"
-                onClick={() => navigate('/dashboard/settings')}
+                onClick={spotifyConnected ? () => {} : handleConnectSpotify}
+                badge={spotifyConnected ? "✓" : undefined}
               />
             </div>
           </div>

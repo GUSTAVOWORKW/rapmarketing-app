@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useNavigate } from 'react-router-dom';
 import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaLink, FaDeezer, FaUserCircle } from 'react-icons/fa';
 import { MdSave, MdErrorOutline, MdCheckCircleOutline, MdFileUpload } from 'react-icons/md';
-import { useSpotifyConnection } from '../hooks/useSpotifyConnection';
 import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
 import SocialLinksPreview from '../components/Common/SocialLinksPreview';
-import { useAuth } from '../context/AuthContext'; // Importar o novo useAuth
+import { useAuth } from '../context/AuthContext';
 
 const socialPlatforms = [
     { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'text-pink-500' },
@@ -21,14 +20,13 @@ const socialPlatforms = [
 
 const UserSettings = () => {
     const navigate = useNavigate();
-    const { user, profile, initializing, refreshProfile } = useAuth(); // Usar o novo useAuth
+    const { user, profile, initializing, refreshProfile } = useAuth();
     const [socialLinks, setSocialLinks] = useState({});
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarPreview, setAvatarPreview] = useState(null); 
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { isConnected: spotifyConnected, loading: spotifyLoading, disconnectSpotify } = useSpotifyConnection();
 
     // Carregar socialLinks e avatarPreview do profile do contexto
     useEffect(() => {
@@ -184,61 +182,6 @@ const UserSettings = () => {
                     Configurações da Conta
                 </h1>
             </header>
-
-            {/* Bloco de login com Spotify */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-semibold flex items-center mb-2" style={{ color: '#1db954' }}>
-                    <FaSpotify className="mr-2" /> Spotify
-                </h2>
-                {spotifyLoading ? (
-                    <span className="text-gray-500">Verificando conexão com Spotify...</span>
-                ) : spotifyConnected ? (
-                    <div className="flex items-center space-x-3">
-                        <span className="text-green-700 font-semibold">Conta do Spotify conectada!</span>
-                        <button
-                            onClick={disconnectSpotify}
-                            className="px-4 py-2 bg-red-500 text-white font-bold rounded-lg shadow hover:bg-red-600 transition"
-                        >
-                            Desconectar Spotify
-                        </button>
-                    </div>
-                ) : (
-                    <button
-                        onClick={async () => {
-                            if (!user) {
-                                setError('Usuário não autenticado.');
-                                return;
-                            }
-
-                            try {
-                                // Iniciar fluxo de login com Spotify via Supabase
-                                const { error } = await supabase.auth.signInWithOAuth({
-                                    provider: 'spotify',
-                                    options: {
-                                        redirectTo: `${window.location.origin}/spotify-callback`,
-                                        scopes: 'user-read-email user-read-private user-top-read user-read-recently-played',
-                                        queryParams: {
-                                            access_type: 'offline',
-                                            prompt: 'consent',
-                                        },
-                                    },
-                                });
-
-                                if (error) {
-                                    console.error('Erro ao conectar com Spotify:', error);
-                                    setError('Falha ao iniciar conexão com o Spotify. Tente novamente.');
-                                }
-                            } catch (authError) {
-                                console.error('Erro inesperado ao conectar com Spotify:', authError);
-                                setError('Erro inesperado ao conectar com o Spotify.');
-                            }
-                        }}
-                        className="flex items-center px-6 py-3 bg-[#1db954] text-white font-bold rounded-lg shadow hover:bg-[#169c46] transition"
-                    >
-                        <FaSpotify className="mr-2" /> Conectar com Spotify
-                    </button>
-                )}
-            </div>
 
             {error && (
                 <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">

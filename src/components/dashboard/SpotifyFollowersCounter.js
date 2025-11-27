@@ -107,7 +107,7 @@ const SpotifyFollowersCounter = () => {
         <FaSpotify className="text-gray-400 mb-2 text-2xl" />
         <span className="text-white/60 text-sm font-medium">Conecte o Spotify</span>
         <a 
-          href="/settings" 
+          href="/dashboard" 
           className="text-green-400 hover:text-green-300 text-xs underline mt-1 transition-colors"
         >
           Conectar agora
@@ -123,7 +123,7 @@ const SpotifyFollowersCounter = () => {
         <FaSpotify className="text-yellow-500 mb-1" />
         <span className="text-yellow-400 text-sm">Token expirado</span>
         <a 
-          href="/settings" 
+          href="/dashboard" 
           className="text-green-400 hover:text-green-300 text-xs underline mt-1 transition-colors"
         >
           Reconectar

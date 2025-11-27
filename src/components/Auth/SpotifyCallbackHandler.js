@@ -88,7 +88,7 @@ export const SpotifyCallbackHandler = () => {
                 setStatus('Conexão estabelecida com sucesso!');
                 window.dispatchEvent(new CustomEvent('spotify-connected'));
                 setTimeout(() => {
-                    navigate('/settings');
+                    navigate('/dashboard');
                     window.location.reload();
                 }, 1500);
                 return;
@@ -109,7 +109,7 @@ export const SpotifyCallbackHandler = () => {
         if (tokenError || !tokenData) {
           console.warn('⚠️ [SpotifyCallback] Tokens não encontrados via webhook nem manual.');
           setError('Não foi possível obter os tokens do Spotify. Tente novamente.');
-          setTimeout(() => navigate('/settings'), 3000);
+          setTimeout(() => navigate('/dashboard'), 3000);
           return;
         } else {
           console.log('✅ [SpotifyCallback] Tokens encontrados via webhook!');
@@ -121,14 +121,14 @@ export const SpotifyCallbackHandler = () => {
         window.dispatchEvent(new CustomEvent('spotify-connected'));
         
         setTimeout(() => {
-          navigate('/settings');
+          navigate('/dashboard');
           window.location.reload();
         }, 1500);
 
       } catch (err) {
         console.error('❌ [SpotifyCallback] Erro no processamento:', err);
         setError('Erro inesperado. Tente conectar novamente.');
-        setTimeout(() => navigate('/settings'), 3000);
+        setTimeout(() => navigate('/dashboard'), 3000);
       }
     };
 
@@ -151,10 +151,10 @@ export const SpotifyCallbackHandler = () => {
                 <h3 className="text-lg font-semibold text-red-700">Erro na Conexão</h3>
                 <p className="text-sm text-gray-600 mt-2">{error}</p>
                 <button 
-                  onClick={() => navigate('/settings')}
+                  onClick={() => navigate('/dashboard')}
                   className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
                 >
-                  Voltar às Configurações
+                  Voltar ao Dashboard
                 </button>
               </>
             ) : (
