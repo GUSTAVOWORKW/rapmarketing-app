@@ -281,7 +281,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   const [error, setError] = useState<string | null>(null);
   const { registerGlobalRefetch } = useAuth();
   const { isMountedRef, abortControllerRef, requestIdRef, nextRequest } = useSafeAsync();
-  const loadingTimeoutRef = useRef<number | null>(null);
+  const hasInitialMetricsDataRef = useRef(false);
 
   const getDateRange = useCallback((p: Period) => {
     const now = new Date();
@@ -319,17 +319,9 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     }
 
     if (isMountedRef.current) {
-      setLoading(true);
+      // Stale-while-revalidate: só mostra loading se ainda não temos dados iniciais
+      setLoading(!hasInitialMetricsDataRef.current);
       setError(null);
-      // Timeout defensivo para evitar loading infinito
-      if (loadingTimeoutRef.current) {
-        window.clearTimeout(loadingTimeoutRef.current);
-      }
-      loadingTimeoutRef.current = window.setTimeout(() => {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
-      }, 15000);
     }
 
     try {
@@ -382,7 +374,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         };
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(emptyData);
-          // Loading será tratado no finally
+          hasInitialMetricsDataRef.current = true;
         }
         return;
       }
@@ -403,7 +395,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(metricsData);
-          // Loading será tratado no finally
+          hasInitialMetricsDataRef.current = true;
         }
         return;
       }
@@ -501,10 +493,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       // Só atualiza o loading se este for o ID ATUAL
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setLoading(false);
-        if (loadingTimeoutRef.current) {
-          window.clearTimeout(loadingTimeoutRef.current);
-          loadingTimeoutRef.current = null;
-        }
       }
     }
   }, [userId, period, getDateRange, nextRequest]);
@@ -517,10 +505,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     });
     return () => {
       unregister && unregister();
-      if (loadingTimeoutRef.current) {
-        window.clearTimeout(loadingTimeoutRef.current);
-        loadingTimeoutRef.current = null;
-      }
     };
   }, [fetchMetrics, registerGlobalRefetch]);
 
