@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 import { useNavigate } from 'react-router-dom';
-import { FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, FaYoutube, FaLink, FaDeezer, FaUserCircle } from 'react-icons/fa';
-import { MdSave, MdErrorOutline, MdCheckCircleOutline, MdFileUpload } from 'react-icons/md';
+import { 
+    FaInstagram, FaTwitter, FaFacebookF, FaTiktok, FaSpotify, 
+    FaYoutube, FaLink, FaDeezer, FaUserCircle, FaCog, FaCamera,
+    FaShareAlt, FaCheckCircle, FaExclamationTriangle, FaArrowLeft
+} from 'react-icons/fa';
+import { MdSave } from 'react-icons/md';
 import { validateSocialLink, getSocialValidationMessage } from '../utils/socialValidation';
 import SocialLinksPreview from '../components/Common/SocialLinksPreview';
 import { useAuth } from '../context/AuthContext';
 
 const socialPlatforms = [
-    { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'text-pink-500' },
-    { name: 'twitter', Icon: FaTwitter, placeholder: 'https://twitter.com/usuario', color: 'text-sky-500' },
-    { name: 'facebook', Icon: FaFacebookF, placeholder: 'https://facebook.com/usuario', color: 'text-blue-600' },
-    { name: 'tiktok', Icon: FaTiktok, placeholder: 'https://tiktok.com/@usuario', color: 'text-black' },
-    { name: 'spotify', Icon: FaSpotify, placeholder: 'https://open.spotify.com/artist/id', color: 'text-green-500' },
-    { name: 'youtube', Icon: FaYoutube, placeholder: 'https://youtube.com/c/canal', color: 'text-red-600' },
-    { name: 'deezer', Icon: FaDeezer, placeholder: 'https://deezer.com/profile/id', color: 'text-purple-500' },
-    { name: 'other', Icon: FaLink, placeholder: 'https://seuoutrolink.com', color: 'text-gray-500' }
+    { name: 'instagram', Icon: FaInstagram, placeholder: 'https://instagram.com/usuario', color: 'from-pink-500 to-purple-500', iconColor: 'text-pink-500' },
+    { name: 'twitter', Icon: FaTwitter, placeholder: 'https://twitter.com/usuario', color: 'from-sky-400 to-blue-500', iconColor: 'text-sky-500' },
+    { name: 'facebook', Icon: FaFacebookF, placeholder: 'https://facebook.com/usuario', color: 'from-blue-500 to-blue-700', iconColor: 'text-blue-600' },
+    { name: 'tiktok', Icon: FaTiktok, placeholder: 'https://tiktok.com/@usuario', color: 'from-gray-800 to-black', iconColor: 'text-black' },
+    { name: 'spotify', Icon: FaSpotify, placeholder: 'https://open.spotify.com/artist/id', color: 'from-green-400 to-green-600', iconColor: 'text-green-500' },
+    { name: 'youtube', Icon: FaYoutube, placeholder: 'https://youtube.com/c/canal', color: 'from-red-500 to-red-700', iconColor: 'text-red-600' },
+    { name: 'deezer', Icon: FaDeezer, placeholder: 'https://deezer.com/profile/id', color: 'from-purple-400 to-purple-600', iconColor: 'text-purple-500' },
+    { name: 'other', Icon: FaLink, placeholder: 'https://seuoutrolink.com', color: 'from-gray-400 to-gray-600', iconColor: 'text-gray-500' }
 ];
 
 const UserSettings = () => {
@@ -167,110 +171,191 @@ const UserSettings = () => {
     // Mostrar loading apenas se estiver inicializando a AUTH, não o profile
     if (initializing) {
         return (
-            <div className="flex justify-center items-center h-screen bg-[#e9e6ff]">
-                <div className="text-2xl font-semibold text-[#3100ff]">Carregando...</div>
+            <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#3100ff] border-t-transparent mx-auto mb-4"></div>
+                    <p className="text-gray-600 text-lg">Carregando...</p>
+                </div>
             </div>
         );
     }
 
     if (!user) return null; // Proteção extra
 
+    // Contar links preenchidos
+    const filledLinksCount = Object.values(socialLinks).filter(url => url && url.trim() !== '').length;
+
     return (
-        <div className="max-w-3xl mx-auto">
-            <header className="mb-10">
-                <h1 className="text-4xl font-extrabold text-[#1c1c1c]">
-                    Configurações da Conta
-                </h1>
-            </header>
-
-            {error && (
-                <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md flex items-center">
-                    <MdErrorOutline className="text-xl mr-3" />
-                    {error}
-                </div>
-            )}
-            {successMessage && (
-                <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md flex items-center">
-                    <MdCheckCircleOutline className="text-xl mr-3" />
-                    {successMessage}
-                </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-2xl space-y-8">
-                {/* Seção de Avatar */}
-                <div>
-                    <h2 className="text-2xl font-semibold text-[#1c1c1c] mb-1">Foto de perfil</h2>
-                    <p className="text-sm text-[#1c1c1c]/70 mb-6">Atualize sua foto de perfil.</p>
-                    <div className="flex items-center space-x-6">
-                        {avatarPreview ? (
-                            <img src={avatarPreview} alt="Preview do Avatar" className="w-24 h-24 rounded-full object-cover border-2 border-gray-300" />
-                        ) : (
-                            <FaUserCircle className="w-24 h-24 text-gray-300 rounded-full" />
-                        )}
-                        <div className="flex-grow">
-                            <label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-[#1c1c1c] bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3100ff]">
-                                <MdFileUpload className="mr-2 text-lg" />
-                                Escolher arquivo...
-                            </label>
-                            <input
-                                id="avatar-upload"
-                                name="avatar-upload"
-                                type="file"
-                                accept="image/png, image/jpeg, image/webp"
-                                onChange={handleAvatarChange}
-                                className="sr-only"
-                            />
-                            <p className="mt-2 text-xs text-[#1c1c1c]/70">PNG, JPG ou WEBP. Máximo 2MB.</p>
+        <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] p-4 md:p-6">
+            <div className="max-w-4xl mx-auto space-y-6">
+                
+                {/* Header com gradiente */}
+                <div className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
+                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4" />
+                    
+                    <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-4">
+                            <button
+                                onClick={() => navigate('/dashboard')}
+                                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-colors"
+                            >
+                                <FaArrowLeft className="text-white" />
+                            </button>
+                            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                                <FaCog className="text-2xl" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold">Configurações</h1>
+                                <p className="text-white/80 text-sm">Personalize seu perfil e redes sociais</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <hr className="border-gray-200" />
+                {/* Alertas */}
+                {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3 shadow-lg">
+                        <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                            <FaExclamationTriangle className="text-red-500" />
+                        </div>
+                        <p className="text-red-700 text-sm font-medium">{error}</p>
+                    </div>
+                )}
+                {successMessage && (
+                    <div className="bg-green-50 border border-green-200 rounded-2xl p-4 flex items-center gap-3 shadow-lg">
+                        <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <FaCheckCircle className="text-green-500" />
+                        </div>
+                        <p className="text-green-700 text-sm font-medium">{successMessage}</p>
+                    </div>
+                )}
 
-                <div>
-                    <h2 className="text-2xl font-semibold text-[#1c1c1c] mb-1">Seus Links Sociais</h2>
-                    <p className="text-sm text-[#1c1c1c]/70 mb-6">Adicione ou atualize os links das suas redes sociais.</p>
-                    
-                    <div className="space-y-6">
-                        {socialPlatforms.map(({ name, Icon, placeholder, color }) => (
-                            <div key={name}>
-                                <label htmlFor={name} className="block text-sm font-medium text-[#1c1c1c] mb-1">
-                                    <Icon className={`inline mr-2 mb-0.5 ${color || 'text-[#3100ff]'}`} />
-                                    {name.charAt(0).toUpperCase() + name.slice(1)}
-                                </label>
-                                <input
-                                    type="url"
-                                    id={name}
-                                    name={name}
-                                    value={socialLinks[name] || ''}
-                                    onChange={(e) => handleSocialLinkChange(name, e.target.value)}
-                                    placeholder={placeholder}
-                                    className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-[#3100ff] focus:border-[#3100ff] sm:text-sm placeholder-gray-400"
-                                />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Card de Foto de Perfil */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                        <div className="bg-gradient-to-r from-[#ffb300] to-[#ff8c00] px-6 py-4 flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                <FaCamera className="text-white" />
                             </div>
-                        ))}
+                            <div>
+                                <h2 className="text-white font-bold text-lg">Foto de Perfil</h2>
+                                <p className="text-white/80 text-xs">Personalize sua imagem</p>
+                            </div>
+                        </div>
+                        
+                        <div className="p-6">
+                            <div className="flex flex-col sm:flex-row items-center gap-6">
+                                <div className="relative group">
+                                    {avatarPreview ? (
+                                        <img 
+                                            src={avatarPreview} 
+                                            alt="Avatar" 
+                                            className="w-28 h-28 rounded-2xl object-cover border-4 border-[#ffb300]/30 shadow-lg group-hover:border-[#ffb300] transition-colors" 
+                                        />
+                                    ) : (
+                                        <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-4 border-gray-200">
+                                            <FaUserCircle className="w-16 h-16 text-gray-400" />
+                                        </div>
+                                    )}
+                                    <label 
+                                        htmlFor="avatar-upload" 
+                                        className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-[#ffb300] to-[#ff8c00] rounded-xl flex items-center justify-center cursor-pointer hover:scale-110 transition-transform shadow-lg"
+                                    >
+                                        <FaCamera className="text-white text-sm" />
+                                    </label>
+                                </div>
+                                
+                                <div className="flex-grow text-center sm:text-left">
+                                    <h3 className="font-bold text-gray-800 mb-1">Alterar foto</h3>
+                                    <p className="text-gray-500 text-sm mb-3">PNG, JPG ou WEBP. Máximo 2MB.</p>
+                                    <label 
+                                        htmlFor="avatar-upload" 
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#f8f6f2] to-[#e9e6ff] text-gray-700 rounded-xl font-medium hover:shadow-md transition-all cursor-pointer border border-gray-200"
+                                    >
+                                        <FaCamera className="text-[#ffb300]" />
+                                        Escolher arquivo
+                                    </label>
+                                    <input
+                                        id="avatar-upload"
+                                        type="file"
+                                        accept="image/png, image/jpeg, image/webp"
+                                        onChange={handleAvatarChange}
+                                        className="sr-only"
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    
-                    {/* Preview das redes sociais configuradas */}
-                    <div className="mt-8">
-                        <SocialLinksPreview 
-                            socialLinks={socialLinks}
-                            title="Preview das suas redes sociais" 
-                        />
-                    </div>
-                </div>
 
-                <div className="pt-2">
+                    {/* Card de Redes Sociais */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                        <div className="bg-gradient-to-r from-[#3100ff] to-[#a259ff] px-6 py-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                                    <FaShareAlt className="text-white" />
+                                </div>
+                                <div>
+                                    <h2 className="text-white font-bold text-lg">Redes Sociais</h2>
+                                    <p className="text-white/80 text-xs">Conecte suas redes para exibir nos smart links</p>
+                                </div>
+                            </div>
+                            <div className="px-3 py-1 bg-white/20 rounded-full">
+                                <span className="text-white text-sm font-bold">{filledLinksCount}/{socialPlatforms.length}</span>
+                            </div>
+                        </div>
+                        
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {socialPlatforms.map(({ name, Icon, placeholder, color, iconColor }) => (
+                                    <div key={name} className="group">
+                                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${color} flex items-center justify-center`}>
+                                                <Icon className="text-white text-sm" />
+                                            </div>
+                                            <span className="capitalize">{name === 'other' ? 'Outro Link' : name}</span>
+                                            {socialLinks[name] && (
+                                                <FaCheckCircle className="text-green-500 text-xs ml-auto" />
+                                            )}
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type="url"
+                                                value={socialLinks[name] || ''}
+                                                onChange={(e) => handleSocialLinkChange(name, e.target.value)}
+                                                placeholder={placeholder}
+                                                className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3100ff] focus:border-transparent transition-all text-sm placeholder-gray-400 hover:border-gray-300"
+                                            />
+                                            <Icon className={`absolute left-3 top-1/2 -translate-y-1/2 ${iconColor} text-sm`} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            {/* Preview das redes sociais */}
+                            {filledLinksCount > 0 && (
+                                <div className="mt-6 pt-6 border-t border-gray-100">
+                                    <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                        Preview dos seus links
+                                    </h3>
+                                    <SocialLinksPreview socialLinks={socialLinks} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Botão de Salvar */}
                     <button
                         type="submit"
                         disabled={saving}
-                        className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-[#3100ff] hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3100ff] disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white rounded-2xl font-bold text-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
-                        <MdSave className="mr-2 text-xl" />
+                        <MdSave className="text-xl" />
                         {saving ? 'Salvando...' : 'Salvar Alterações'}
                     </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };
