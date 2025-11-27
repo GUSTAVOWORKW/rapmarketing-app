@@ -273,9 +273,34 @@ function processClicksToMetrics(
   };
 }
 
+// Constantes de cache
+const METRICS_CACHE_PREFIX = 'metrics_data_';
+const METRICS_CACHE_DURATION = 3 * 60 * 1000; // 3 minutos
+
+// Ref global para evitar chamadas duplicadas entre re-renders
+const fetchedMetricsRef: { [key: string]: boolean } = {};
+
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
-  const [data, setData] = useState<MetricsData | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Verificar cache antes de inicializar estados
+  const getCachedData = (): MetricsData | null => {
+    if (!userId) return null;
+    try {
+      const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
+          return data;
+        }
+      }
+    } catch { /* ignore */ }
+    return null;
+  };
+
+  const cachedData = getCachedData();
+  
+  const [data, setData] = useState<MetricsData | null>(cachedData);
+  const [loading, setLoading] = useState(!cachedData);
   const [error, setError] = useState<string | null>(null);
 
   const getDateRange = useCallback((p: Period) => {
@@ -309,6 +334,28 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       return;
     }
 
+    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
+    
+    // Verificar se já buscamos nesta sessão
+    if (fetchedMetricsRef[cacheKey]) {
+      setLoading(false);
+      return;
+    }
+
+    // Verificar cache primeiro
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const { data: cachedData, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
+          setData(cachedData);
+          setLoading(false);
+          fetchedMetricsRef[cacheKey] = true;
+          return;
+        }
+      }
+    } catch { /* ignore */ }
+
     setLoading(true);
     setError(null);
 
@@ -336,7 +383,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
       // Se não houver items, retornar dados vazios
       if (totalSmartlinks === 0 && totalPresaves === 0) {
-        setData({
+        const emptyData: MetricsData = {
           summary: {
             total_clicks: 0,
             total_views: 0,
@@ -356,7 +403,14 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           os: [],
           hourly: [],
           weekdays: []
-        });
+        };
+        setData(emptyData);
+        // Cache dados vazios também
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: emptyData,
+          timestamp: Date.now()
+        }));
+        fetchedMetricsRef[cacheKey] = true;
         setLoading(false);
         return;
       }
@@ -375,6 +429,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         // View disponível, processar diretamente
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
         setData(metricsData);
+        // Salvar no cache
+        sessionStorage.setItem(cacheKey, JSON.stringify({
+          data: metricsData,
+          timestamp: Date.now()
+        }));
+        fetchedMetricsRef[cacheKey] = true;
         setLoading(false);
         return;
       }
@@ -455,6 +515,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
       const metricsData = processClicksToMetrics(allClicks, totalSmartlinks, totalPresaves);
       setData(metricsData);
+
+      // Salvar no cache
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        data: metricsData,
+        timestamp: Date.now()
+      }));
+      fetchedMetricsRef[cacheKey] = true;
 
     } catch (err) {
       console.error('Erro ao buscar métricas:', err);
