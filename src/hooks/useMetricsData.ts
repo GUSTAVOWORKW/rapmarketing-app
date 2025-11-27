@@ -275,33 +275,32 @@ function processClicksToMetrics(
 
 // Constantes de cache
 const METRICS_CACHE_PREFIX = 'metrics_data_';
-const METRICS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const METRICS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
 
 // Função para obter dados do cache
-function getCachedMetricsData(userId: string | undefined, period: Period): MetricsData | null {
+function getCachedMetricsData(userId: string | undefined, period: Period): { data: MetricsData; valid: boolean } | null {
   if (!userId) return null;
   try {
     const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
     const cached = sessionStorage.getItem(cacheKey);
     if (cached) {
       const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
-        return data;
-      }
+      const isValid = Date.now() - timestamp < METRICS_CACHE_DURATION;
+      return { data, valid: isValid };
     }
   } catch { /* ignore */ }
   return null;
 }
 
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
-  // Inicializar do cache se disponível
-  const initialData = useMemo(() => getCachedMetricsData(userId, period), [userId, period]);
+  // Verificar cache na inicialização
+  const cachedResult = useMemo(() => getCachedMetricsData(userId, period), [userId, period]);
   
-  const [data, setData] = useState<MetricsData | null>(initialData);
-  const [loading, setLoading] = useState(!initialData);
+  const [data, setData] = useState<MetricsData | null>(cachedResult?.data || null);
+  const [loading, setLoading] = useState(!cachedResult?.data);
   const [error, setError] = useState<string | null>(null);
   
-  // Ref para evitar fetch duplicado no mesmo ciclo
+  // Ref para evitar fetch duplicado simultâneo
   const isFetchingRef = useRef(false);
 
   const getDateRange = useCallback((p: Period) => {
@@ -335,30 +334,38 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       return;
     }
 
-    // Evitar fetch duplicado
+    // Evitar fetch duplicado simultâneo
     if (isFetchingRef.current) {
       return;
     }
 
     const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
 
-    // Verificar cache primeiro - se válido, usar e não buscar novamente
+    // Verificar cache primeiro
     try {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         const { data: cachedData, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
-          // Cache válido - atualizar estado se diferente e retornar
-          setData(cachedData);
+        const isValid = Date.now() - timestamp < METRICS_CACHE_DURATION;
+        
+        // Sempre usar dados do cache se existirem
+        setData(cachedData);
+        
+        if (isValid) {
+          // Cache válido - não precisa buscar
           setLoading(false);
           return;
         }
+        // Cache expirado - mostrar dados antigos mas buscar novos em background
+        setLoading(false);
       }
     } catch { /* ignore */ }
 
-    // Sem cache válido - buscar da API
+    // Buscar da API (em background se temos dados do cache)
     isFetchingRef.current = true;
-    setLoading(true);
+    if (!data) {
+      setLoading(true);
+    }
     setError(null);
 
     try {

@@ -224,31 +224,31 @@ const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile, initializing } = useAuth();
 
-  // Constantes de cache
-  const DASHBOARD_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+  // Constantes de cache - 10 minutos
+  const DASHBOARD_CACHE_DURATION = 10 * 60 * 1000;
 
-  // Função para obter dados do cache - usa userId direto
-  const getCachedDashboard = useCallback((userId: string | undefined) => {
+  // Função para obter dados do cache - retorna dados mesmo se expirado
+  const getCachedDashboard = useCallback((userId: string | undefined): { data: any; valid: boolean } | null => {
     if (!userId) return null;
     try {
       const cached = sessionStorage.getItem(`dashboard_data_${userId}`);
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < DASHBOARD_CACHE_DURATION) {
-          return data;
-        }
+        const isValid = Date.now() - timestamp < DASHBOARD_CACHE_DURATION;
+        return { data, valid: isValid };
       }
     } catch { /* ignore */ }
     return null;
   }, []);
 
-  const getCachedSpotify = useCallback((userId: string | undefined) => {
+  const getCachedSpotify = useCallback((userId: string | undefined): { data: any; valid: boolean } | null => {
     if (!userId) return null;
     try {
       const cached = sessionStorage.getItem(`${SPOTIFY_CACHE_PREFIX}${userId}`);
       if (cached) {
         const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < SPOTIFY_CACHE_DURATION) return data;
+        const isValid = Date.now() - timestamp < SPOTIFY_CACHE_DURATION;
+        return { data, valid: isValid };
       }
     } catch { /* ignore */ }
     return null;
@@ -328,19 +328,28 @@ const UserDashboard: React.FC = () => {
       const cacheKey = `${SPOTIFY_CACHE_PREFIX}${userId}`;
       
       // Verificar cache
-      const cachedData = getCachedSpotify(userId);
+      const cachedResult = getCachedSpotify(userId);
       
-      if (cachedData) {
-        setTopArtists(cachedData.artists || []);
-        setTopTracks(cachedData.tracks || []);
-        setSpotifyFollowers(cachedData.followers);
-        setSpotifyConnected(cachedData.connected);
+      if (cachedResult) {
+        // Usar dados do cache (mesmo se expirado - stale-while-revalidate)
+        setTopArtists(cachedResult.data.artists || []);
+        setTopTracks(cachedResult.data.tracks || []);
+        setSpotifyFollowers(cachedResult.data.followers);
+        setSpotifyConnected(cachedResult.data.connected);
         setLoadingSpotify(false);
-        return;
+        
+        // Se cache válido, não precisa buscar novamente
+        if (cachedResult.valid) {
+          return;
+        }
+        // Cache expirado - continuar para buscar novos dados em background
       }
 
       isFetchingSpotifyRef.current = true;
-      setLoadingSpotify(true);
+      // Só mostrar loading se não temos dados
+      if (!cachedResult) {
+        setLoadingSpotify(true);
+      }
       
       try {
         const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
@@ -419,16 +428,25 @@ const UserDashboard: React.FC = () => {
       const cacheKey = `dashboard_data_${userId}`;
       
       // Verificar cache primeiro
-      const cachedData = getCachedDashboard(userId);
-      if (cachedData) {
-        setStats(cachedData.stats);
-        setRecentLinks(cachedData.recentLinks);
+      const cachedResult = getCachedDashboard(userId);
+      if (cachedResult) {
+        // Usar dados do cache (stale-while-revalidate)
+        setStats(cachedResult.data.stats);
+        setRecentLinks(cachedResult.data.recentLinks);
         setLoadingData(false);
-        return;
+        
+        // Se cache válido, não buscar novamente
+        if (cachedResult.valid) {
+          return;
+        }
+        // Cache expirado - continuar para buscar em background
       }
 
       isFetchingDashboardRef.current = true;
-      setLoadingData(true);
+      // Só mostrar loading se não temos dados
+      if (!cachedResult) {
+        setLoadingData(true);
+      }
 
       try {
         // Buscar dados em paralelo
