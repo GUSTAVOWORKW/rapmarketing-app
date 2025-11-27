@@ -435,19 +435,11 @@ const UserDashboard: React.FC = () => {
     fetchDashboardData();
     fetchSpotifyData();
 
-    const handleVisibilityChange = () => {
-      // Revalida apenas quando voltar para visível E existe usuário
-      if (document.visibilityState === 'visible' && user?.id) {
-        fetchDashboardData();
-        fetchSpotifyData();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Listener removido: revalidação global via AuthContext
 
     return () => {
       if (dashboardAbortControllerRef.current) dashboardAbortControllerRef.current.abort();
       if (spotifyAbortControllerRef.current) spotifyAbortControllerRef.current.abort();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [user?.id, initializing]);
 

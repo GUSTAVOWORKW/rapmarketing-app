@@ -1,6 +1,8 @@
 // hooks/useMetricsData.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../services/supabase';
+import { useAuth } from '../context/AuthContext';
+import { useSafeAsync } from './useSafeAsync';
 
 // Tipos para os dados de métricas
 export interface DailyMetric {
@@ -277,9 +279,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   const [data, setData] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
-  // Ref para controle de montagem (evita atualizar estado em componente desmontado)
-  const isMountedRef = useRef(true);
+  const { registerGlobalRefetch } = useAuth();
+  const { isMountedRef, abortControllerRef, requestIdRef, nextRequest } = useSafeAsync();
 
   const getDateRange = useCallback((p: Period) => {
     const now = new Date();
@@ -306,22 +307,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     };
   }, []);
 
-  // Ref para o AbortController
-  const abortControllerRef = useRef<AbortController | null>(null);
-  // Ref para o ID da requisição atual (para evitar race conditions sem depender de AbortError)
-  const requestIdRef = useRef(0);
-
   const fetchMetrics = useCallback(async () => {
-    // Cancelar request anterior se houver
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    // Criar novo controller e ID
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
-    const currentRequestId = requestIdRef.current + 1;
-    requestIdRef.current = currentRequestId;
+    const { controller, currentRequestId } = nextRequest();
 
     if (!userId) {
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
@@ -336,7 +323,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     }
 
     try {
-      const { start, end } = getDateRange(period);
+  const { start, end } = getDateRange(period);
 
       // Buscar contagem de smart_links do usuário
       // Removido .abortSignal(signal) para evitar problemas com a biblioteca Supabase
@@ -506,29 +493,18 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         setLoading(false);
       }
     }
-  }, [userId, period, getDateRange]);
+  }, [userId, period, getDateRange, nextRequest]);
 
   useEffect(() => {
-    isMountedRef.current = true;
     fetchMetrics();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchMetrics();
-      }
-    };
-
-    // Removido listener de focus para evitar chamadas duplicadas com visibilitychange
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+    // Registrar refetch global (visibilidade volta a 'visible' com user válido)
+    const unregister = registerGlobalRefetch(() => {
+      fetchMetrics();
+    });
     return () => {
-      isMountedRef.current = false;
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      unregister && unregister();
     };
-  }, [fetchMetrics]);
+  }, [fetchMetrics, registerGlobalRefetch]);
 
   return { data, loading, error, refetch: fetchMetrics };
 }

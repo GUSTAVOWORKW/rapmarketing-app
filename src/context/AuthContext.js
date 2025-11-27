@@ -9,6 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
+  // Visibilidade global do app
+  const [appVisibility, setAppVisibility] = useState(typeof document !== 'undefined' ? document.visibilityState : 'visible');
+  const globalRefetchCallbacksRef = useRef(new Set());
   
   // Refs para evitar chamadas duplicadas
   const lastFetchedUserIdRef = useRef(null);
@@ -116,8 +119,26 @@ export const AuthProvider = ({ children }) => {
 
     setupAuth();
 
+    // Listener único de visibilitychange
+    const onVisibility = () => {
+      const state = document.visibilityState;
+      if (!mounted) return;
+      setAppVisibility(state);
+      // Quando voltar para visível e houver usuário válido, dispare revalidação global com debounce simples
+      if (state === 'visible' && (user?.id)) {
+        // Debounce: agenda no próximo tick para evitar múltiplas execuções em sequência
+        setTimeout(() => {
+          globalRefetchCallbacksRef.current.forEach(cb => {
+            try { cb(); } catch (e) { /* noop */ }
+          });
+        }, 300);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     return () => {
       mounted = false;
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, []);  // Removido fetchProfile das dependências para evitar loop
 
@@ -138,6 +159,20 @@ export const AuthProvider = ({ children }) => {
     await fetchProfile(userId, false);
   }, [fetchProfile]);
 
+  // Registro de callbacks globais de revalidação
+  const registerGlobalRefetch = useCallback((cb) => {
+    if (typeof cb !== 'function') return () => {};
+    globalRefetchCallbacksRef.current.add(cb);
+    return () => {
+      globalRefetchCallbacksRef.current.delete(cb);
+    };
+  }, []);
+
+  const unregisterGlobalRefetch = useCallback((cb) => {
+    if (typeof cb !== 'function') return;
+    globalRefetchCallbacksRef.current.delete(cb);
+  }, []);
+
   const value = {
     session,
     user,
@@ -147,6 +182,10 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     signOut,
     refreshProfile: forceRefreshProfile,
+    // App visibility e revalidação global
+    appVisibility,
+    registerGlobalRefetch,
+    unregisterGlobalRefetch,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -159,3 +198,18 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Helpers para registrar callbacks globais
+function registerGlobalRefetch(callback) {
+  if (typeof callback !== 'function') return () => {};
+  try {
+    // this will be bound inside provider via closure, redefined below at runtime
+    return () => {};
+  } catch {
+    return () => {};
+  }
+}
+
+function unregisterGlobalRefetch(callback) {
+  // placeholder, implemented inside provider instance
+}
