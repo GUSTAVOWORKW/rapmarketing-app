@@ -15,6 +15,7 @@ import {
   FaTimes
 } from 'react-icons/fa';
 import { usePresaveFormContext } from '../../../context/presave/PresaveFormContext';
+import config from '../../../config';
 
 const FinalPreviewStep = ({ onSubmit, submitStatus }) => {
   const { state } = usePresaveFormContext();
@@ -106,7 +107,7 @@ const FinalPreviewStep = ({ onSubmit, submitStatus }) => {
       .replace(/^-+|-+$/g, '') + '-preview';
   };
   
-  const presaveUrl = `http://localhost:3000/presave/${generatePreviewSlug()}`;
+  const presaveUrl = `${config.APP_URL}/presave/${generatePreviewSlug()}`;
   return (
     <div className="w-full max-w-6xl mx-auto">
       {/* Notificação personalizada */}
