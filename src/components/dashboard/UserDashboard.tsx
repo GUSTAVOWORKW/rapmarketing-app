@@ -1,5 +1,5 @@
 // src/components/dashboard/UserDashboard.tsx
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '../../services/supabase';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -10,10 +10,6 @@ import {
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { spotifyTokenService } from '../../services/spotifyTokenService';
-
-// Constantes para controle de cache
-const SPOTIFY_CACHE_PREFIX = 'dashboard_spotify_';
-const SPOTIFY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
 // Componente de contador animado
 const AnimatedCounter: React.FC<{ end: number; duration?: number; suffix?: string }> = ({ 
@@ -224,36 +220,6 @@ const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, profile, initializing } = useAuth();
 
-  // Constantes de cache - 10 minutos
-  const DASHBOARD_CACHE_DURATION = 10 * 60 * 1000;
-
-  // Função para obter dados do cache - retorna dados mesmo se expirado
-  const getCachedDashboard = useCallback((userId: string | undefined): { data: any; valid: boolean } | null => {
-    if (!userId) return null;
-    try {
-      const cached = sessionStorage.getItem(`dashboard_data_${userId}`);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        const isValid = Date.now() - timestamp < DASHBOARD_CACHE_DURATION;
-        return { data, valid: isValid };
-      }
-    } catch { /* ignore */ }
-    return null;
-  }, []);
-
-  const getCachedSpotify = useCallback((userId: string | undefined): { data: any; valid: boolean } | null => {
-    if (!userId) return null;
-    try {
-      const cached = sessionStorage.getItem(`${SPOTIFY_CACHE_PREFIX}${userId}`);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        const isValid = Date.now() - timestamp < SPOTIFY_CACHE_DURATION;
-        return { data, valid: isValid };
-      }
-    } catch { /* ignore */ }
-    return null;
-  }, []);
-
   // Estados principais
   const [stats, setStats] = useState({
     smartLinks: 0,
@@ -273,9 +239,8 @@ const UserDashboard: React.FC = () => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const [connectingSpotify, setConnectingSpotify] = useState(false);
 
-  // Ref para evitar fetch duplicado simultâneo
-  const isFetchingDashboardRef = useRef(false);
-  const isFetchingSpotifyRef = useRef(false);
+  // Ref para controle de montagem
+  const isMountedRef = useRef(true);
 
   // Calcular taxa de conversão
   const conversionRate = useMemo(() => {
@@ -311,9 +276,8 @@ const UserDashboard: React.FC = () => {
     }
   };
 
-  // Carregar dados do Spotify - com cache e proteção contra loops
+  // Carregar dados do Spotify
   useEffect(() => {
-    let cancelled = false;
     const userId = user?.id;
 
     if (!userId || initializing) {
@@ -321,33 +285,8 @@ const UserDashboard: React.FC = () => {
       return;
     }
 
-    // Evitar fetch duplicado simultâneo
-    if (isFetchingSpotifyRef.current) return;
-
     const fetchSpotifyData = async () => {
-      const cacheKey = `${SPOTIFY_CACHE_PREFIX}${userId}`;
-      
-      // Verificar cache
-      const cachedResult = getCachedSpotify(userId);
-      
-      if (cachedResult) {
-        // Usar dados do cache (mesmo se expirado - stale-while-revalidate)
-        setTopArtists(cachedResult.data.artists || []);
-        setTopTracks(cachedResult.data.tracks || []);
-        setSpotifyFollowers(cachedResult.data.followers);
-        setSpotifyConnected(cachedResult.data.connected);
-        setLoadingSpotify(false);
-        
-        // Se cache válido, não precisa buscar novamente
-        if (cachedResult.valid) {
-          return;
-        }
-        // Cache expirado - continuar para buscar novos dados em background
-      }
-
-      isFetchingSpotifyRef.current = true;
-      // Só mostrar loading se não temos dados
-      if (!cachedResult) {
+      if (isMountedRef.current) {
         setLoadingSpotify(true);
       }
       
@@ -355,15 +294,9 @@ const UserDashboard: React.FC = () => {
         const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
         
         if (!hasSpotify) {
-          if (!cancelled) {
+          if (isMountedRef.current) {
             setSpotifyConnected(false);
             setLoadingSpotify(false);
-            isFetchingSpotifyRef.current = false;
-            // Cache estado desconectado
-            sessionStorage.setItem(cacheKey, JSON.stringify({
-              data: { connected: false, artists: [], tracks: [], followers: null },
-              timestamp: Date.now()
-            }));
           }
           return;
         }
@@ -374,7 +307,7 @@ const UserDashboard: React.FC = () => {
           spotifyTokenService.makeSpotifyRequest(userId, '/me')
         ]);
 
-        if (!cancelled) {
+        if (isMountedRef.current) {
           const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
           const tracksData = tracksResponse.ok ? await tracksResponse.json() : { items: [] };
           const userData = userResponse.ok ? await userResponse.json() : {};
@@ -383,37 +316,22 @@ const UserDashboard: React.FC = () => {
           setTopTracks(tracksData.items || []);
           setSpotifyFollowers(userData.followers?.total ?? null);
           setSpotifyConnected(true);
-
-          // Cache dados
-          sessionStorage.setItem(cacheKey, JSON.stringify({
-            data: {
-              connected: true,
-              artists: artistsData.items || [],
-              tracks: tracksData.items || [],
-              followers: userData.followers?.total ?? null
-            },
-            timestamp: Date.now()
-          }));
         }
       } catch (error) {
         console.error('Erro ao buscar dados do Spotify:', error);
-        if (!cancelled) setSpotifyConnected(false);
+        if (isMountedRef.current) setSpotifyConnected(false);
       } finally {
-        if (!cancelled) {
+        if (isMountedRef.current) {
           setLoadingSpotify(false);
-          isFetchingSpotifyRef.current = false;
         }
       }
     };
 
     fetchSpotifyData();
-
-    return () => { cancelled = true; };
-  }, [user?.id, initializing, getCachedSpotify]);
+  }, [user?.id, initializing]);
 
   // Carregar dados do dashboard
   useEffect(() => {
-    let cancelled = false;
     const userId = user?.id;
 
     if (!userId || initializing) {
@@ -421,30 +339,8 @@ const UserDashboard: React.FC = () => {
       return;
     }
 
-    // Evitar fetch duplicado simultâneo
-    if (isFetchingDashboardRef.current) return;
-
     const fetchDashboardData = async () => {
-      const cacheKey = `dashboard_data_${userId}`;
-      
-      // Verificar cache primeiro
-      const cachedResult = getCachedDashboard(userId);
-      if (cachedResult) {
-        // Usar dados do cache (stale-while-revalidate)
-        setStats(cachedResult.data.stats);
-        setRecentLinks(cachedResult.data.recentLinks);
-        setLoadingData(false);
-        
-        // Se cache válido, não buscar novamente
-        if (cachedResult.valid) {
-          return;
-        }
-        // Cache expirado - continuar para buscar em background
-      }
-
-      isFetchingDashboardRef.current = true;
-      // Só mostrar loading se não temos dados
-      if (!cachedResult) {
+      if (isMountedRef.current) {
         setLoadingData(true);
       }
 
@@ -462,8 +358,7 @@ const UserDashboard: React.FC = () => {
           supabase.from('smart_links').select('view_count').eq('user_id', userId)
         ]);
 
-        if (!cancelled) {
-          // Calcular totais de métricas a partir dos smart_links
+        if (isMountedRef.current) {
           let totalViews = 0;
           
           if (allLinksForMetrics) {
@@ -481,27 +376,26 @@ const UserDashboard: React.FC = () => {
 
           setStats(newStats);
           setRecentLinks(linksData || []);
-
-          // Salvar no cache
-          sessionStorage.setItem(cacheKey, JSON.stringify({
-            data: { stats: newStats, recentLinks: linksData || [] },
-            timestamp: Date.now()
-          }));
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
-        if (!cancelled) {
+        if (isMountedRef.current) {
           setLoadingData(false);
-          isFetchingDashboardRef.current = false;
         }
       }
     };
 
     fetchDashboardData();
+  }, [user?.id, initializing]);
 
-    return () => { cancelled = true; };
-  }, [user?.id, initializing, getCachedDashboard]);
+  // Cleanup na desmontagem
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Dicas do sistema - atualizado para usar handleConnectSpotify
   const tips = [

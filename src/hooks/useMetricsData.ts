@@ -1,5 +1,5 @@
 // hooks/useMetricsData.ts
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../services/supabase';
 
 // Tipos para os dados de métricas
@@ -273,35 +273,13 @@ function processClicksToMetrics(
   };
 }
 
-// Constantes de cache
-const METRICS_CACHE_PREFIX = 'metrics_data_';
-const METRICS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
-
-// Função para obter dados do cache
-function getCachedMetricsData(userId: string | undefined, period: Period): { data: MetricsData; valid: boolean } | null {
-  if (!userId) return null;
-  try {
-    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      const isValid = Date.now() - timestamp < METRICS_CACHE_DURATION;
-      return { data, valid: isValid };
-    }
-  } catch { /* ignore */ }
-  return null;
-}
-
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
-  // Verificar cache na inicialização
-  const cachedResult = useMemo(() => getCachedMetricsData(userId, period), [userId, period]);
-  
-  const [data, setData] = useState<MetricsData | null>(cachedResult?.data || null);
-  const [loading, setLoading] = useState(!cachedResult?.data);
+  const [data, setData] = useState<MetricsData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Ref para evitar fetch duplicado simultâneo
-  const isFetchingRef = useRef(false);
+  // Ref para controle de montagem (evita atualizar estado em componente desmontado)
+  const isMountedRef = useRef(true);
 
   const getDateRange = useCallback((p: Period) => {
     const now = new Date();
@@ -330,43 +308,16 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
   const fetchMetrics = useCallback(async () => {
     if (!userId) {
-      setLoading(false);
-      return;
-    }
-
-    // Evitar fetch duplicado simultâneo
-    if (isFetchingRef.current) {
-      return;
-    }
-
-    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
-
-    // Verificar cache primeiro
-    try {
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        const { data: cachedData, timestamp } = JSON.parse(cached);
-        const isValid = Date.now() - timestamp < METRICS_CACHE_DURATION;
-        
-        // Sempre usar dados do cache se existirem
-        setData(cachedData);
-        
-        if (isValid) {
-          // Cache válido - não precisa buscar
-          setLoading(false);
-          return;
-        }
-        // Cache expirado - mostrar dados antigos mas buscar novos em background
+      if (isMountedRef.current) {
         setLoading(false);
       }
-    } catch { /* ignore */ }
-
-    // Buscar da API (em background se temos dados do cache)
-    isFetchingRef.current = true;
-    if (!data) {
-      setLoading(true);
+      return;
     }
-    setError(null);
+
+    if (isMountedRef.current) {
+      setLoading(true);
+      setError(null);
+    }
 
     try {
       const { start, end } = getDateRange(period);
@@ -413,18 +364,14 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           hourly: [],
           weekdays: []
         };
-        setData(emptyData);
-        // Cache dados vazios também
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          data: emptyData,
-          timestamp: Date.now()
-        }));
-        isFetchingRef.current = false;
-        setLoading(false);
+        if (isMountedRef.current) {
+          setData(emptyData);
+          setLoading(false);
+        }
         return;
       }
 
-      // Tentar usar a view all_clicks primeiro (mais eficiente)
+      // Usar a view all_clicks (mais eficiente)
       const { data: allClicksData, error: allClicksError } = await supabase
         .from('all_clicks')
         .select('*')
@@ -435,16 +382,11 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         .limit(10000);
 
       if (!allClicksError && allClicksData) {
-        // View disponível, processar diretamente
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
-        setData(metricsData);
-        // Salvar no cache
-        sessionStorage.setItem(cacheKey, JSON.stringify({
-          data: metricsData,
-          timestamp: Date.now()
-        }));
-        isFetchingRef.current = false;
-        setLoading(false);
+        if (isMountedRef.current) {
+          setData(metricsData);
+          setLoading(false);
+        }
         return;
       }
 
@@ -453,14 +395,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       
       const BATCH_SIZE = 50;
       
-      // Buscar IDs dos smartlinks
       const { data: smartlinks } = await supabase
         .from('smart_links')
         .select('id')
         .eq('user_id', userId)
         .limit(500);
 
-      // Buscar IDs dos presaves
       const { data: presaves } = await supabase
         .from('presaves')
         .select('id')
@@ -473,7 +413,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       let allSmartlinkClicks: any[] = [];
       let allPresaveClicks: any[] = [];
 
-      // Buscar smartlink clicks em batches
       for (let i = 0; i < smartlinkIds.length; i += BATCH_SIZE) {
         const batch = smartlinkIds.slice(i, i + BATCH_SIZE);
         if (batch.length === 0) continue;
@@ -488,7 +427,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         if (clicks) allSmartlinkClicks = [...allSmartlinkClicks, ...clicks];
       }
 
-      // Buscar presave clicks em batches
       for (let i = 0; i < presaveIds.length; i += BATCH_SIZE) {
         const batch = presaveIds.slice(i, i + BATCH_SIZE);
         if (batch.length === 0) continue;
@@ -503,7 +441,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         if (clicks) allPresaveClicks = [...allPresaveClicks, ...clicks];
       }
 
-      // Combinar clicks
       const allClicks = [
         ...allSmartlinkClicks.map(c => ({
           ...c,
@@ -523,25 +460,29 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       ];
 
       const metricsData = processClicksToMetrics(allClicks, totalSmartlinks, totalPresaves);
-      setData(metricsData);
-
-      // Salvar no cache
-      sessionStorage.setItem(cacheKey, JSON.stringify({
-        data: metricsData,
-        timestamp: Date.now()
-      }));
+      if (isMountedRef.current) {
+        setData(metricsData);
+      }
 
     } catch (err) {
       console.error('Erro ao buscar métricas:', err);
-      setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
+      if (isMountedRef.current) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
+      }
     } finally {
-      isFetchingRef.current = false;
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [userId, period, getDateRange]);
 
   useEffect(() => {
+    isMountedRef.current = true;
     fetchMetrics();
+    
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [fetchMetrics]);
 
   return { data, loading, error, refetch: fetchMetrics };
