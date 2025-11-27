@@ -102,6 +102,15 @@ export const AuthProvider = ({ children }) => {
           const newUserId = newSession?.user?.id;
 
           // Só atualiza se realmente mudou algo significativo
+          // Evitar tratar SIGNED_IN redundante quando o usuário não mudou
+          if (event === 'SIGNED_IN' && currentUserId === newUserId) {
+            console.log('[Auth] SIGNED_IN redundante: mesmo usuário, ignorando');
+            setSession(newSession);
+            setUser(newSession?.user ?? null);
+            userRef.current = newSession?.user ?? null;
+            return;
+          }
+
           if (currentUserId !== newUserId || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
             setSession(newSession);
             setUser(newSession?.user ?? null);
