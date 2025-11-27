@@ -276,16 +276,7 @@ function processClicksToMetrics(
 }
 
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
-  const [data, setData] = useState<MetricsData | null>(() => {
-    try {
-      const key = userId ? `metrics_cache_${userId}_${period}` : null;
-      if (key) {
-        const cached = sessionStorage.getItem(key);
-        if (cached) return JSON.parse(cached) as MetricsData;
-      }
-    } catch {}
-    return null;
-  });
+  const [data, setData] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { registerGlobalRefetch } = useAuth();
@@ -388,7 +379,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(emptyData);
           console.log('[Metrics] fetchMetrics: sem items, setData empty');
-          try { sessionStorage.setItem(`metrics_cache_${userId}_${period}`, JSON.stringify(emptyData)); } catch {}
           hasInitialMetricsDataRef.current = true;
         }
         return;
@@ -411,7 +401,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(metricsData);
           console.log('[Metrics] fetchMetrics: dados da view all_clicks setados', { clicks: allClicksData.length });
-          try { sessionStorage.setItem(`metrics_cache_${userId}_${period}`, JSON.stringify(metricsData)); } catch {}
           hasInitialMetricsDataRef.current = true;
         }
         return;
@@ -518,12 +507,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   }, [userId, period, getDateRange, nextRequest]);
 
   useEffect(() => {
-    // Hidratar do cache para evitar bloquear UI
-    if (data) {
-      hasInitialMetricsDataRef.current = true;
-      setLoading(false);
-      console.log('[Metrics] effect: cache presente, setLoading(false)');
-    }
+    // Sem cache: sempre revalidar e controlar loading via hasInitialMetricsDataRef
     fetchMetrics();
     // Registrar refetch global (visibilidade volta a 'visible' com user válido)
     const unregister = registerGlobalRefetch(() => {

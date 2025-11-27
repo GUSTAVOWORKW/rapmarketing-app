@@ -221,33 +221,16 @@ const UserDashboard: React.FC = () => {
   const { user, profile, initializing, registerGlobalRefetch } = useAuth();
 
   // Estados principais
-  const [stats, setStats] = useState(() => {
-    try {
-      const key = user?.id ? `dashboard_stats_${user.id}` : null;
-      if (key) {
-        const cached = sessionStorage.getItem(key);
-        if (cached) return JSON.parse(cached);
-      }
-    } catch {}
-    return {
-      smartLinks: 0,
-      presaves: 0,
-      totalViews: 0,
-      totalClicks: 0
-    };
+  const [stats, setStats] = useState({
+    smartLinks: 0,
+    presaves: 0,
+    totalViews: 0,
+    totalClicks: 0
   });
-  const [recentLinks, setRecentLinks] = useState<any[]>(() => {
-    try {
-      const key = user?.id ? `dashboard_recent_${user.id}` : null;
-      if (key) {
-        const cached = sessionStorage.getItem(key);
-        if (cached) return JSON.parse(cached);
-      }
-    } catch {}
-    return [];
-  });
+  const [recentLinks, setRecentLinks] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const hasInitialDashboardDataRef = useRef(false);
+  // Sem cache: sempre buscar dados atualizados
   const [showAllTips, setShowAllTips] = useState(false);
   const loadingTimeoutRef = useRef<number | null>(null);
 
@@ -434,10 +417,6 @@ const UserDashboard: React.FC = () => {
         setStats(newStats);
         setRecentLinks(linksData || []);
         console.log('[Dashboard] fetchDashboardData: dados atualizados', { newStats, recentCount: (linksData || []).length });
-        try {
-          sessionStorage.setItem(`dashboard_stats_${userId}`, JSON.stringify(newStats));
-          sessionStorage.setItem(`dashboard_recent_${userId}`, JSON.stringify(linksData || []));
-        } catch {}
   hasInitialDashboardDataRef.current = true;
       }
     } catch (error) {
