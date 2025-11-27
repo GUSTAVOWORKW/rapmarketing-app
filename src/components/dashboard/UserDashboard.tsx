@@ -823,14 +823,16 @@ const UserDashboard: React.FC = () => {
             <FaRocket className="text-3xl mb-3 opacity-80" />
             <h3 className="font-bold text-lg mb-2">Impulsione sua carreira!</h3>
             <p className="text-sm text-white/80 mb-4">
-              Use todos os recursos da plataforma para maximizar seu alcance.
+              Conheça nossos serviços de marketing musical e leve sua carreira ao próximo nível.
             </p>
-            <button
-              onClick={() => navigate('/criar-smart-link')}
-              className="w-full py-2.5 bg-white text-[#3100ff] rounded-xl font-bold hover:bg-gray-100 transition-colors"
+            <a
+              href="https://rapmarketing.com.br/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 bg-white text-[#3100ff] rounded-xl font-bold hover:bg-gray-100 transition-colors block text-center"
             >
-              Começar agora
-            </button>
+              Conhecer Rapmarketing
+            </a>
           </div>
         </div>
       </div>
