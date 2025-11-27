@@ -319,11 +319,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
   const fetchMetrics = useCallback(async () => {
     const { controller, currentRequestId } = nextRequest();
+    console.log('[Metrics] fetchMetrics: start', { userId, period, currentRequestId });
 
     if (!userId) {
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setLoading(false);
       }
+      console.log('[Metrics] fetchMetrics: sem userId, finalizando loading');
       return;
     }
 
@@ -331,10 +333,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       // Stale-while-revalidate: só mostra loading se ainda não temos dados iniciais
       setLoading(!hasInitialMetricsDataRef.current);
       setError(null);
+      console.log('[Metrics] fetchMetrics: setLoading', { loading: !hasInitialMetricsDataRef.current });
     }
 
     try {
   const { start, end } = getDateRange(period);
+      console.log('[Metrics] fetchMetrics: range', { start, end });
 
       // Buscar contagem de smart_links do usuário
       // Removido .abortSignal(signal) para evitar problemas com a biblioteca Supabase
@@ -383,6 +387,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         };
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(emptyData);
+          console.log('[Metrics] fetchMetrics: sem items, setData empty');
           try { sessionStorage.setItem(`metrics_cache_${userId}_${period}`, JSON.stringify(emptyData)); } catch {}
           hasInitialMetricsDataRef.current = true;
         }
@@ -405,6 +410,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
         if (isMountedRef.current && requestIdRef.current === currentRequestId) {
           setData(metricsData);
+          console.log('[Metrics] fetchMetrics: dados da view all_clicks setados', { clicks: allClicksData.length });
           try { sessionStorage.setItem(`metrics_cache_${userId}_${period}`, JSON.stringify(metricsData)); } catch {}
           hasInitialMetricsDataRef.current = true;
         }
@@ -489,6 +495,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       const metricsData = processClicksToMetrics(allClicks, totalSmartlinks, totalPresaves);
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setData(metricsData);
+        console.log('[Metrics] fetchMetrics: dados do fallback setados', { total: allClicks.length });
       }
 
     } catch (err) {
@@ -499,11 +506,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
+        console.log('[Metrics] fetchMetrics: error set', { message: err instanceof Error ? err.message : String(err) });
       }
     } finally {
       // Só atualiza o loading se este for o ID ATUAL
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
         setLoading(false);
+        console.log('[Metrics] fetchMetrics: finalizando loading');
       }
     }
   }, [userId, period, getDateRange, nextRequest]);
@@ -513,10 +522,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     if (data) {
       hasInitialMetricsDataRef.current = true;
       setLoading(false);
+      console.log('[Metrics] effect: cache presente, setLoading(false)');
     }
     fetchMetrics();
     // Registrar refetch global (visibilidade volta a 'visible' com user válido)
     const unregister = registerGlobalRefetch(() => {
+      console.log('[Metrics] globalRefetch: executando revalidação');
       fetchMetrics();
     });
     return () => {

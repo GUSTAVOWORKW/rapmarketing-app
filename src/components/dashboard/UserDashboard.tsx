@@ -378,6 +378,7 @@ const UserDashboard: React.FC = () => {
       if (isMountedRef.current) {
         setLoadingData(false);
       }
+      console.log('[Dashboard] fetchDashboardData: sem userId, finalizando loading');
       return;
     }
 
@@ -393,6 +394,7 @@ const UserDashboard: React.FC = () => {
 
     // Só mostrar loading se ainda não temos dados iniciais
     if (isMountedRef.current && !hasInitialDashboardDataRef.current) {
+      console.log('[Dashboard] fetchDashboardData: mostrando loading inicial');
       setLoadingData(true);
     }
 
@@ -431,6 +433,7 @@ const UserDashboard: React.FC = () => {
 
         setStats(newStats);
         setRecentLinks(linksData || []);
+        console.log('[Dashboard] fetchDashboardData: dados atualizados', { newStats, recentCount: (linksData || []).length });
         try {
           sessionStorage.setItem(`dashboard_stats_${userId}`, JSON.stringify(newStats));
           sessionStorage.setItem(`dashboard_recent_${userId}`, JSON.stringify(linksData || []));
@@ -443,6 +446,7 @@ const UserDashboard: React.FC = () => {
     } finally {
       if (isMountedRef.current && dashboardRequestIdRef.current === currentRequestId) {
         setLoadingData(false);
+        console.log('[Dashboard] fetchDashboardData: finalizando loading');
       }
     }
   };
@@ -454,23 +458,34 @@ const UserDashboard: React.FC = () => {
     if (!userId) {
       setLoadingData(false);
       setLoadingSpotify(false);
+      console.log('[Dashboard] effect: sem userId, não busca');
       return;
     }
 
-    fetchDashboardData();
-    fetchSpotifyData();
+  console.log('[Dashboard] effect: iniciando fetchDashboardData & fetchSpotifyData');
+  fetchDashboardData();
+  fetchSpotifyData();
 
     // Revalidação global via AuthContext: registra callbacks
     const unregister = registerGlobalRefetch(() => {
       if (user?.id) {
+        console.log('[Dashboard] globalRefetch: executando revalidação');
         fetchDashboardData();
         fetchSpotifyData();
+      } else {
+        console.log('[Dashboard] globalRefetch: ignorado, sem userId');
       }
     });
 
     return () => {
-      if (dashboardAbortControllerRef.current) dashboardAbortControllerRef.current.abort();
-      if (spotifyAbortControllerRef.current) spotifyAbortControllerRef.current.abort();
+      if (dashboardAbortControllerRef.current) {
+        dashboardAbortControllerRef.current.abort();
+        console.log('[Dashboard] cleanup: abort dashboard request');
+      }
+      if (spotifyAbortControllerRef.current) {
+        spotifyAbortControllerRef.current.abort();
+        console.log('[Dashboard] cleanup: abort spotify request');
+      }
       unregister && unregister();
       // nada
     };

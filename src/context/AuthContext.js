@@ -58,14 +58,17 @@ export const AuthProvider = ({ children }) => {
 
     const setupAuth = async () => {
       try {
+        console.log('[Auth] setupAuth: iniciando getSession');
         // 1. Obter sessão atual apenas uma vez na inicialização
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         if (!mounted) return;
 
         setSession(initialSession);
         setUser(initialSession?.user ?? null);
+        console.log('[Auth] getSession:', { hasSession: !!initialSession, userId: initialSession?.user?.id });
 
         if (initialSession?.user) {
+          console.log('[Auth] getSession: user presente, buscando profile');
           await fetchProfile(initialSession.user.id, true);
         }
       } catch (error) {
@@ -73,6 +76,7 @@ export const AuthProvider = ({ children }) => {
       } finally {
         // Garantir que initializing fique false uma única vez, mesmo em caso de erro
         if (mounted) {
+          console.log('[Auth] setupAuth: finalizando initializing=false');
           setInitializing(false);
         }
       }
@@ -81,12 +85,14 @@ export const AuthProvider = ({ children }) => {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, newSession) => {
           if (!mounted) return;
+          console.log('[Auth] onAuthStateChange:', event, { newUserId: newSession?.user?.id });
           
           // Ignora eventos que não mudam realmente o estado de autenticação
           // TOKEN_REFRESHED acontece frequentemente e não precisa re-buscar profile
           if (event === 'TOKEN_REFRESHED') {
             // Apenas atualiza a sessão, não rebusca o profile
             setSession(newSession);
+            console.log('[Auth] TOKEN_REFRESHED: session atualizada, sem re-fetch de profile');
             return;
           }
 
@@ -97,16 +103,19 @@ export const AuthProvider = ({ children }) => {
           if (currentUserId !== newUserId || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
             setSession(newSession);
             setUser(newSession?.user ?? null);
+            console.log('[Auth] session/user atualizados:', { event, currentUserId, newUserId });
 
             if (newSession?.user) {
               // Força re-fetch apenas em login real
               if (event === 'SIGNED_IN') {
                 lastFetchedUserIdRef.current = null;
+                console.log('[Auth] SIGNED_IN: reset lastFetchedUserId, buscando profile');
               }
               await fetchProfile(newSession.user.id, false);
             } else {
               setProfile(null);
               lastFetchedUserIdRef.current = null;
+              console.log('[Auth] SIGNED_OUT: limpando profile');
             }
           }
         }
@@ -124,10 +133,12 @@ export const AuthProvider = ({ children }) => {
       const state = document.visibilityState;
       if (!mounted) return;
       setAppVisibility(state);
+      console.log('[Auth] visibilitychange:', state, { hasUser: !!user?.id });
       // Quando voltar para visível e houver usuário válido, dispare revalidação global com debounce simples
       if (state === 'visible' && (user?.id)) {
         // Debounce: agenda no próximo tick para evitar múltiplas execuções em sequência
         setTimeout(() => {
+          console.log('[Auth] visibilitychange: disparando refetch callbacks');
           globalRefetchCallbacksRef.current.forEach(cb => {
             try { cb(); } catch (e) { /* noop */ }
           });

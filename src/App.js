@@ -42,6 +42,7 @@ const ProtectedRoutes = () => {
   }, [isInitialMount]);
 
   if (initializing && isInitialMount) {
+    console.log('[Routes] ProtectedRoutes: initializing on initial mount, showing LoadingScreen');
     return <LoadingScreen />;
   }
 
@@ -51,10 +52,12 @@ const ProtectedRoutes = () => {
 
   // Se o profile ainda não foi carregado, evita decidir e mostra uma tela de loading leve
   if (profile === null) {
+    console.log('[Routes] ProtectedRoutes: profile ainda nulo, aguardando para decidir rota');
     return <LoadingScreen />;
   }
 
   if (!profile?.username) {
+    console.log('[Routes] ProtectedRoutes: sem username, redirecionando para /choose-username');
     return <Navigate to="/choose-username" replace />;
   }
 
@@ -88,6 +91,7 @@ const AppRoutes = () => {
   }, [isInitialMount]);
 
   if (initializing && isInitialMount) {
+    console.log('[Routes] AppRoutes: initializing on initial mount, showing LoadingScreen');
     return <LoadingScreen />;
   }
 
