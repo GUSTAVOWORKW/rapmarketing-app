@@ -490,6 +490,13 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       if (err instanceof Error && err.name === 'AbortError') return;
 
       console.error('Erro ao buscar métricas:', err);
+      
+      // Se for erro 400 (Bad Request), provavelmente é um problema de requisição que não deve travar o loading
+      // Mas vamos logar para debug
+      if (typeof err === 'object' && err !== null && 'code' in err && (err as any).code === '400') {
+         console.warn('Erro 400 detectado, ignorando para evitar loading infinito');
+      }
+
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
       }

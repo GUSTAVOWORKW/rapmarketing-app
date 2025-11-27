@@ -248,6 +248,10 @@ const UserDashboard: React.FC = () => {
     return Math.round((stats.totalClicks / stats.totalViews) * 100);
   }, [stats.totalViews, stats.totalClicks]);
 
+  // Refs para controle de requisições
+  const dashboardAbortControllerRef = useRef<AbortController | null>(null);
+  const spotifyAbortControllerRef = useRef<AbortController | null>(null);
+
   // Função para conectar com Spotify
   const handleConnectSpotify = async () => {
     if (!user) return;
@@ -277,149 +281,155 @@ const UserDashboard: React.FC = () => {
   };
 
   // Carregar dados do Spotify
-  useEffect(() => {
+  const fetchSpotifyData = async () => {
     const userId = user?.id;
+    if (!userId) return;
+
+    // Cancelar anterior
+    if (spotifyAbortControllerRef.current) {
+      spotifyAbortControllerRef.current.abort();
+    }
+
     const abortController = new AbortController();
+    spotifyAbortControllerRef.current = abortController;
     const signal = abortController.signal;
 
+    if (isMountedRef.current) {
+      setLoadingSpotify(true);
+    }
+    
+    try {
+      const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
+      
+      if (!hasSpotify) {
+        if (isMountedRef.current && spotifyAbortControllerRef.current === abortController) {
+          setSpotifyConnected(false);
+          setLoadingSpotify(false);
+        }
+        return;
+      }
+
+      // Se foi abortado durante a verificação
+      if (signal.aborted) return;
+
+      const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
+        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
+        spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term'),
+        spotifyTokenService.makeSpotifyRequest(userId, '/me')
+      ]);
+
+      if (signal.aborted) return;
+
+      if (isMountedRef.current) {
+        const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
+        const tracksData = tracksResponse.ok ? await tracksResponse.json() : { items: [] };
+        const userData = userResponse.ok ? await userResponse.json() : {};
+
+        setTopArtists(artistsData.items || []);
+        setTopTracks(tracksData.items || []);
+        setSpotifyFollowers(userData.followers?.total ?? null);
+        setSpotifyConnected(true);
+      }
+    } catch (error) {
+      if (signal.aborted) return;
+      console.error('Erro ao buscar dados do Spotify:', error);
+      if (isMountedRef.current) setSpotifyConnected(false);
+    } finally {
+      if (isMountedRef.current && spotifyAbortControllerRef.current === abortController) {
+        setLoadingSpotify(false);
+      }
+    }
+  };
+
+  // Carregar dados do dashboard
+  const fetchDashboardData = async () => {
+    const userId = user?.id;
+    if (!userId) return;
+
+    // Cancelar anterior
+    if (dashboardAbortControllerRef.current) {
+      dashboardAbortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    dashboardAbortControllerRef.current = abortController;
+    const signal = abortController.signal;
+
+    if (isMountedRef.current) {
+      setLoadingData(true);
+    }
+
+    try {
+      // Buscar dados em paralelo
+      const [
+        { count: smartLinksCount },
+        { count: presavesCount },
+        { data: linksData },
+        { data: allLinksForMetrics }
+      ] = await Promise.all([
+        supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
+        supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
+        supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4).abortSignal(signal),
+        supabase.from('smart_links').select('view_count').eq('user_id', userId).abortSignal(signal)
+      ]);
+
+      if (signal.aborted) return;
+
+      if (isMountedRef.current) {
+        let totalViews = 0;
+        
+        if (allLinksForMetrics) {
+          allLinksForMetrics.forEach((link: any) => {
+            totalViews += link.view_count || 0;
+          });
+        }
+
+        const newStats = {
+          smartLinks: smartLinksCount ?? 0,
+          presaves: presavesCount ?? 0,
+          totalViews,
+          totalClicks: 0
+        };
+
+        setStats(newStats);
+        setRecentLinks(linksData || []);
+      }
+    } catch (error) {
+      if (signal.aborted) return;
+      if (error instanceof Error && error.name === 'AbortError') return;
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      if (isMountedRef.current && dashboardAbortControllerRef.current === abortController) {
+        setLoadingData(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const userId = user?.id;
+
     if (!userId || initializing) {
-      if (!userId && !initializing) setLoadingSpotify(false);
+      if (!userId && !initializing) {
+        setLoadingData(false);
+        setLoadingSpotify(false);
+      }
       return;
     }
 
-    const fetchSpotifyData = async () => {
-      if (isMountedRef.current) {
-        setLoadingSpotify(true);
-      }
-      
-      try {
-        const hasSpotify = await spotifyTokenService.hasValidSpotifyConnection(userId);
-        
-        if (!hasSpotify) {
-          if (isMountedRef.current) {
-            setSpotifyConnected(false);
-            setLoadingSpotify(false);
-          }
-          return;
-        }
-
-        const [artistsResponse, tracksResponse, userResponse] = await Promise.all([
-          spotifyTokenService.makeSpotifyRequest(userId, '/me/top/artists?limit=5&time_range=long_term'),
-          spotifyTokenService.makeSpotifyRequest(userId, '/me/top/tracks?limit=5&time_range=long_term'),
-          spotifyTokenService.makeSpotifyRequest(userId, '/me')
-        ]);
-
-        if (signal.aborted) return;
-
-        if (isMountedRef.current) {
-          const artistsData = artistsResponse.ok ? await artistsResponse.json() : { items: [] };
-          const tracksData = tracksResponse.ok ? await tracksResponse.json() : { items: [] };
-          const userData = userResponse.ok ? await userResponse.json() : {};
-
-          setTopArtists(artistsData.items || []);
-          setTopTracks(tracksData.items || []);
-          setSpotifyFollowers(userData.followers?.total ?? null);
-          setSpotifyConnected(true);
-        }
-      } catch (error) {
-        if (signal.aborted) return;
-        console.error('Erro ao buscar dados do Spotify:', error);
-        if (isMountedRef.current) setSpotifyConnected(false);
-      } finally {
-        if (isMountedRef.current && !signal.aborted) {
-          setLoadingSpotify(false);
-        }
-      }
-    };
-
+    fetchDashboardData();
     fetchSpotifyData();
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
+        fetchDashboardData();
         fetchSpotifyData();
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      abortController.abort();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [user?.id, initializing]);
-
-  // Carregar dados do dashboard
-  useEffect(() => {
-    const userId = user?.id;
-    const abortController = new AbortController();
-    const signal = abortController.signal;
-
-    if (!userId || initializing) {
-      if (!userId && !initializing) setLoadingData(false);
-      return;
-    }
-
-    const fetchDashboardData = async () => {
-      if (isMountedRef.current) {
-        setLoadingData(true);
-      }
-
-      try {
-        // Buscar dados em paralelo
-        const [
-          { count: smartLinksCount },
-          { count: presavesCount },
-          { data: linksData },
-          { data: allLinksForMetrics }
-        ] = await Promise.all([
-          supabase.from('smart_links').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
-          supabase.from('presaves').select('*', { count: 'exact', head: true }).eq('user_id', userId).abortSignal(signal),
-          supabase.from('smart_links').select('id, artist_name, release_title, slug, template_id, created_at, view_count').eq('user_id', userId).order('created_at', { ascending: false }).limit(4).abortSignal(signal),
-          supabase.from('smart_links').select('view_count').eq('user_id', userId).abortSignal(signal)
-        ]);
-
-        if (signal.aborted) return;
-
-        if (isMountedRef.current) {
-          let totalViews = 0;
-          
-          if (allLinksForMetrics) {
-            allLinksForMetrics.forEach((link: any) => {
-              totalViews += link.view_count || 0;
-            });
-          }
-
-          const newStats = {
-            smartLinks: smartLinksCount ?? 0,
-            presaves: presavesCount ?? 0,
-            totalViews,
-            totalClicks: 0
-          };
-
-          setStats(newStats);
-          setRecentLinks(linksData || []);
-        }
-      } catch (error) {
-        if (signal.aborted) return;
-        if (error instanceof Error && error.name === 'AbortError') return;
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        if (isMountedRef.current && !signal.aborted) {
-          setLoadingData(false);
-        }
-      }
-    };
-
-    fetchDashboardData();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchDashboardData();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      abortController.abort();
+      if (dashboardAbortControllerRef.current) dashboardAbortControllerRef.current.abort();
+      if (spotifyAbortControllerRef.current) spotifyAbortControllerRef.current.abort();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [user?.id, initializing]);
