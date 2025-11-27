@@ -1,5 +1,5 @@
 // hooks/useMetricsData.ts
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../services/supabase';
 
 // Tipos para os dados de métricas
@@ -275,33 +275,34 @@ function processClicksToMetrics(
 
 // Constantes de cache
 const METRICS_CACHE_PREFIX = 'metrics_data_';
-const METRICS_CACHE_DURATION = 3 * 60 * 1000; // 3 minutos
+const METRICS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-// Ref global para evitar chamadas duplicadas entre re-renders
-const fetchedMetricsRef: { [key: string]: boolean } = {};
+// Função para obter dados do cache
+function getCachedMetricsData(userId: string | undefined, period: Period): MetricsData | null {
+  if (!userId) return null;
+  try {
+    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
+        return data;
+      }
+    }
+  } catch { /* ignore */ }
+  return null;
+}
 
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
-  // Verificar cache antes de inicializar estados
-  const getCachedData = (): MetricsData | null => {
-    if (!userId) return null;
-    try {
-      const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
-          return data;
-        }
-      }
-    } catch { /* ignore */ }
-    return null;
-  };
-
-  const cachedData = getCachedData();
+  // Inicializar do cache se disponível
+  const initialData = useMemo(() => getCachedMetricsData(userId, period), [userId, period]);
   
-  const [data, setData] = useState<MetricsData | null>(cachedData);
-  const [loading, setLoading] = useState(!cachedData);
+  const [data, setData] = useState<MetricsData | null>(initialData);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
+  
+  // Ref para evitar fetch duplicado no mesmo ciclo
+  const isFetchingRef = useRef(false);
 
   const getDateRange = useCallback((p: Period) => {
     const now = new Date();
@@ -334,28 +335,29 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       return;
     }
 
-    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
-    
-    // Verificar se já buscamos nesta sessão
-    if (fetchedMetricsRef[cacheKey]) {
-      setLoading(false);
+    // Evitar fetch duplicado
+    if (isFetchingRef.current) {
       return;
     }
 
-    // Verificar cache primeiro
+    const cacheKey = `${METRICS_CACHE_PREFIX}${userId}_${period}`;
+
+    // Verificar cache primeiro - se válido, usar e não buscar novamente
     try {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         const { data: cachedData, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < METRICS_CACHE_DURATION) {
+          // Cache válido - atualizar estado se diferente e retornar
           setData(cachedData);
           setLoading(false);
-          fetchedMetricsRef[cacheKey] = true;
           return;
         }
       }
     } catch { /* ignore */ }
 
+    // Sem cache válido - buscar da API
+    isFetchingRef.current = true;
     setLoading(true);
     setError(null);
 
@@ -410,7 +412,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           data: emptyData,
           timestamp: Date.now()
         }));
-        fetchedMetricsRef[cacheKey] = true;
+        isFetchingRef.current = false;
         setLoading(false);
         return;
       }
@@ -434,7 +436,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           data: metricsData,
           timestamp: Date.now()
         }));
-        fetchedMetricsRef[cacheKey] = true;
+        isFetchingRef.current = false;
         setLoading(false);
         return;
       }
@@ -521,12 +523,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         data: metricsData,
         timestamp: Date.now()
       }));
-      fetchedMetricsRef[cacheKey] = true;
 
     } catch (err) {
       console.error('Erro ao buscar métricas:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
     }
   }, [userId, period, getDateRange]);
