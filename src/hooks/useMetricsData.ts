@@ -274,7 +274,7 @@ function processClicksToMetrics(
   };
 }
 
-export function useMetricsData(userId: string | undefined, period: Period = '30d') {
+export function useMetricsData(userId: string | undefined, period: Period = '30d', itemId?: string) {
   const [data, setData] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -312,7 +312,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
 
   const fetchMetrics = useCallback(async () => {
     const { controller, currentRequestId } = nextRequest();
-    console.log('[Metrics] fetchMetrics: start', { userId, period, currentRequestId });
+    console.log('[Metrics] fetchMetrics: start', { userId, period, itemId, currentRequestId });
 
     if (!userId) {
       if (isMountedRef.current && requestIdRef.current === currentRequestId) {
@@ -332,6 +332,70 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     try {
   const { start, end } = getDateRange(period);
       console.log('[Metrics] fetchMetrics: range', { start, end });
+
+      // Se tiver itemId, buscar apenas esse item específico
+      if (itemId) {
+        // Primeiro, descobrir se é smartlink ou presave
+        const { data: smartlink } = await supabase
+          .from('smart_links')
+          .select('id')
+          .eq('id', itemId)
+          .eq('user_id', userId)
+          .single();
+
+        const isSmartlink = !!smartlink;
+
+        // Buscar clicks do item específico
+        let allClicks: any[] = [];
+
+        if (isSmartlink) {
+          const { data: clicks } = await supabase
+            .from('smartlink_clicks')
+            .select('*')
+            .eq('smartlink_id', itemId)
+            .gte('clicked_at', start)
+            .lte('clicked_at', end)
+            .order('clicked_at', { ascending: false })
+            .limit(10000);
+
+          if (clicks) {
+            allClicks = clicks.map(c => ({
+              ...c,
+              type: 'smartlink',
+              link_id: c.smartlink_id,
+              is_page_view: c.is_general_click || false,
+              os: c.os_type,
+              browser: c.browser_type
+            }));
+          }
+        } else {
+          const { data: clicks } = await supabase
+            .from('presave_clicks')
+            .select('*')
+            .eq('presave_id', itemId)
+            .gte('clicked_at', start)
+            .lte('clicked_at', end)
+            .order('clicked_at', { ascending: false })
+            .limit(10000);
+
+          if (clicks) {
+            allClicks = clicks.map(c => ({
+              ...c,
+              type: 'presave',
+              link_id: c.presave_id,
+              os: c.os_type,
+              browser: c.browser_type
+            }));
+          }
+        }
+
+        const metricsData = processClicksToMetrics(allClicks, isSmartlink ? 1 : 0, isSmartlink ? 0 : 1);
+        if (isMountedRef.current && requestIdRef.current === currentRequestId) {
+          setData(metricsData);
+          hasInitialMetricsDataRef.current = true;
+        }
+        return;
+      }
 
       // Buscar contagem de smart_links do usuário
       // Removido .abortSignal(signal) para evitar problemas com a biblioteca Supabase
@@ -506,7 +570,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         console.log('[Metrics] fetchMetrics: finalizando loading');
       }
     }
-  }, [userId, period, getDateRange, nextRequest]);
+  }, [userId, period, itemId, getDateRange, nextRequest]);
 
   // Efeito para recarregar dados quando aba volta a ficar visível
   useEffect(() => {

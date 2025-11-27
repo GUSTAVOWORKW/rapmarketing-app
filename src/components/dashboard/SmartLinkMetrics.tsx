@@ -105,14 +105,80 @@ const DEVICE_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
 // COMPONENTE PRINCIPAL
 // ============================================================================
 
+interface ItemDetails {
+  id: string;
+  title: string;
+  artist_name?: string;
+  type: 'smartlink' | 'presave';
+  created_at: string;
+  slug?: string;
+  artwork_url?: string;
+}
+
 const SmartLinkMetrics: React.FC = () => {
-  const { id: smartLinkId } = useParams<{ id?: string }>();
+  const { id: itemId } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<Period>('30d');
   const [activeTab, setActiveTab] = useState<'overview' | 'detailed' | 'items'>('overview');
+  const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
+  const [loadingItem, setLoadingItem] = useState(false);
 
-  const { data: metrics, loading, error, refetch } = useMetricsData(user?.id, selectedPeriod);
+  // Se tiver itemId, mostra a view de detalhes do item específico
+  const isItemDetail = !!itemId;
+
+  const { data: metrics, loading, error, refetch } = useMetricsData(user?.id, selectedPeriod, itemId);
+
+  // Buscar detalhes do item específico
+  React.useEffect(() => {
+    async function fetchItemDetails() {
+      if (!itemId || !user?.id) return;
+      
+      setLoadingItem(true);
+      try {
+        // Tentar buscar como smartlink primeiro
+        const { data: smartlink } = await import('../../services/supabase').then(m =>
+          m.supabase.from('smart_links').select('*').eq('id', itemId).eq('user_id', user.id).single()
+        );
+        
+        if (smartlink) {
+          setItemDetails({
+            id: smartlink.id,
+            title: smartlink.release_title || smartlink.title || 'Sem título',
+            artist_name: smartlink.artist_name,
+            type: 'smartlink',
+            created_at: smartlink.created_at,
+            slug: smartlink.slug,
+            artwork_url: smartlink.artwork_url
+          });
+          return;
+        }
+
+        // Tentar buscar como presave
+        const { data: presave } = await import('../../services/supabase').then(m =>
+          m.supabase.from('presaves').select('*').eq('id', itemId).eq('user_id', user.id).single()
+        );
+        
+        if (presave) {
+          setItemDetails({
+            id: presave.id,
+            title: presave.track_name || 'Sem título',
+            artist_name: presave.artist_name,
+            type: 'presave',
+            created_at: presave.created_at,
+            slug: presave.shareable_slug,
+            artwork_url: presave.artwork_url
+          });
+        }
+      } catch (err) {
+        console.error('Erro ao buscar detalhes do item:', err);
+      } finally {
+        setLoadingItem(false);
+      }
+    }
+
+    fetchItemDetails();
+  }, [itemId, user?.id]);
 
   // Formatadores
   const formatNumber = (num: number) => {
@@ -189,19 +255,37 @@ const SmartLinkMetrics: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => isItemDetail ? navigate('/dashboard/metrics') : navigate('/dashboard')}
               className="p-2 rounded-xl bg-white shadow-md hover:shadow-lg transition-all"
             >
               <FaArrowLeft className="text-gray-600" />
             </button>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-[#3100ff] to-[#a259ff] flex items-center justify-center mr-3">
-                  <FaChartBar className="text-white text-xl" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 ${
+                  isItemDetail && itemDetails?.type === 'presave' 
+                    ? 'bg-gradient-to-r from-[#a259ff] to-pink-500'
+                    : 'bg-gradient-to-r from-[#3100ff] to-[#a259ff]'
+                }`}>
+                  {isItemDetail ? (
+                    itemDetails?.type === 'presave' ? <FaMusic className="text-white text-xl" /> : <FaLink className="text-white text-xl" />
+                  ) : (
+                    <FaChartBar className="text-white text-xl" />
+                  )}
                 </div>
-                Métricas
+                {isItemDetail && itemDetails ? itemDetails.title : 'Métricas'}
               </h1>
-              <p className="text-gray-600">Análise completa de performance</p>
+              <p className="text-gray-600">
+                {isItemDetail && itemDetails ? (
+                  <>
+                    {itemDetails.type === 'smartlink' ? 'Smart Link' : 'Presave'}
+                    {itemDetails.artist_name && ` • ${itemDetails.artist_name}`}
+                    {` • Criado em ${new Date(itemDetails.created_at).toLocaleDateString('pt-BR')}`}
+                  </>
+                ) : (
+                  'Análise completa de performance'
+                )}
+              </p>
             </div>
           </div>
 
@@ -239,19 +323,65 @@ const SmartLinkMetrics: React.FC = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex bg-white rounded-xl p-1 shadow-md w-fit">
-          {[
-            { id: 'overview', label: 'Visão Geral', icon: FaChartBar },
-            { id: 'detailed', label: 'Detalhado', icon: FaEye },
-            { id: 'items', label: 'Meus Itens', icon: FaLink }
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as typeof activeTab)}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
+        {/* Card de Detalhes do Item (apenas quando está vendo item específico) */}
+        {isItemDetail && itemDetails && (
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="flex items-center space-x-6">
+              {itemDetails.artwork_url && (
+                <img 
+                  src={itemDetails.artwork_url} 
+                  alt={itemDetails.title}
+                  className="w-24 h-24 rounded-xl object-cover shadow-md"
+                />
+              )}
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    itemDetails.type === 'smartlink' 
+                      ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white'
+                      : 'bg-gradient-to-r from-[#a259ff] to-pink-500 text-white'
+                  }`}>
+                    {itemDetails.type === 'smartlink' ? 'Smart Link' : 'Presave'}
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">{itemDetails.title}</h2>
+                {itemDetails.artist_name && (
+                  <p className="text-gray-600">{itemDetails.artist_name}</p>
+                )}
+                {itemDetails.slug && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    rapmarketing.link/{itemDetails.type === 'smartlink' ? 'sl' : 'presave'}/{itemDetails.slug}
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-gradient-to-r from-[#3100ff]/10 to-[#a259ff]/10 rounded-xl">
+                  <div className="text-2xl font-bold text-[#3100ff]">{metrics?.summary.total_clicks || 0}</div>
+                  <div className="text-xs text-gray-600">Clicks</div>
+                </div>
+                <div className="text-center p-4 bg-gradient-to-r from-[#a259ff]/10 to-[#ffb300]/10 rounded-xl">
+                  <div className="text-2xl font-bold text-[#a259ff]">{metrics?.summary.total_views || 0}</div>
+                  <div className="text-xs text-gray-600">Views</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tabs (ocultar se estiver vendo item específico) */}
+        {!isItemDetail && (
+          <div className="flex bg-white rounded-xl p-1 shadow-md w-fit">
+            {[
+              { id: 'overview', label: 'Visão Geral', icon: FaChartBar },
+              { id: 'detailed', label: 'Detalhado', icon: FaEye },
+              { id: 'items', label: 'Meus Itens', icon: FaLink }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-[#3100ff] to-[#a259ff] text-white shadow-md'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -260,11 +390,22 @@ const SmartLinkMetrics: React.FC = () => {
             </button>
           ))}
         </div>
+        )}
 
         {/* Conteúdo das Tabs */}
-        {activeTab === 'overview' && metrics && <OverviewTab metrics={metrics} formatNumber={formatNumber} formatDate={formatDate} getPlatformData={getPlatformData} />}
-        {activeTab === 'detailed' && metrics && <DetailedTab metrics={metrics} />}
-        {activeTab === 'items' && <ItemsTab navigate={navigate} />}
+        {isItemDetail && metrics ? (
+          // Mostrar visão geral e detalhada quando visualizando item específico
+          <>
+            <OverviewTab metrics={metrics} formatNumber={formatNumber} formatDate={formatDate} getPlatformData={getPlatformData} />
+            <DetailedTab metrics={metrics} />
+          </>
+        ) : (
+          <>
+            {activeTab === 'overview' && metrics && <OverviewTab metrics={metrics} formatNumber={formatNumber} formatDate={formatDate} getPlatformData={getPlatformData} />}
+            {activeTab === 'detailed' && metrics && <DetailedTab metrics={metrics} />}
+            {activeTab === 'items' && <ItemsTab navigate={navigate} />}
+          </>
+        )}
       </div>
     </div>
   );
