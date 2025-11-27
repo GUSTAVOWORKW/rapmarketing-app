@@ -150,8 +150,8 @@ const SmartLinkMetrics: React.FC = () => {
     link.click();
   };
 
-  // Loading State
-  if (loading) {
+  // Loading apenas se ainda não há dados (primeiro carregamento).
+  if (loading && !metrics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8f6f2] to-[#e9e6ff] flex items-center justify-center">
         <div className="text-center">

@@ -496,7 +496,8 @@ const UserDashboard: React.FC = () => {
   ];
 
   // Loading state
-  if (initializing || loadingData) {
+  // Mostrar loading apenas antes do primeiro carregamento; não bloquear por initializing após mount
+  if (loadingData) {
     return (
       <div className="flex flex-col justify-center items-center min-h-[60vh] gap-4">
         <div className="w-16 h-16 border-4 border-[#3100ff]/20 border-t-[#3100ff] rounded-full animate-spin" />
