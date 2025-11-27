@@ -83,16 +83,206 @@ export interface MetricsData {
 
 type Period = '7d' | '30d' | '90d' | 'all';
 
+// Função auxiliar para processar clicks em métricas
+function processClicksToMetrics(
+  allClicks: any[],
+  smartlinksCount: number,
+  presavesCount: number
+): MetricsData {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const totalClicks = allClicks.filter(c => !c.is_page_view).length;
+  const totalViews = allClicks.filter(c => c.is_page_view).length;
+  const clicksToday = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= todayStart).length;
+  const clicksWeek = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= weekStart).length;
+  const clicksMonth = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= monthStart).length;
+
+  // Métricas diárias
+  const dailyMap = new Map<string, { clicks: number; views: number }>();
+  allClicks.forEach(click => {
+    const date = new Date(click.clicked_at).toISOString().split('T')[0];
+    const existing = dailyMap.get(date) || { clicks: 0, views: 0 };
+    if (click.is_page_view) {
+      existing.views++;
+    } else {
+      existing.clicks++;
+    }
+    dailyMap.set(date, existing);
+  });
+
+  const daily: DailyMetric[] = Array.from(dailyMap.entries())
+    .map(([date, data]) => ({ date, ...data }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Métricas por plataforma
+  const platformMap = new Map<string, number>();
+  allClicks.filter(c => !c.is_page_view && c.platform_id).forEach(click => {
+    const count = platformMap.get(click.platform_id) || 0;
+    platformMap.set(click.platform_id, count + 1);
+  });
+
+  const platforms: PlatformMetric[] = Array.from(platformMap.entries())
+    .map(([platform_id, clicks]) => ({
+      platform_id,
+      clicks,
+      percentage: totalClicks > 0 ? Math.round((clicks / totalClicks) * 100) : 0
+    }))
+    .sort((a, b) => b.clicks - a.clicks);
+
+  // Métricas por país
+  const countryMap = new Map<string, { count: number; code: string }>();
+  allClicks.filter(c => c.country_name || c.country).forEach(click => {
+    const country = click.country_name || click.country || 'Desconhecido';
+    const code = click.country_code || '';
+    const existing = countryMap.get(country) || { count: 0, code };
+    existing.count++;
+    countryMap.set(country, existing);
+  });
+
+  const totalCountryClicks = Array.from(countryMap.values()).reduce((sum, c) => sum + c.count, 0);
+  const countries: CountryMetric[] = Array.from(countryMap.entries())
+    .map(([country, data]) => ({
+      country,
+      country_code: data.code,
+      count: data.count,
+      percentage: totalCountryClicks > 0 ? Math.round((data.count / totalCountryClicks) * 100) : 0
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Métricas por cidade
+  const cityMap = new Map<string, { count: number; country: string }>();
+  allClicks.filter(c => c.city_name || c.city).forEach(click => {
+    const city = click.city_name || click.city || 'Desconhecida';
+    const country = click.country_name || click.country || '';
+    const key = `${city}-${country}`;
+    const existing = cityMap.get(key) || { count: 0, country };
+    existing.count++;
+    cityMap.set(key, existing);
+  });
+
+  const cities: CityMetric[] = Array.from(cityMap.entries())
+    .map(([key, data]) => ({
+      city: key.split('-')[0],
+      country: data.country,
+      count: data.count
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  // Métricas por dispositivo
+  const deviceMap = new Map<string, number>();
+  allClicks.filter(c => c.device_type).forEach(click => {
+    const device = click.device_type || 'Desconhecido';
+    deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
+  });
+
+  const totalDevices = Array.from(deviceMap.values()).reduce((sum, c) => sum + c, 0);
+  const devices: DeviceMetric[] = Array.from(deviceMap.entries())
+    .map(([device_type, count]) => ({
+      device_type,
+      count,
+      percentage: totalDevices > 0 ? Math.round((count / totalDevices) * 100) : 0
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Métricas por browser
+  const browserMap = new Map<string, number>();
+  allClicks.filter(c => c.browser || c.browser_type).forEach(click => {
+    const browser = click.browser || click.browser_type || 'Desconhecido';
+    browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
+  });
+
+  const totalBrowsers = Array.from(browserMap.values()).reduce((sum, c) => sum + c, 0);
+  const browsers: BrowserMetric[] = Array.from(browserMap.entries())
+    .map(([browser, count]) => ({
+      browser,
+      count,
+      percentage: totalBrowsers > 0 ? Math.round((count / totalBrowsers) * 100) : 0
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Métricas por OS
+  const osMap = new Map<string, number>();
+  allClicks.filter(c => c.os || c.os_type).forEach(click => {
+    const os = click.os || click.os_type || 'Desconhecido';
+    osMap.set(os, (osMap.get(os) || 0) + 1);
+  });
+
+  const totalOS = Array.from(osMap.values()).reduce((sum, c) => sum + c, 0);
+  const osMetrics: OSMetric[] = Array.from(osMap.entries())
+    .map(([os, count]) => ({
+      os,
+      count,
+      percentage: totalOS > 0 ? Math.round((count / totalOS) * 100) : 0
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Métricas por hora do dia
+  const hourlyMap = new Map<number, number>();
+  for (let i = 0; i < 24; i++) hourlyMap.set(i, 0);
+  allClicks.filter(c => !c.is_page_view).forEach(click => {
+    const hour = new Date(click.clicked_at).getHours();
+    hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1);
+  });
+
+  const hourly: HourlyMetric[] = Array.from(hourlyMap.entries())
+    .map(([hour, clicks]) => ({ hour, clicks }))
+    .sort((a, b) => a.hour - b.hour);
+
+  // Métricas por dia da semana
+  const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const weekdayMap = new Map<number, number>();
+  for (let i = 0; i < 7; i++) weekdayMap.set(i, 0);
+  allClicks.filter(c => !c.is_page_view).forEach(click => {
+    const day = new Date(click.clicked_at).getDay();
+    weekdayMap.set(day, (weekdayMap.get(day) || 0) + 1);
+  });
+
+  const weekdays: WeekdayMetric[] = Array.from(weekdayMap.entries())
+    .map(([weekday_num, clicks]) => ({
+      weekday: weekdayNames[weekday_num],
+      weekday_num,
+      clicks
+    }))
+    .sort((a, b) => a.weekday_num - b.weekday_num);
+
+  return {
+    summary: {
+      total_clicks: totalClicks,
+      total_views: totalViews,
+      total_smartlinks: smartlinksCount,
+      total_presaves: presavesCount,
+      click_rate: totalViews > 0 ? Math.round((totalClicks / totalViews) * 100) : 0,
+      clicks_today: clicksToday,
+      clicks_week: clicksWeek,
+      clicks_month: clicksMonth
+    },
+    daily,
+    platforms,
+    countries,
+    cities,
+    devices,
+    browsers,
+    os: osMetrics,
+    hourly,
+    weekdays
+  };
+}
+
 export function useMetricsData(userId: string | undefined, period: Period = '30d') {
   const [data, setData] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const getDateRange = useCallback((period: Period) => {
+  const getDateRange = useCallback((p: Period) => {
     const now = new Date();
     let startDate: Date;
 
-    switch (period) {
+    switch (p) {
       case '7d':
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
@@ -125,27 +315,27 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     try {
       const { start, end } = getDateRange(period);
 
-      // Buscar smart_links do usuário
-      const { data: smartlinks, error: smartlinksError } = await supabase
+      // Buscar contagem de smart_links do usuário
+      const { count: smartlinksCount, error: smartlinksError } = await supabase
         .from('smart_links')
-        .select('id')
+        .select('*', { count: 'exact', head: true })
         .eq('user_id', userId);
 
       if (smartlinksError) throw smartlinksError;
 
-      // Buscar presaves do usuário
-      const { data: presaves, error: presavesError } = await supabase
+      // Buscar contagem de presaves do usuário
+      const { count: presavesCount, error: presavesError } = await supabase
         .from('presaves')
-        .select('id')
+        .select('*', { count: 'exact', head: true })
         .eq('user_id', userId);
 
       if (presavesError) throw presavesError;
 
-      const smartlinkIds = smartlinks?.map(s => s.id) || [];
-      const presaveIds = presaves?.map(p => p.id) || [];
+      const totalSmartlinks = smartlinksCount || 0;
+      const totalPresaves = presavesCount || 0;
 
       // Se não houver items, retornar dados vazios
-      if (smartlinkIds.length === 0 && presaveIds.length === 0) {
+      if (totalSmartlinks === 0 && totalPresaves === 0) {
         setData({
           summary: {
             total_clicks: 0,
@@ -171,37 +361,82 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         return;
       }
 
-      // Buscar clicks de smartlinks
-      let smartlinkClicksQuery = supabase
-        .from('smartlink_clicks')
+      // Tentar usar a view all_clicks primeiro (mais eficiente)
+      const { data: allClicksData, error: allClicksError } = await supabase
+        .from('all_clicks')
         .select('*')
+        .eq('user_id', userId)
         .gte('clicked_at', start)
-        .lte('clicked_at', end);
+        .lte('clicked_at', end)
+        .order('clicked_at', { ascending: false })
+        .limit(10000);
 
-      if (smartlinkIds.length > 0) {
-        smartlinkClicksQuery = smartlinkClicksQuery.in('smartlink_id', smartlinkIds);
+      if (!allClicksError && allClicksData) {
+        // View disponível, processar diretamente
+        const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
+        setData(metricsData);
+        setLoading(false);
+        return;
       }
 
-      const { data: smartlinkClicks, error: clicksError } = await smartlinkClicksQuery;
-      if (clicksError) throw clicksError;
+      // Fallback: buscar clicks em batches
+      console.warn('View all_clicks não disponível, usando fallback...');
+      
+      const BATCH_SIZE = 50;
+      
+      // Buscar IDs dos smartlinks
+      const { data: smartlinks } = await supabase
+        .from('smart_links')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(500);
 
-      // Buscar clicks de presaves
-      let presaveClicksQuery = supabase
-        .from('presave_clicks')
-        .select('*')
-        .gte('clicked_at', start)
-        .lte('clicked_at', end);
+      // Buscar IDs dos presaves
+      const { data: presaves } = await supabase
+        .from('presaves')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(500);
 
-      if (presaveIds.length > 0) {
-        presaveClicksQuery = presaveClicksQuery.in('presave_id', presaveIds);
+      const smartlinkIds = smartlinks?.map(s => s.id) || [];
+      const presaveIds = presaves?.map(p => p.id) || [];
+
+      let allSmartlinkClicks: any[] = [];
+      let allPresaveClicks: any[] = [];
+
+      // Buscar smartlink clicks em batches
+      for (let i = 0; i < smartlinkIds.length; i += BATCH_SIZE) {
+        const batch = smartlinkIds.slice(i, i + BATCH_SIZE);
+        if (batch.length === 0) continue;
+        
+        const { data: clicks } = await supabase
+          .from('smartlink_clicks')
+          .select('*')
+          .in('smartlink_id', batch)
+          .gte('clicked_at', start)
+          .lte('clicked_at', end);
+        
+        if (clicks) allSmartlinkClicks = [...allSmartlinkClicks, ...clicks];
       }
 
-      const { data: presaveClicks, error: presaveClicksError } = await presaveClicksQuery;
-      if (presaveClicksError) throw presaveClicksError;
+      // Buscar presave clicks em batches
+      for (let i = 0; i < presaveIds.length; i += BATCH_SIZE) {
+        const batch = presaveIds.slice(i, i + BATCH_SIZE);
+        if (batch.length === 0) continue;
+        
+        const { data: clicks } = await supabase
+          .from('presave_clicks')
+          .select('*')
+          .in('presave_id', batch)
+          .gte('clicked_at', start)
+          .lte('clicked_at', end);
+        
+        if (clicks) allPresaveClicks = [...allPresaveClicks, ...clicks];
+      }
 
       // Combinar clicks
       const allClicks = [
-        ...(smartlinkClicks || []).map(c => ({
+        ...allSmartlinkClicks.map(c => ({
           ...c,
           type: 'smartlink',
           link_id: c.smartlink_id,
@@ -209,7 +444,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
           os: c.os_type,
           browser: c.browser_type
         })),
-        ...(presaveClicks || []).map(c => ({
+        ...allPresaveClicks.map(c => ({
           ...c,
           type: 'presave',
           link_id: c.presave_id,
@@ -218,192 +453,9 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         }))
       ];
 
-      // Calcular métricas
-      const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const monthStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const metricsData = processClicksToMetrics(allClicks, totalSmartlinks, totalPresaves);
+      setData(metricsData);
 
-      const totalClicks = allClicks.filter(c => !c.is_page_view).length;
-      const totalViews = allClicks.filter(c => c.is_page_view).length;
-      const clicksToday = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= todayStart).length;
-      const clicksWeek = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= weekStart).length;
-      const clicksMonth = allClicks.filter(c => !c.is_page_view && new Date(c.clicked_at) >= monthStart).length;
-
-      // Métricas diárias
-      const dailyMap = new Map<string, { clicks: number; views: number }>();
-      allClicks.forEach(click => {
-        const date = new Date(click.clicked_at).toISOString().split('T')[0];
-        const existing = dailyMap.get(date) || { clicks: 0, views: 0 };
-        if (click.is_page_view) {
-          existing.views++;
-        } else {
-          existing.clicks++;
-        }
-        dailyMap.set(date, existing);
-      });
-
-      const daily: DailyMetric[] = Array.from(dailyMap.entries())
-        .map(([date, data]) => ({ date, ...data }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-
-      // Preencher dias sem dados
-      const filledDaily = fillMissingDays(daily, period);
-
-      // Métricas por plataforma
-      const platformMap = new Map<string, number>();
-      allClicks.filter(c => !c.is_page_view && c.platform_id).forEach(click => {
-        const count = platformMap.get(click.platform_id) || 0;
-        platformMap.set(click.platform_id, count + 1);
-      });
-
-      const platforms: PlatformMetric[] = Array.from(platformMap.entries())
-        .map(([platform_id, clicks]) => ({
-          platform_id,
-          clicks,
-          percentage: totalClicks > 0 ? Math.round((clicks / totalClicks) * 100) : 0
-        }))
-        .sort((a, b) => b.clicks - a.clicks);
-
-      // Métricas por país
-      const countryMap = new Map<string, { count: number; code: string }>();
-      allClicks.filter(c => c.country_name || c.country).forEach(click => {
-        const country = click.country_name || click.country || 'Desconhecido';
-        const code = click.country_code || '';
-        const existing = countryMap.get(country) || { count: 0, code };
-        existing.count++;
-        countryMap.set(country, existing);
-      });
-
-      const totalCountryClicks = Array.from(countryMap.values()).reduce((sum, c) => sum + c.count, 0);
-      const countries: CountryMetric[] = Array.from(countryMap.entries())
-        .map(([country, data]) => ({
-          country,
-          country_code: data.code,
-          count: data.count,
-          percentage: totalCountryClicks > 0 ? Math.round((data.count / totalCountryClicks) * 100) : 0
-        }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10);
-
-      // Métricas por cidade
-      const cityMap = new Map<string, { count: number; country: string }>();
-      allClicks.filter(c => c.city_name || c.city).forEach(click => {
-        const city = click.city_name || click.city || 'Desconhecida';
-        const country = click.country_name || click.country || '';
-        const key = `${city}-${country}`;
-        const existing = cityMap.get(key) || { count: 0, country };
-        existing.count++;
-        cityMap.set(key, existing);
-      });
-
-      const cities: CityMetric[] = Array.from(cityMap.entries())
-        .map(([key, data]) => ({
-          city: key.split('-')[0],
-          country: data.country,
-          count: data.count
-        }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 10);
-
-      // Métricas por dispositivo
-      const deviceMap = new Map<string, number>();
-      allClicks.filter(c => c.device_type).forEach(click => {
-        const device = click.device_type || 'Desconhecido';
-        deviceMap.set(device, (deviceMap.get(device) || 0) + 1);
-      });
-
-      const totalDevices = Array.from(deviceMap.values()).reduce((sum, c) => sum + c, 0);
-      const devices: DeviceMetric[] = Array.from(deviceMap.entries())
-        .map(([device_type, count]) => ({
-          device_type,
-          count,
-          percentage: totalDevices > 0 ? Math.round((count / totalDevices) * 100) : 0
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      // Métricas por browser
-      const browserMap = new Map<string, number>();
-      allClicks.filter(c => c.browser).forEach(click => {
-        const browser = click.browser || 'Desconhecido';
-        browserMap.set(browser, (browserMap.get(browser) || 0) + 1);
-      });
-
-      const totalBrowsers = Array.from(browserMap.values()).reduce((sum, c) => sum + c, 0);
-      const browsers: BrowserMetric[] = Array.from(browserMap.entries())
-        .map(([browser, count]) => ({
-          browser,
-          count,
-          percentage: totalBrowsers > 0 ? Math.round((count / totalBrowsers) * 100) : 0
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      // Métricas por OS
-      const osMap = new Map<string, number>();
-      allClicks.filter(c => c.os).forEach(click => {
-        const os = click.os || 'Desconhecido';
-        osMap.set(os, (osMap.get(os) || 0) + 1);
-      });
-
-      const totalOS = Array.from(osMap.values()).reduce((sum, c) => sum + c, 0);
-      const osMetrics: OSMetric[] = Array.from(osMap.entries())
-        .map(([os, count]) => ({
-          os,
-          count,
-          percentage: totalOS > 0 ? Math.round((count / totalOS) * 100) : 0
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      // Métricas por hora do dia
-      const hourlyMap = new Map<number, number>();
-      for (let i = 0; i < 24; i++) hourlyMap.set(i, 0);
-      allClicks.filter(c => !c.is_page_view).forEach(click => {
-        const hour = new Date(click.clicked_at).getHours();
-        hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1);
-      });
-
-      const hourly: HourlyMetric[] = Array.from(hourlyMap.entries())
-        .map(([hour, clicks]) => ({ hour, clicks }))
-        .sort((a, b) => a.hour - b.hour);
-
-      // Métricas por dia da semana
-      const weekdayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-      const weekdayMap = new Map<number, number>();
-      for (let i = 0; i < 7; i++) weekdayMap.set(i, 0);
-      allClicks.filter(c => !c.is_page_view).forEach(click => {
-        const day = new Date(click.clicked_at).getDay();
-        weekdayMap.set(day, (weekdayMap.get(day) || 0) + 1);
-      });
-
-      const weekdays: WeekdayMetric[] = Array.from(weekdayMap.entries())
-        .map(([weekday_num, clicks]) => ({
-          weekday: weekdayNames[weekday_num],
-          weekday_num,
-          clicks
-        }))
-        .sort((a, b) => a.weekday_num - b.weekday_num);
-
-      setData({
-        summary: {
-          total_clicks: totalClicks,
-          total_views: totalViews,
-          total_smartlinks: smartlinkIds.length,
-          total_presaves: presaveIds.length,
-          click_rate: totalViews > 0 ? Math.round((totalClicks / totalViews) * 100) : 0,
-          clicks_today: clicksToday,
-          clicks_week: clicksWeek,
-          clicks_month: clicksMonth
-        },
-        daily: filledDaily,
-        platforms,
-        countries,
-        cities,
-        devices,
-        browsers,
-        os: osMetrics,
-        hourly,
-        weekdays
-      });
     } catch (err) {
       console.error('Erro ao buscar métricas:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
@@ -417,30 +469,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   }, [fetchMetrics]);
 
   return { data, loading, error, refetch: fetchMetrics };
-}
-
-// Função auxiliar para preencher dias sem dados
-function fillMissingDays(daily: DailyMetric[], period: Period): DailyMetric[] {
-  if (daily.length === 0) return [];
-
-  const days = period === '7d' ? 7 : period === '30d' ? 30 : period === '90d' ? 90 : 365;
-  const result: DailyMetric[] = [];
-  const now = new Date();
-  const existingDates = new Set(daily.map(d => d.date));
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-    const dateStr = date.toISOString().split('T')[0];
-    
-    if (existingDates.has(dateStr)) {
-      const existing = daily.find(d => d.date === dateStr);
-      if (existing) result.push(existing);
-    } else {
-      result.push({ date: dateStr, clicks: 0, views: 0 });
-    }
-  }
-
-  return result;
 }
 
 export default useMetricsData;
