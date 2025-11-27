@@ -102,31 +102,34 @@ export const AuthProvider = ({ children }) => {
             return;
           }
 
-          const currentUserId = session?.user?.id;
+          // Usar userRef para comparação síncrona (evita stale closure)
+          const currentUserId = userRef.current?.id;
           const newUserId = newSession?.user?.id;
 
-          // Só atualiza se realmente mudou algo significativo
-          // Evitar tratar SIGNED_IN redundante quando o usuário não mudou
+          // SIGNED_IN redundante: mesmo usuário, apenas atualiza sessão sem causar re-render
           if (event === 'SIGNED_IN' && currentUserId === newUserId) {
-            console.log('[Auth] SIGNED_IN redundante: mesmo usuário, ignorando');
+            console.log('[Auth] SIGNED_IN redundante: mesmo usuário, ignorando re-render');
             setSession(newSession);
-            setUser(newSession?.user ?? null);
-            userRef.current = newSession?.user ?? null;
+            // NÃO atualizar setUser para evitar re-render nos componentes
             return;
           }
 
-          if (currentUserId !== newUserId || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+          // INITIAL_SESSION após já ter usuário: ignorar se é o mesmo
+          if (event === 'INITIAL_SESSION' && currentUserId === newUserId) {
+            console.log('[Auth] INITIAL_SESSION redundante: mesmo usuário, ignorando');
+            setSession(newSession);
+            return;
+          }
+
+          // Só atualiza user se realmente mudou
+          if (currentUserId !== newUserId) {
             setSession(newSession);
             setUser(newSession?.user ?? null);
             userRef.current = newSession?.user ?? null;
             console.log('[Auth] session/user atualizados:', { event, currentUserId, newUserId });
 
             if (newSession?.user) {
-              // Força re-fetch apenas em login real
-              if (event === 'SIGNED_IN') {
-                lastFetchedUserIdRef.current = null;
-                console.log('[Auth] SIGNED_IN: reset lastFetchedUserId, buscando profile');
-              }
+              lastFetchedUserIdRef.current = null;
               await fetchProfile(newSession.user.id, false);
             } else {
               setProfile(null);
@@ -134,6 +137,14 @@ export const AuthProvider = ({ children }) => {
               userRef.current = null;
               console.log('[Auth] SIGNED_OUT: limpando profile');
             }
+          } else if (event === 'SIGNED_OUT') {
+            // Logout explícito
+            setSession(null);
+            setUser(null);
+            setProfile(null);
+            lastFetchedUserIdRef.current = null;
+            userRef.current = null;
+            console.log('[Auth] SIGNED_OUT: limpando tudo');
           }
         }
       );
