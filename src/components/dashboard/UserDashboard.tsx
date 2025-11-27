@@ -450,11 +450,10 @@ const UserDashboard: React.FC = () => {
   useEffect(() => {
     const userId = user?.id;
 
-    if (!userId || initializing) {
-      if (!userId && !initializing) {
-        setLoadingData(false);
-        setLoadingSpotify(false);
-      }
+    // Não bloquear por initializing após o primeiro mount: se há userId, seguimos
+    if (!userId) {
+      setLoadingData(false);
+      setLoadingSpotify(false);
       return;
     }
 
@@ -475,7 +474,7 @@ const UserDashboard: React.FC = () => {
       unregister && unregister();
       // nada
     };
-  }, [user?.id, initializing]);
+  }, [user?.id]);
 
   // Cleanup na desmontagem
   useEffect(() => {
