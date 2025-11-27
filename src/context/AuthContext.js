@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
   // Visibilidade global do app
   const [appVisibility, setAppVisibility] = useState(typeof document !== 'undefined' ? document.visibilityState : 'visible');
   const globalRefetchCallbacksRef = useRef(new Set());
+  const userRef = useRef(null);
   
   // Refs para evitar chamadas duplicadas
   const lastFetchedUserIdRef = useRef(null);
@@ -63,8 +64,9 @@ export const AuthProvider = ({ children }) => {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         if (!mounted) return;
 
-        setSession(initialSession);
-        setUser(initialSession?.user ?? null);
+  setSession(initialSession);
+  setUser(initialSession?.user ?? null);
+  userRef.current = initialSession?.user ?? null;
         console.log('[Auth] getSession:', { hasSession: !!initialSession, userId: initialSession?.user?.id });
 
         if (initialSession?.user) {
@@ -103,6 +105,7 @@ export const AuthProvider = ({ children }) => {
           if (currentUserId !== newUserId || event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
             setSession(newSession);
             setUser(newSession?.user ?? null);
+            userRef.current = newSession?.user ?? null;
             console.log('[Auth] session/user atualizados:', { event, currentUserId, newUserId });
 
             if (newSession?.user) {
@@ -115,6 +118,7 @@ export const AuthProvider = ({ children }) => {
             } else {
               setProfile(null);
               lastFetchedUserIdRef.current = null;
+              userRef.current = null;
               console.log('[Auth] SIGNED_OUT: limpando profile');
             }
           }
@@ -133,9 +137,10 @@ export const AuthProvider = ({ children }) => {
       const state = document.visibilityState;
       if (!mounted) return;
       setAppVisibility(state);
-      console.log('[Auth] visibilitychange:', state, { hasUser: !!user?.id });
+      const hasUser = !!userRef.current?.id;
+      console.log('[Auth] visibilitychange:', state, { hasUser });
       // Quando voltar para visível e houver usuário válido, dispare revalidação global com debounce simples
-      if (state === 'visible' && (user?.id)) {
+      if (state === 'visible' && hasUser) {
         // Debounce: agenda no próximo tick para evitar múltiplas execuções em sequência
         setTimeout(() => {
           console.log('[Auth] visibilitychange: disparando refetch callbacks');
