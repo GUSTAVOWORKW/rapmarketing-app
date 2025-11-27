@@ -359,6 +359,14 @@ const UserDashboard: React.FC = () => {
       setLoadingData(true);
     }
 
+    // Timeout de segurança para garantir que o loading não fique preso
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current && dashboardAbortControllerRef.current === abortController) {
+        console.warn('Dashboard fetch timed out - forcing loading false');
+        setLoadingData(false);
+      }
+    }, 15000); // 15 segundos
+
     try {
       // Buscar dados em paralelo
       const [
@@ -399,6 +407,7 @@ const UserDashboard: React.FC = () => {
       if (error instanceof Error && error.name === 'AbortError') return;
       console.error('Error fetching dashboard data:', error);
     } finally {
+      clearTimeout(timeoutId);
       if (isMountedRef.current && dashboardAbortControllerRef.current === abortController) {
         setLoadingData(false);
       }

@@ -332,6 +332,14 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       setError(null);
     }
 
+    // Timeout de segurança
+    const timeoutId = setTimeout(() => {
+      if (isMountedRef.current && abortControllerRef.current === abortController) {
+        console.warn('Metrics fetch timed out - forcing loading false');
+        setLoading(false);
+      }
+    }, 15000);
+
     try {
       const { start, end } = getDateRange(period);
 
@@ -501,6 +509,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
       }
     } finally {
+      clearTimeout(timeoutId);
       // Só atualiza o loading se este for o controller ATUAL
       // Isso evita que requisições antigas cancelem o loading de requisições novas
       if (isMountedRef.current && abortControllerRef.current === abortController) {
