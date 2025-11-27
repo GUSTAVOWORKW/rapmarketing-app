@@ -17,6 +17,10 @@ export const AuthProvider = ({ children }) => {
   // Refs para evitar chamadas duplicadas
   const lastFetchedUserIdRef = useRef(null);
   const isFetchingRef = useRef(false);
+  
+  // Ref para evitar múltiplas chamadas de refetch em sequência
+  const lastRefetchTimeRef = useRef(0);
+  const REFETCH_DEBOUNCE_MS = 2000; // 2 segundos de debounce
 
   const fetchProfile = useCallback(async (userId, showLoading = true) => {
     if (!userId) return;
@@ -141,23 +145,16 @@ export const AuthProvider = ({ children }) => {
 
     setupAuth();
 
-    // Listener único de visibilitychange
+    // Listener único de visibilitychange - REMOVIDO pois causava múltiplas requisições
+    // O Supabase já dispara eventos quando a visibilidade muda, então não precisamos de callbacks adicionais
     const onVisibility = () => {
       const state = document.visibilityState;
       if (!mounted) return;
       setAppVisibility(state);
       const hasUser = !!userRef.current?.id;
       console.log('[Auth] visibilitychange:', state, { hasUser });
-      // Quando voltar para visível e houver usuário válido, dispare revalidação global com debounce simples
-      if (state === 'visible' && hasUser) {
-        // Debounce: agenda no próximo tick para evitar múltiplas execuções em sequência
-        setTimeout(() => {
-          console.log('[Auth] visibilitychange: disparando refetch callbacks');
-          globalRefetchCallbacksRef.current.forEach(cb => {
-            try { cb(); } catch (e) { /* noop */ }
-          });
-        }, 300);
-      }
+      // NÃO dispare refetch callbacks aqui - o Supabase já faz isso via onAuthStateChange
+      // Isso estava causando requisições duplicadas e loading infinito
     };
     document.addEventListener('visibilitychange', onVisibility);
 

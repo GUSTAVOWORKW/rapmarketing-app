@@ -1,7 +1,6 @@
 // hooks/useMetricsData.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../services/supabase';
-import { useAuth } from '../context/AuthContext';
 import { useSafeAsync } from './useSafeAsync';
 
 // Tipos para os dados de métricas
@@ -279,9 +278,12 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
   const [data, setData] = useState<MetricsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { registerGlobalRefetch } = useAuth();
   const { isMountedRef, abortControllerRef, requestIdRef, nextRequest } = useSafeAsync();
   const hasInitialMetricsDataRef = useRef(false);
+  
+  // Ref para evitar fetch duplicado ao voltar da aba
+  const lastFetchTimeRef = useRef(0);
+  const FETCH_DEBOUNCE_MS = 1000; // 1 segundo de debounce
 
   const getDateRange = useCallback((p: Period) => {
     const now = new Date();
@@ -506,18 +508,36 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     }
   }, [userId, period, getDateRange, nextRequest]);
 
+  // Efeito para recarregar dados quando aba volta a ficar visível
+  useEffect(() => {
+    if (!userId) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && userId) {
+        const now = Date.now();
+        // Debounce para evitar múltiplas requisições
+        if (now - lastFetchTimeRef.current < FETCH_DEBOUNCE_MS) {
+          console.log('[Metrics] visibilitychange: debounced, ignorando');
+          return;
+        }
+        lastFetchTimeRef.current = now;
+        console.log('[Metrics] visibilitychange: recarregando dados');
+        fetchMetrics();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [userId, fetchMetrics]);
+
   useEffect(() => {
     // Sem cache: sempre revalidar e controlar loading via hasInitialMetricsDataRef
+    // Debounce inicial
+    lastFetchTimeRef.current = Date.now();
     fetchMetrics();
-    // Registrar refetch global (visibilidade volta a 'visible' com user válido)
-    const unregister = registerGlobalRefetch(() => {
-      console.log('[Metrics] globalRefetch: executando revalidação');
-      fetchMetrics();
-    });
-    return () => {
-      unregister && unregister();
-    };
-  }, [fetchMetrics, registerGlobalRefetch]);
+  }, [fetchMetrics]);
 
   return { data, loading, error, refetch: fetchMetrics };
 }

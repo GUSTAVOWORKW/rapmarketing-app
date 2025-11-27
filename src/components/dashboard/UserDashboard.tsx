@@ -218,7 +218,7 @@ const TipCard: React.FC<TipCardProps> = ({ title, description, icon, action, onC
 
 const UserDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { user, profile, initializing, registerGlobalRefetch } = useAuth();
+  const { user, profile, initializing } = useAuth();
 
   // Estados principais
   const [stats, setStats] = useState({
@@ -244,6 +244,10 @@ const UserDashboard: React.FC = () => {
 
   // Ref para controle de montagem
   const isMountedRef = useRef(true);
+  
+  // Ref para evitar fetch duplicado ao voltar da aba
+  const lastFetchTimeRef = useRef(0);
+  const FETCH_DEBOUNCE_MS = 1000; // 1 segundo de debounce
 
   // Calcular taxa de conversão
   const conversionRate = useMemo(() => {
@@ -430,6 +434,32 @@ const UserDashboard: React.FC = () => {
     }
   };
 
+  // Efeito para recarregar dados quando aba volta a ficar visível
+  useEffect(() => {
+    const userId = user?.id;
+    if (!userId) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && user?.id) {
+        const now = Date.now();
+        // Debounce para evitar múltiplas requisições
+        if (now - lastFetchTimeRef.current < FETCH_DEBOUNCE_MS) {
+          console.log('[Dashboard] visibilitychange: debounced, ignorando');
+          return;
+        }
+        lastFetchTimeRef.current = now;
+        console.log('[Dashboard] visibilitychange: recarregando dados');
+        fetchDashboardData();
+        fetchSpotifyData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user?.id]);
+
   useEffect(() => {
     const userId = user?.id;
 
@@ -441,20 +471,13 @@ const UserDashboard: React.FC = () => {
       return;
     }
 
-  console.log('[Dashboard] effect: iniciando fetchDashboardData & fetchSpotifyData');
-  fetchDashboardData();
-  fetchSpotifyData();
+    // Debounce inicial
+    const now = Date.now();
+    lastFetchTimeRef.current = now;
 
-    // Revalidação global via AuthContext: registra callbacks
-    const unregister = registerGlobalRefetch(() => {
-      if (user?.id) {
-        console.log('[Dashboard] globalRefetch: executando revalidação');
-        fetchDashboardData();
-        fetchSpotifyData();
-      } else {
-        console.log('[Dashboard] globalRefetch: ignorado, sem userId');
-      }
-    });
+    console.log('[Dashboard] effect: iniciando fetchDashboardData & fetchSpotifyData');
+    fetchDashboardData();
+    fetchSpotifyData();
 
     return () => {
       if (dashboardAbortControllerRef.current) {
@@ -465,8 +488,6 @@ const UserDashboard: React.FC = () => {
         spotifyAbortControllerRef.current.abort();
         console.log('[Dashboard] cleanup: abort spotify request');
       }
-      unregister && unregister();
-      // nada
     };
   }, [user?.id]);
 
