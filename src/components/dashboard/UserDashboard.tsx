@@ -399,6 +399,7 @@ const UserDashboard: React.FC = () => {
           setRecentLinks(linksData || []);
         }
       } catch (error) {
+        if (signal.aborted) return;
         if (error instanceof Error && error.name === 'AbortError') return;
         console.error('Error fetching dashboard data:', error);
       } finally {

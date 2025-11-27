@@ -321,7 +321,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
     const signal = abortController.signal;
 
     if (!userId) {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && abortControllerRef.current === abortController) {
         setLoading(false);
       }
       return;
@@ -381,7 +381,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         };
         if (isMountedRef.current) {
           setData(emptyData);
-          setLoading(false);
+          // Loading será tratado no finally
         }
         return;
       }
@@ -401,7 +401,7 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         const metricsData = processClicksToMetrics(allClicksData, totalSmartlinks, totalPresaves);
         if (isMountedRef.current) {
           setData(metricsData);
-          setLoading(false);
+          // Loading será tratado no finally
         }
         return;
       }
@@ -485,16 +485,18 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       }
 
     } catch (err) {
-      // Ignorar erro de abort
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
+      // Verificar se foi abortado
+      if (signal.aborted) return;
+      if (err instanceof Error && err.name === 'AbortError') return;
+
       console.error('Erro ao buscar métricas:', err);
       if (isMountedRef.current) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar métricas');
       }
     } finally {
-      if (isMountedRef.current && (!abortControllerRef.current?.signal.aborted)) {
+      // Só atualiza o loading se este for o controller ATUAL
+      // Isso evita que requisições antigas cancelem o loading de requisições novas
+      if (isMountedRef.current && abortControllerRef.current === abortController) {
         setLoading(false);
       }
     }
@@ -510,12 +512,8 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
       }
     };
 
-    const handleFocus = () => {
-      fetchMetrics();
-    };
-
+    // Removido listener de focus para evitar chamadas duplicadas com visibilitychange
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
     
     return () => {
       isMountedRef.current = false;
@@ -523,7 +521,6 @@ export function useMetricsData(userId: string | undefined, period: Period = '30d
         abortControllerRef.current.abort();
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
     };
   }, [fetchMetrics]);
 
